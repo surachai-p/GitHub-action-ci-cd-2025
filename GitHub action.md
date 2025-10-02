@@ -1577,8 +1577,16 @@ git push origin feature/test-pr
 
 ## คำถามท้ายการทดลอง
 1. docker compose คืืออะไร มีความสำคัญอย่างไร
+   ตอบ ใช้จัดการหลาย container พร้อมกันในไฟล์เดียว
+   
 2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
+  ตอบ คือขั้นตอนอัตโนมัติใน GitHub ที่ใช้รัน CI/CD เช่น ทดสอบโค้ด อัปเดตระบ
+
 3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
+  ตอบ    - volumes: เก็บข้อมูลถาวร
+         - networks: ให้ container เชื่อมกัน
+         - healthcheck: เช็กว่า container พร้อมทำงานมั้
+
 4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
 ```yaml
 jobs:
@@ -1601,6 +1609,13 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 ```
+  ตอบ - jobs.test: งานชื่อ "Run Tests" จะรันบน Ubuntu ล่าสุด
+      - services.postgres: สร้าง container ของ PostgreSQL เพื่อใช้ในการทดสอบ
+      - env: กำหนด environment variables สำหรับ database
+      - ports: เปิดพอร์ต 5432 เพื่อให้ container เชื่อมต่อได้
+      - options.healthcheck: ตรวจสอบว่า PostgreSQL พร้อมใช้งานหรือยัง โดยใช้คำสั่ง pg_isready
+
+  
 5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
 ```yaml
     steps:
@@ -1613,4 +1628,10 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
 ```
+ตอบ  - actions/checkout@v4: ดึงโค้ดจาก GitHub repo มาใช้ใน pipeline
+    - actions/setup-python@v5: ติดตั้ง Python version ที่กำหนด และ cache dependency จาก pip เพื่อให้เร็วขึ้น
+
 6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+   ตอบ  Snyk คือเครื่องมือช่วยตรวจสอบความปลอดภัยของโค้ดและ dependencies ที่เราใช้ในโปรเจกต์ เช่น npm, pip, Docker ฯลฯ ถ้ามีช่องโหว่หรือเวอร์ชันที่ไม่ปลอดภัย มันจะแจ้งเตือน พร้อมแนะนำวิธีแก้ไขให้ด้วย
+
+   
