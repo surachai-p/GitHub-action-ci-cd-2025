@@ -1145,6 +1145,9 @@ docker system prune -f
 ## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
 
 ```
+![](https://github.com/user-attachments/assets/c01a4364-5d5a-490a-8628-999bb38dcc9a)
+
+
 
 ## การทดลองที่ 2: สร้าง GitHub Actions Workflow
 
@@ -1529,10 +1532,11 @@ git push origin main
 # ตรวจสอบผลลัพธ์ใน GitHub Actions 
 ```
 ## บันทึกรูปผลการทดลอง หน้า GitHub Actions
-```bash
+
+![](https://github.com/user-attachments/assets/09c344bf-8994-4913-87b1-eeb3e7c0ea1b)
 
 
-```
+
 
 #### ขั้นตอนที่ 5: ทดสอบ Pull Request
 
@@ -1547,13 +1551,9 @@ git push origin feature/test-pr
 # ตรวจสอบ workflow การทำงานและ comment ที่ถูกสร้าง
 ```
 ## บันทึกรูปผลการทดลอง 
-```bash
-
-
-```
-
-
 ---
+![](https://github.com/user-attachments/assets/1e542abb-54fa-41ec-88bf-e974b24515ae)
+
 
 
 ## Resources และเอกสารอ้างอิง
@@ -1585,10 +1585,24 @@ git push origin feature/test-pr
 ---
 
 ## คำถามท้ายการทดลอง
-1. docker compose คืออะไร มีความสำคัญอย่างไร
-2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
-3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
-4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
+1. docker compose คืออะไร มีความสำคัญอย่างไร - Docker Compose คือ เครื่องมือที่ช่วยจัดการ multi-container applications ได้ง่ายขึ้น โดยใช้ไฟล์ docker-compose.yml
+   ความสำคัญ ช่วยจัดการ container หลายตัวพร้อมกัน เช่น web server + database ทำให้ reproducible สะดวกในการทำงานเป็นทีมและ CI/CD
+2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร - GitHub Pipeline คือ workflow ที่นิยามใน GitHub Actions ให้รันอัตโนมัติ เช่น build, test, deploy
+   เกี่ยวข้องกับ CI/CD โดย CI (Continuous Integration): pipeline จะ run test/build ทุกครั้งที่ push/pull request → ตรวจว่าโค้ดใหม่ไม่พัง , CD (Continuous Deployment/Delivery): pipeline จะ deploy อัตโนมัติไปยัง server หรือ cloud
+3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร - volumes = ใช้เก็บข้อมูลให้คงอยู่แม้ container หยุด เช่น database data
+networks = ใช้กำหนด network ระหว่าง container เพื่อให้สื่อสารกันได้ (เช่น app ↔ database)
+healthcheck = ใช้ตรวจสอบว่า service ภายใน container ทำงานปกติหรือยัง เช่น Postgres พร้อมรับ connection หรือไม่
+4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้
+jobs:  กำหนดชุดงาน (job) ที่ pipeline จะทำ
+test:  job นี้ชื่อว่า test
+runs-on: ubuntu-latest  job จะรันบน VM Ubuntu
+services: กำหนด container service ที่ job ต้องใช้
+postgres:  รัน Postgres DB เป็น service
+image: postgres:16-alpine  ใช้ image Postgres รุ่นเบา
+env:  environment variables สำหรับ DB (user, pass, db)
+ports:  map port 5432 ออกมา
+options: เพิ่ม healthcheck ตรวจสอบว่าฐานข้อมูลพร้อมใช้งาน
+
 ```yaml
 jobs:
   test:
@@ -1622,4 +1636,12 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
 ```
-6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+- actions/setup-python@v5 = ติดตั้ง Python version ที่ต้องการใน runner
+python-version = ระบุเวอร์ชัน Python จาก environment variable
+cache: 'pip' = cache dependency (pip) เพื่อให้ run เร็วขึ้นในครั้งถัดไป
+6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง - Snyk เป็นเครื่องมือ Security & Vulnerability Scanning
+ใช้ตรวจหาช่องโหว่ใน:
+Dependencies (เช่น package npm, pip, maven)
+Docker images
+Kubernetes configs
+Infrastructure as Code (IaC)
