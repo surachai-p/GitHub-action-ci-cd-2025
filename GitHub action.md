@@ -1639,6 +1639,8 @@ env
 เพื่อสร้างฐานข้อมูลเริ่มต้นชื่อ testdb, user testuser และ password testpass
 ports
 ทำการแมปพอร์ต 5432 ของ host (GitHub runner) เข้ากับ container ทำให้โค้ดของคุณใน job นี้สามารถเชื่อมต่อกับ PostgreSQL ที่รันอยู่ใน container ได้ หมายเหตุ: บางครั้งไม่จำเป็นต้องแมป port ก็สามารถเชื่อมต่อกันได้ภายใน runner ผ่าน hostname localhost หรือ postgres
+
+
 5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
 ```yaml
     steps:
