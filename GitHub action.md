@@ -1528,6 +1528,7 @@ git push origin main
 ```
 ## บันทึกรูปผลการทดลอง หน้า GitHub Actions
 ```bash
+<img width="1903" height="933" alt="image" src="https://github.com/user-attachments/assets/ce92a419-3d95-4212-8790-8024801d49ce" />
 
 
 ```
@@ -1547,6 +1548,7 @@ git push origin feature/test-pr
 ## บันทึกรูปผลการทดลอง 
 ```bash
 
+<img width="1875" height="933" alt="image" src="https://github.com/user-attachments/assets/2b1e0776-10ee-4b64-a501-e784e161b1d4" />
 
 ```
 
@@ -1584,8 +1586,18 @@ git push origin feature/test-pr
 
 ## คำถามท้ายการทดลอง
 1. docker compose คืืออะไร มีความสำคัญอย่างไร
+คือเครื่องมือที่ใช้รันหลาย container พร้อมกัน ด้วย config ไฟล์ .yml
+สำคัญเพราะจัดการ service ต่างๆ (เช่น app, db) ให้ทำงานร่วมกันได้ง่ายในโปรเจกต์เดียว
+
 2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
+คือชุดขั้นตอนอัตโนมัติ (workflow) บน GitHub Actions
+ใช้รัน CI/CD เช่น เทส, build, deploy ทุกครั้งที่ push code
+
 3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
+volumes: ใช้เก็บข้อมูลถาวร แม้ container หยุด ข้อมูลยังอยู่
+networks: ให้ container คุยกันเองได้
+healthcheck: ตรวจสุขภาพ container ถ้ายังไม่พร้อม จะไม่ให้ใช้งาน
+
 4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
 ```yaml
 jobs:
@@ -1608,6 +1620,19 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 ```
+ใช้ Postgres เป็น service สำหรับเทส และเช็คว่า DB พร้อมก่อนเริ่มงาน
+jobs:
+เริ่มกำหนด "งาน" ที่จะให้ GitHub Actions ทำ
+
+test:
+ตั้งชื่อ job ว่า test
+
+name: Run Tests
+ตั้งชื่อโชว์ว่า Run Tests
+
+runs-on: ubuntu-latest
+ให้ pipeline นี้ไปรันบนเครื่อง Ubuntu ล่าสุดของ GitHub
+
 5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
 ```yaml
     steps:
@@ -1619,5 +1644,34 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
+          - name: Checkout code
+
+บอกว่า step นี้จะ ดึง source code จาก GitHub repo มารัน
+
+uses: actions/checkout@v4: ใช้ action สำเร็จรูปชื่อ checkout เวอร์ชัน 4
+
+ - name: Set up Python
+
+Step นี้เตรียม Python environment ให้พร้อมใช้งาน
+
+uses: actions/setup-python@v5: ใช้ action ที่ช่วยติดตั้ง Python เวอร์ชันที่กำหนด
+
+with: กำหนด option เพิ่มเติม:
+
+python-version: ใช้ Python version ที่กำหนดไว้ใน env ชื่อ PYTHON_VERSION
+
+cache: 'pip': ช่วย cache dependencies ที่ติดตั้งผ่าน pip ไว้ให้ build รอบหน้ารวดเร็วขึ้น
+
+ สรุป:
+
+step แรก: ดึงโค้ดจาก GitHub มา
+
+step สอง: เตรียม Python version ให้พร้อม พร้อม cache เพื่อลดเวลารัน
 ```
 6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+Snyk = เครื่องมือตรวจช่องโหว่ในโค้ดและ dependency
+
+จุดเด่น:
+เช็ค security ของโค้ด
+วิเคราะห์ package ที่ใช้
+แจ้งเตือนและแนะนำวิธีแก้
