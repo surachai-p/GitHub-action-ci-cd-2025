@@ -1529,7 +1529,8 @@ git push origin main
 # ตรวจสอบผลลัพธ์ใน GitHub Actions 
 ```
 ## บันทึกรูปผลการทดลอง หน้า GitHub Actions
-```bash
+``bash
+<img width="1874" height="884" alt="image" src="https://github.com/user-attachments/assets/50421212-f053-4ebc-8f4a-ab952cf588c3" />
 
 
 ```
@@ -1547,7 +1548,8 @@ git push origin feature/test-pr
 # ตรวจสอบ workflow การทำงานและ comment ที่ถูกสร้าง
 ```
 ## บันทึกรูปผลการทดลอง 
-```bash
+``bash
+<img width="1662" height="900" alt="image" src="https://github.com/user-attachments/assets/a942d750-8cb9-4f87-a083-224ab28a5f1e" />
 
 
 ```
@@ -1585,11 +1587,26 @@ git push origin feature/test-pr
 ---
 
 ## คำถามท้ายการทดลอง
-1. docker compose คืออะไร มีความสำคัญอย่างไร
-2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
-3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
+Docker Compose
+คือเครื่องมือที่ช่วยให้เรารันหลายคอนเทนเนอร์พร้อมกัน โดยกำหนดทุกบริการ, พอร์ต, เครือข่าย, โวลุ่ม ในไฟล์ YAML เดียว แล้วสั่ง docker compose up ก็รันทุกบริการได้พร้อมกัน 
+Docker Documentation
+
+GitHub Pipeline / CI-CD Pipeline
+คือ workflow ที่รันอัตโนมัติเมื่อมีการเปลี่ยนแปลงโค้ด (push, pull request) เพื่อทดสอบ, build, deploy — GitHub Actions เป็นตัวทำ pipeline ใน GitHub ที่เกี่ยวข้องโดยตรงกับ CI/CD 
+GitHub
++2
+Medium
++2
+
+Volumes / Networks / Healthcheck ใน docker compose
+
+Volumes = เก็บข้อมูลถาวร (persist data) ข้ามการสร้าง/ลบ container
+
+Networks = ทำให้ container แต่ละตัวเชื่อมต่อกันได้โดยใช้ชื่อ service เป็น hostname
+
+Healthcheck = กำหนดวิธีตรวจว่า service ใช้งานได้จริงหรือไม่ (เช่น ping, HTTP) ถ้าไม่ “healthy” ก็อาจ restart หรือ delay service อื่นที่พึ่งพา
 4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
-```yaml
+``yaml
 jobs:
   test:
     name: Run Tests
@@ -1611,7 +1628,7 @@ jobs:
           --health-retries 5
 ```
 5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
-```yaml
+``yaml
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -1621,5 +1638,7 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
-```
+รัน job บน Ubuntu พร้อมให้ PostgreSQL 16 รันใน background และรอจน database พร้อม ก่อนเริ่มเทส
+``
 6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+Snyk คือเครื่องมือสำหรับ ตรวจสอบช่องโหว่ด้านความปลอดภัยในโค้ดและ dependency (ไลบรารีที่ใช้งาน)
