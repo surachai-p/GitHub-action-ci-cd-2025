@@ -1129,7 +1129,7 @@ docker compose down -v --rmi all
 
 # ลบ system cache (optional)
 docker system prune -f
-```
+
 
 ### Checklist ก่อนไปขั้นตอนถัดไป:
 
@@ -1143,6 +1143,8 @@ docker system prune -f
 ```
 ## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
 
+(![alt text](image.png))
+![docker system prune -f](web.png)
 
 ### การทดลองที่ 2: สร้าง GitHub Actions Workflow
 
@@ -1547,7 +1549,8 @@ git push origin feature/test-pr
 ## บันทึกรูปผลการทดลอง 
 ```bash
 
-
+![alt text](image-1.png)
+![alt text](image-2.png)
 ```
 
 
@@ -1584,8 +1587,20 @@ git push origin feature/test-pr
 
 ## คำถามท้ายการทดลอง
 1. docker compose คืืออะไร มีความสำคัญอย่างไร
+Docker Compose คือเครื่องมือ (Tool) ที่ใช้สำหรับ จัดการหลาย ๆ Container พร้อมกัน
+จัดการหลาย container ได้ง่าย
+ใช้ไฟล์เดียว (docker-compose.yml) กำหนด services ทั้งหมด
+เช่น Web + DB + Redis → เปิดพร้อมกันด้วยคำสั่งเดียว
 2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
+Pipeline ก็คือ “ลำดับขั้นตอนการทำงานอัตโนมัติ” ที่เรากำหนดไว้ให้ GitHub รันให้แทนเรา
+บน GitHub มันถูก implement ผ่าน GitHub Actions โดยเราจะเขียนเป็นไฟล์ .yml (workflow file) เก็บไว้ใน repo (เช่น .github/workflows/ci-cd.yml)
+CI = test + validate ทุกครั้งที่ push
+CD = build + deploy อัตโนมัติ
+ทำให้การพัฒนาและส่งมอบซอฟต์แวร์เร็วขึ้น มีคุณภาพ และลดข้อผิดพลาดจากคน
 3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
+Volumes  เก็บข้อมูลถาวร, restart container แล้วข้อมูลยังอยู่
+Networks  ให้ service คุยกันได้ด้วยชื่อ service, แยก network ให้ปลอดภัย
+Healthcheck  ตรวจว่า service พร้อมทำงานจริง ก่อนให้ container อื่นใช้งาน
 4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
 ```yaml
 jobs:
@@ -1620,4 +1635,54 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
 ```
+
+jobs:  กำหนด งาน (job) ที่จะให้ pipeline ทำ
+test:  ชื่อของ job (ในที่นี้คือ job สำหรับทดสอบ)
+name: Run Tests  ชื่อที่จะแสดงบน GitHub Actions UI
+runs-on: ubuntu-latest  job นี้จะรันบน runner ที่เป็น Ubuntu เวอร์ชันล่าสุด (GitHub เตรียมเครื่องให้)
+services
+ใช้สำหรับประกาศ service เสริม (เช่น Database, Redis) ที่ job นี้ต้องใช้ร่วมในการทดสอบ
+postgres:
+ชื่อ service (สามารถอ้างอิงได้ว่า host คือ postgres)
+image: postgres:16-alpine
+ดึง Docker image ของ PostgreSQL เวอร์ชัน 16 ที่เป็น alpine (เบาและเร็ว)
+env:
+ตัวแปรสภาพแวดล้อมที่ใช้ตั้งค่าฐานข้อมูลเริ่มต้น
+POSTGRES_PASSWORD: testpass  รหัสผ่าน user
+POSTGRES_USER: testuser  ชื่อ user
+POSTGRES_DB: testdb  สร้าง database ชื่อ testdb ให้พร้อมใช้งาน
+ports:
+- 5432:5432
+map port ของ Postgres ใน container (5432) ออกมาให้ runner ใช้งานที่ port 5432 เช่นกัน
+เวลาที่ test script เชื่อมต่อ DB จะใช้ localhost:5432
+options:
+ตั้งค่า health check สำหรับ Postgres
+--health-cmd "pg_isready -U testuser"  ตรวจว่าฐานข้อมูลพร้อมหรือยัง
+--health-interval 10s  ตรวจทุก 10 วินาที
+--health-timeout 5s  ให้เวลาสูงสุด 5 วินาทีต่อการตรวจ
+--health-retries 5  ถ้าตรวจไม่ผ่าน 5 ครั้ง  mark ว่า unhealthy
+uses: actions/checkout@v4
+Action มาตรฐานของ GitHub
+ทำหน้าที่ checkout source code จาก repo ของคุณมาใส่ใน runner (เครื่อง Ubuntu ที่ GitHub จัดให้)
+ถ้าไม่มี step นี้  runner จะไม่มีโค้ดของคุณ  build/test ไม่ได้
+เวอร์ชัน @v4 หมายถึงใช้ release ล่าสุด v4
+uses: actions/setup-python@v5
+Action สำหรับติดตั้ง Python บน runner
+with:  เป็นการกำหนด option ให้ action
+python-version: ${{ env.PYTHON_VERSION }}
+ จะดึงค่า Python version จากตัวแปร env (3.9 ที่กำหนดไว้ด้านบน)
+cache: 'pip'
+ บอกให้ GitHub Actions cache packages ที่ติดตั้งด้วย pip
+ ครั้งถัดไป pipeline จะรันเร็วขึ้น เพราะไม่ต้องโหลด dependency ซ้ำ
+
 6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+Snyk  คือเครื่องมือ Application Security ที่ช่วยตรวจสอบและแก้ไขช่องโหว่ด้านความปลอดภัยของซอฟต์แวร์แบบอัตโนมัติ
+ใช้ได้ทั้ง Dependency Scan (ตรวจ library ที่เราใช้งาน)
+Code Scan (ตรวจ source code)
+Container Scan (ตรวจ Docker image)
+IaC Scan (ตรวจ Infrastructure as Code เช่น Terraform, Kubernetes YAML)
+ความสามารถคือ
+ตรวจหาช่องโหว่ใน dependency, code, container, IaC
+แนะนำวิธีแก้ (fix suggestions)
+ผูกเข้ากับ CI/CD pipeline ได้ง่าย
+ทำให้โค้ดที่ deploy ไป production ปลอดภัยมากขึ้น
