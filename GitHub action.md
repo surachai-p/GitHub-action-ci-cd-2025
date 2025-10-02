@@ -1133,18 +1133,25 @@ docker system prune -f
 
 ### Checklist ก่อนไปขั้นตอนถัดไป:
 
-- [ ] ไฟล์ทั้งหมดถูกสร้างครบ
-- [ ] .env มี passwords ที่ปลอดภัย
-- [ ] `docker compose config` ไม่มี error
-- [ ] Services ทั้งหมด status เป็น "Up" และ "healthy"
-- [ ] API endpoints ตอบกลับถูกต้อง
-- [ ] Tests ผ่านทั้งหมด
-- [ ] Database และ Redis เชื่อมต่อได้
-- [ ] 
-```bash
+- [✓] ไฟล์ทั้งหมดถูกสร้างครบ
+- [✓ ] .env มี passwords ที่ปลอดภัย
+- [✓ ] `docker compose config` ไม่มี error
+- [✓ ] Services ทั้งหมด status เป็น "Up" และ "healthy"
+- [✓ ] API endpoints ตอบกลับถูกต้อง
+- [✓ ] Tests ผ่านทั้งหมด
+- [✓ ] Database และ Redis เชื่อมต่อได้
+- [✓ ] 
+bash
 ## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
 
-```
+<img width="375" height="236" alt="image" src="https://github.com/user-attachments/assets/0050083f-5d7f-418d-a261-c76940da5662" />
+
+
+<img width="408" height="200" alt="image" src="https://github.com/user-attachments/assets/5cccdaf4-73b4-4f6a-8c73-fcd654ddaaf5" />
+
+
+<img width="517" height="454" alt="image" src="https://github.com/user-attachments/assets/2a7ec5ac-5ef3-44a5-9214-da3273c0fd62" />
+
 
 ## การทดลองที่ 2: สร้าง GitHub Actions Workflow
 
@@ -1529,10 +1536,9 @@ git push origin main
 # ตรวจสอบผลลัพธ์ใน GitHub Actions 
 ```
 ## บันทึกรูปผลการทดลอง หน้า GitHub Actions
-```bash
+bash
 
-
-```
+<img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/9edae0d9-0ba2-40df-8c22-8c30859bb326" />
 
 #### ขั้นตอนที่ 5: ทดสอบ Pull Request
 
@@ -1547,14 +1553,9 @@ git push origin feature/test-pr
 # ตรวจสอบ workflow การทำงานและ comment ที่ถูกสร้าง
 ```
 ## บันทึกรูปผลการทดลอง 
-```bash
+bash
 
-
-```
-
-
----
-
+<img width="1919" height="1078" alt="image" src="https://github.com/user-attachments/assets/8c977cb3-7ac3-49a0-b8ed-27960f063836" />
 
 ## Resources และเอกสารอ้างอิง
 
@@ -1586,8 +1587,19 @@ git push origin feature/test-pr
 
 ## คำถามท้ายการทดลอง
 1. docker compose คืออะไร มีความสำคัญอย่างไร
+
+ไฟล์และเครื่องมือใช้จัดการหลาย container พร้อมกันในโปรเจกต์เดียว เช่น web + db + redis โดยใช้คำสั่งเดียว (docker compose up) ช่วยให้พัฒนาและ deploy ได้ง่ายขึ้น
+
 2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
+
+workflow อัตโนมัติ ที่ GitHub Actions ใช้ในการทำ CI/CD เช่น รันทดสอบ (CI) และ build/deploy แอป (CD) ทุกครั้งที่มีการ push โค้ด
+
 3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
+
+volumes: เก็บข้อมูลถาวร เช่น ฐานข้อมูล ไม่หายแม้ลบ container
+networks: ให้ container เชื่อมต่อกันในเครือข่ายเดียว
+healthcheck: ตรวจว่า container พร้อมทำงานจริงก่อนให้บริการ
+
 4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
 ```yaml
 jobs:
@@ -1610,6 +1622,8 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 ```
+- สำหรับรันทดสอบ โดยตั้งค่าให้ใช้ PostgreSQL ใน container เป็น service พร้อมกำหนด environment และ healthcheck เพื่อรอจนฐานข้อมูลพร้อมก่อนทดสอบ
+
 5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
 ```yaml
     steps:
@@ -1622,4 +1636,10 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
 ```
+
+actions/checkout@v4: ดึงโค้ดจาก repo มาใช้ใน workflow
+actions/setup-python@v5: ติดตั้ง Python เวอร์ชันที่ต้องการใน runner
+
 6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+
+เครื่องมือสแกนช่องโหว่ความปลอดภัยในโค้ด ไลบรารี และ Docker image ช่วยหาช่องโหว่และแนะนำวิธีแก้ เพื่อให้แอปปลอดภัยมากขึ้น
