@@ -1621,3 +1621,13 @@ jobs:
           cache: 'pip'
 ```
 6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+เครื่องมือที่ช่วยนักพัฒนาตรวจหาช่องโหว่ใน โค้ด, dependency, container, และ config
+Dependency Scanning – ตรวจหาช่องโหว่ในไลบรารี/แพ็กเกจ
+
+Container Scanning – สแกน Docker image หาแพ็กเกจเสี่ยง
+
+IaC Scanning – ตรวจ config ของ Terraform/Kubernetes ที่ไม่ปลอดภัย
+
+Code Scanning – วิเคราะห์โค้ดหาช่องโหว่โดยตรง
+
+CI/CD Integration – ผูกเข้ากับ pipeline เพื่อบล็อกโค้ดไม่ปลอดภัย
