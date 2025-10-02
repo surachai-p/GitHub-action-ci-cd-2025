@@ -1616,7 +1616,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 ```
-### อธิบายโค้ด YAML ส่วน jobs.test
+#### jobs.test
 
 - **jobs:** กำหนดงานที่จะรันใน GitHub Actions workflow  
 - **test:** ชื่อ job สำหรับรันชุดทดสอบ  
@@ -1631,8 +1631,6 @@ jobs:
   - `pg_isready -U testuser` → ตรวจสอบว่า PostgreSQL พร้อมใช้งาน  
   - ตรวจสอบทุก 10 วินาที, timeout 5 วินาที, retry 5 ครั้ง  
 
-**สรุป:**  
-เมื่อ job รัน จะสร้าง PostgreSQL container เป็น service รอให้ database พร้อมใช้งานก่อนรันทดสอบ ทำให้มั่นใจว่า test ที่ต้องใช้ DB รันได้ถูกต้อง
 
 5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
 ```yaml
@@ -1647,17 +1645,17 @@ jobs:
           cache: 'pip'
 ```
 
-1. uses: actions/checkout@v4
-  -  คือ GitHub Action ที่ใช้ ดึงโค้ดจาก repository ลงมาใน runner เพื่อให้ workflow สามารถเข้าถึงไฟล์โค้ด รันทดสอบ สร้าง หรือดีพลอยได้ Step นี้มักจะอยู่ ขั้นแรกสุด ของทุก workflow
-  - @v4 คือเวอร์ชันของ action
-2. uses: actions/setup-python@v5
-  - คือ GitHub Action ที่ใช้ ติดตั้ง Python บน runner สำหรับ workflow
-  - @v5 หมายถึง เวอร์ชันของ GitHub Action
+  - uses: actions/checkout@v4
+    -  คือ GitHub Action ที่ใช้ ดึงโค้ดจาก repository ลงมาใน runner เพื่อให้ workflow สามารถเข้าถึงไฟล์โค้ด รันทดสอบ สร้าง หรือดีพลอยได้ Step นี้มักจะอยู่ ขั้นแรกสุด ของทุก workflow
+    - @v4 คือเวอร์ชันของ action
+  - uses: actions/setup-python@v5
+    - คือ GitHub Action ที่ใช้ ติดตั้ง Python บน runner สำหรับ workflow
+    - @v5 หมายถึง เวอร์ชันของ GitHub Action
 
 6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
-Snyk คืออะไร
-  เป็น เครื่องมือความปลอดภัยสำหรับซอฟต์แวร์ ช่วยตรวจจับและแก้ไข ช่องโหว่ด้านความปลอดภัย ในโค้ด ไลบรารี และ container ของโปรเจกต์ โดยสามารถใช้งานร่วมกับระบบ CI/CD เช่น GitHub Actions, GitLab CI, Jenkins หรือ Docker ได้
-  ความสามารถหลักของ Snyk
+- Snyk คืออะไร
+  เป็น เครื่องมือความปลอดภัยสำหรับซอฟต์แวร์ ช่วยตรวจจับและแก้ไข ช่องโหว่ด้านความปลอดภัย ในโค้ด ไลบรารี และ container ของโปรเจกต์ โดยสามารถใช้งานร่วมกับระบบ - CI/CD เช่น GitHub Actions, GitLab CI, Jenkins หรือ Docker ได้
+- ความสามารถหลักของ Snyk
   - ตรวจสอบช่องโหว่ (Vulnerability Scanning) สแกนโค้ด ไลบรารี หรือ dependencies เพื่อหาช่องโหว่ด้านความปลอดภัย
   - จัดการ license ของ dependencies ตรวจสอบว่า dependencies ที่ใช้มี license ปลอดภัยและอนุญาตใช้งานตามกฎหมาย
   - แก้ไขช่องโหว่อัตโนมัติ (Fix & Patch) แนะนำเวอร์ชันใหม่หรือแพทช์สำหรับ dependencies ที่มีปัญหา
