@@ -1141,10 +1141,10 @@ docker system prune -f
 - [ ] Tests ผ่านทั้งหมด
 - [ ] Database และ Redis เชื่อมต่อได้
 - [ ] 
-```bash
+
 ## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
 
-```
+![alt text](image.png)
 
 ## การทดลองที่ 2: สร้าง GitHub Actions Workflow
 
@@ -1529,10 +1529,7 @@ git push origin main
 # ตรวจสอบผลลัพธ์ใน GitHub Actions 
 ```
 ## บันทึกรูปผลการทดลอง หน้า GitHub Actions
-```bash
-
-
-```
+![alt text](image-1.png)
 
 #### ขั้นตอนที่ 5: ทดสอบ Pull Request
 
@@ -1547,11 +1544,10 @@ git push origin feature/test-pr
 # ตรวจสอบ workflow การทำงานและ comment ที่ถูกสร้าง
 ```
 ## บันทึกรูปผลการทดลอง 
-```bash
 
+![alt text](image-2.png)
 
-```
-
+![alt text](image-3.png)
 
 ---
 
@@ -1585,9 +1581,16 @@ git push origin feature/test-pr
 ---
 
 ## คำถามท้ายการทดลอง
-1. docker compose คืออะไร มีความสำคัญอย่างไร
-2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
+1. docker compose คืออะไร มีความสำคัญอย่างไร คือเครื่องมือจัดการ multi-container application ด้วยไฟล์ docker-compose.yml เพียงไฟล์เดียว กำหนด container, network, volume ฯลฯ ลดความซับซ้อนในการรันหลาย container พร้อมกัน ใช้งานง่ายและย้ายไปรันที่อื่นได้สะดวก
+
+2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร 
+GitHub Actions เป็นเครื่องมือที่ใช้สร้าง workflow อัตโนมัติ เช่น build, test, deploy ซึ่งเกี่ยวข้องโดยตรงกับ CI/CD:CI (Continuous Integration): เมื่อ push code → รัน build และ test อัตโนมัติ CD (Continuous Deployment/Delivery): ถ้าทดสอบผ่าน → deploy ไปยัง server หรือ cloud อัตโนมัติ
+
 3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
+volumes: เก็บข้อมูลถาวร ข้อมูลไม่หายเมื่อ container หยุด
+networks: เชื่อมต่อ container กำหนดการมองเห็นกันได้
+healthcheck: ตรวจว่า container ทำงานปกติ เช่น ตอบ HTTP 200
+
 4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
 ```yaml
 jobs:
@@ -1610,6 +1613,10 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 ```
+
+ช่วยให้รันเทสที่ใช้ PostgreSQL บน GitHub Actions ได้อัตโนมัติ
+healthcheck สำคัญ เพราะบางครั้ง DB ยังไม่พร้อม แต่เทสเริ่มแล้ว → อาจ error
+
 5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
 ```yaml
     steps:
@@ -1622,4 +1629,9 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
 ```
-6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+actions/checkout@v4: ดึงโค้ดจาก repo มาให้ runner ใช้งาน
+actions/setup-python@v5: ติดตั้ง Python เลือกเวอร์ชันได้, รองรับ cache pip เพื่อลดเวลา
+
+
+6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง 
+Snyk คือเครื่องมือสแกนหาช่องโหว่ในโค้ดและ dependency พร้อมแนะนำวิธีแก้ไข รองรับหลายภาษา และทำงานร่วมกับ GitHub, CI/CD ได้อัตโนมัติ
