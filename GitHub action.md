@@ -1133,18 +1133,20 @@ docker system prune -f
 
 ### Checklist ก่อนไปขั้นตอนถัดไป:
 
-- [ ] ไฟล์ทั้งหมดถูกสร้างครบ
-- [ ] .env มี passwords ที่ปลอดภัย
-- [ ] `docker compose config` ไม่มี error
-- [ ] Services ทั้งหมด status เป็น "Up" และ "healthy"
-- [ ] API endpoints ตอบกลับถูกต้อง
-- [ ] Tests ผ่านทั้งหมด
-- [ ] Database และ Redis เชื่อมต่อได้
-- [ ] 
-```bash
+- [ /] ไฟล์ทั้งหมดถูกสร้างครบ
+- [ /] .env มี passwords ที่ปลอดภัย
+- [ /] `docker compose config` ไม่มี error
+- [ /] Services ทั้งหมด status เป็น "Up" และ "healthy"
+- [ /] API endpoints ตอบกลับถูกต้อง
+- [ /] Tests ผ่านทั้งหมด
+- [ /] Database และ Redis เชื่อมต่อได้
+- [ /] 
+bash
 ## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
+![alt text](image.png)
+![alt text](image-1.png)
+![alt text](image-2.png)
 
-```
 
 ## การทดลองที่ 2: สร้าง GitHub Actions Workflow
 
@@ -1529,10 +1531,11 @@ git push origin main
 # ตรวจสอบผลลัพธ์ใน GitHub Actions 
 ```
 ## บันทึกรูปผลการทดลอง หน้า GitHub Actions
-```bash
+bash
+![alt text](image-3.png)
 
 
-```
+
 
 #### ขั้นตอนที่ 5: ทดสอบ Pull Request
 
@@ -1547,10 +1550,10 @@ git push origin feature/test-pr
 # ตรวจสอบ workflow การทำงานและ comment ที่ถูกสร้าง
 ```
 ## บันทึกรูปผลการทดลอง 
-```bash
+bash
+![alt text](image-4.png)
 
 
-```
 
 
 ---
@@ -1586,8 +1589,14 @@ git push origin feature/test-pr
 
 ## คำถามท้ายการทดลอง
 1. docker compose คืออะไร มีความสำคัญอย่างไร
+Docker Compose เป็นเครื่องมือที่ช่วยสร้างและจัดการหลาย container พร้อมกันผ่านไฟล์ docker-compose.yml เช่น web server, database, cache ทำให้ตั้งค่า environment ง่าย รันซ้ำได้เหมือนกันบนเครื่องอื่น และลดความซับซ้อนของ dependencies
 2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
+CI (Continuous Integration): ทดสอบโค้ดอัตโนมัติทุกครั้งที่มีการเปลี่ยนแปลง
+CD (Continuous Delivery/Deployment): deploy โค้ดไป environment ต่าง ๆ อัตโนมัติ
 3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
+Volumes: เก็บข้อมูลของ container แบบถาวร เช่น database
+Networks: ให้ container สื่อสารกันได้อย่างปลอดภัย
+Healthcheck: ตรวจสอบว่า container พร้อมทำงาน ก่อนให้ workflow หรือ container อื่นทำงานต่อ
 4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
 ```yaml
 jobs:
@@ -1610,6 +1619,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 ```
+Workflow สร้าง job test รันบน Ubuntu VM พร้อม service postgres ใช้ image postgres:16-alpine กำหนด user, password, database และ port 5432 พร้อม healthcheck (pg_isready) รอจน database พร้อมก่อนรัน test
 5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
 ```yaml
     steps:
@@ -1622,4 +1632,7 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
 ```
+actions/checkout@v4: ดึงโค้ดจาก repository ลง VM
+actions/setup-python@v5: ติดตั้ง Python เวอร์ชันที่กำหนด พร้อมตั้งค่า pip cache เพื่อลดเวลา install dependencies
 6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+Snyk ตรวจสอบความปลอดภัยของโค้ด, dependencies และ container แนะนำวิธีแก้ไขหรือ patch vulnerabilities และสามารถ integrate กับ CI/CD pipeline เพื่อทำ security scanning อัตโนมัติ
