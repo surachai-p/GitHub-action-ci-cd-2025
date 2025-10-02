@@ -1143,7 +1143,6 @@ docker system prune -f
 ```
 ## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
 
-
 ### การทดลองที่ 2: สร้าง GitHub Actions Workflow
 
 #### ขั้นตอนที่ 1: สร้าง GitHub Repository
@@ -1159,6 +1158,9 @@ git remote add origin https://github.com/YOUR_USERNAME/flask-ci-cd-demo-2025.git
 git branch -M main
 git push -u origin main
 ```
+<img width="1919" height="1011" alt="image" src="https://github.com/user-attachments/assets/0507c39f-2313-43ff-9b84-05a0453d7b8e" />
+<img width="1919" height="614" alt="image" src="https://github.com/user-attachments/assets/b51ae273-f94b-4be4-b9d4-aa89cea2f4c0" />
+<img width="1919" height="620" alt="image" src="https://github.com/user-attachments/assets/6fa7f338-89dd-4feb-82af-d079ea76d183" />
 
 #### ขั้นตอนที่ 2: ตั้งค่า GitHub Secrets
 
