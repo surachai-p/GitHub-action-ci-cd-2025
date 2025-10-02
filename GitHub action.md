@@ -1141,10 +1141,10 @@ docker system prune -f
 - [ ] Tests ผ่านทั้งหมด
 - [ ] Database และ Redis เชื่อมต่อได้
 - [ ] 
-```bash
-## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
 
-```
+## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
+![alt text](image.png)
+
 
 ## การทดลองที่ 2: สร้าง GitHub Actions Workflow
 
@@ -1529,10 +1529,8 @@ git push origin main
 # ตรวจสอบผลลัพธ์ใน GitHub Actions 
 ```
 ## บันทึกรูปผลการทดลอง หน้า GitHub Actions
-```bash
 
-
-```
+![alt text](image-2.png)
 
 #### ขั้นตอนที่ 5: ทดสอบ Pull Request
 
@@ -1547,11 +1545,11 @@ git push origin feature/test-pr
 # ตรวจสอบ workflow การทำงานและ comment ที่ถูกสร้าง
 ```
 ## บันทึกรูปผลการทดลอง 
-```bash
+![alt text](image-1.png)
 
+![alt text](image-3.png)
 
-```
-
+![alt text](image-4.png)
 
 ---
 
@@ -1586,9 +1584,33 @@ git push origin feature/test-pr
 
 ## คำถามท้ายการทดลอง
 1. docker compose คืออะไร มีความสำคัญอย่างไร
+Docker Compose คือ เครื่องมือที่ใช้สำหรับจัดการ multi-container application (แอปที่ต้องใช้หลาย container ทำงานร่วมกัน เช่น backend + database + cache)
+เราสามารถกำหนดทุก container, network, volume, environment variable ไว้ในไฟล์ docker-compose.yml เพียงไฟล์เดียว
+ความสำคัญคือ
+ลดความซับซ้อนในการรันหลาย container
+สั่งงานง่าย เช่น docker compose up เพื่อสั่งให้ทุก container ทำงานพร้อมกัน
+ใช้ซ้ำได้ (portable) ย้ายไปรันเครื่องอื่นหรือ production ได้สะดวก
+
 2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
+GitHub Pipeline (หรือ GitHub Actions) คือ workflow ที่เราสามารถกำหนดขั้นตอนอัตโนมัติ (automation) ได้ เช่น build, test, deploy เมื่อมีการ push code ขึ้น GitHub
+เกี่ยวข้องกับ CI/CD โดยตรง
+CI (Continuous Integration): เมื่อ push code → pipeline จะรันการ build และ test อัตโนมัติ
+CD (Continuous Deployment/Delivery): หลังจากทดสอบผ่าน → pipeline จะ deploy code ไปยัง server หรือ cloud อัตโนมัติ
+
 3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
+volumes
+ใช้สำหรับเก็บข้อมูลถาวร (persistent storage) เช่น ข้อมูล database
+ทำให้ container หยุดหรือ restart ข้อมูลก็ยังอยู่
+networks
+ใช้เชื่อมต่อ container ให้คุยกันได้
+กำหนด isolation ได้ เช่น container กลุ่มหนึ่งมองไม่เห็นอีกกลุ่ม
+healthcheck
+ใช้ตรวจสอบว่า container ทำงานปกติหรือไม่
+เช่น check ว่า web server ตอบ http 200 หรือไม่
+ถ้า healthcheck fail, Docker จะรู้ว่าบริการนั้นไม่พร้อม และ pipeline หรือ service orchestrator จะจัดการได้
+
 4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
+
 ```yaml
 jobs:
   test:
@@ -1610,6 +1632,9 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 ```
+ส่วนนี้ช่วยให้เวลารัน test code ที่ต้องใช้ PostgreSQL จะมี database ขึ้นมาทดสอบโดยอัตโนมัติใน GitHub Actions
+healthcheck สำคัญมาก เพราะบางครั้ง DB ยังไม่พร้อม แต่ job เริ่มเทสแล้ว → error ได้
+
 5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
 ```yaml
     steps:
@@ -1622,4 +1647,13 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
 ```
+uses: actions/checkout@v4
+Action ยอดนิยมที่ใช้ดึง source code จาก GitHub repo (checkout) มาที่ runner
+ทำให้ step ถัดไปสามารถเข้าถึงโค้ดของโปรเจกต์ได้
+uses: actions/setup-python@v5
+ใช้สำหรับติดตั้งและตั้งค่า Python runtime บน runner
+สามารถเลือกเวอร์ชัน Python ได้ เช่น 3.10, 3.11 (ผ่าน ${{ env.PYTHON_VERSION }})
+มี option cache: 'pip' → เก็บ cache ของ dependency ที่ติดตั้งผ่าน pip เพื่อให้รัน workflow ครั้งต่อไปเร็วขึ้น
+
 6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+ guard ด้านความปลอดภัยของโค้ดและ dependency
