@@ -1640,3 +1640,4 @@ jobs:
 - แนะนำการแก้ไข เช่นอัปเดต library หรือแก้ config
 - Integrate ได้ใน CI/CD pipeline → ทำให้โค้ดปลอดภัยตั้งแต่ขั้นพัฒนา
   
+https://github.com/rattapum1269/flask-ci-cd-demo-2025
