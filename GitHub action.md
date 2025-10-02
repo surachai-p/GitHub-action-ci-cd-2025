@@ -1532,10 +1532,9 @@ git push origin main
 # ตรวจสอบผลลัพธ์ใน GitHub Actions 
 ```
 ## บันทึกรูปผลการทดลอง หน้า GitHub Actions
-```bash
 
+<img width="1919" height="911" alt="image" src="https://github.com/user-attachments/assets/7165521d-df90-4d6c-a92b-746ae311481b" />
 
-```
 
 #### ขั้นตอนที่ 5: ทดสอบ Pull Request
 
