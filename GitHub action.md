@@ -1133,18 +1133,21 @@ docker system prune -f
 
 ### Checklist ก่อนไปขั้นตอนถัดไป:
 
-- [ ] ไฟล์ทั้งหมดถูกสร้างครบ
-- [ ] .env มี passwords ที่ปลอดภัย
-- [ ] `docker compose config` ไม่มี error
-- [ ] Services ทั้งหมด status เป็น "Up" และ "healthy"
-- [ ] API endpoints ตอบกลับถูกต้อง
-- [ ] Tests ผ่านทั้งหมด
-- [ ] Database และ Redis เชื่อมต่อได้
+- [ ✓ ] ไฟล์ทั้งหมดถูกสร้างครบ
+- [ ✓ ] .env มี passwords ที่ปลอดภัย
+- [ ✓ ] `docker compose config` ไม่มี error
+- [ ✓ ] Services ทั้งหมด status เป็น "Up" และ "healthy"
+- [ ✓ ] API endpoints ตอบกลับถูกต้อง
+- [ ✓ ] Tests ผ่านทั้งหมด
+- [ ✓ ] Database และ Redis เชื่อมต่อได้
 - [ ] 
 ```bash
 ## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
 
 ```
+<img width="954" height="352" alt="image" src="https://github.com/user-attachments/assets/a65d0d16-c8f2-49ef-915c-9ba02a70def2" />
+<img width="954" height="373" alt="image" src="https://github.com/user-attachments/assets/97d86975-ac0d-4ae1-9dca-8f71088c5784" />
+
 
 ## การทดลองที่ 2: สร้าง GitHub Actions Workflow
 
@@ -1530,6 +1533,7 @@ git push origin main
 ```
 ## บันทึกรูปผลการทดลอง หน้า GitHub Actions
 ```bash
+<img width="1919" height="777" alt="image" src="https://github.com/user-attachments/assets/968ca483-be1d-4c31-8da0-ce2b7c9589c5" />
 
 
 ```
@@ -1548,6 +1552,7 @@ git push origin feature/test-pr
 ```
 ## บันทึกรูปผลการทดลอง 
 ```bash
+<img width="550" height="783" alt="image" src="https://github.com/user-attachments/assets/24e63736-e984-438f-bef4-f2170f808aab" />
 
 
 ```
@@ -1586,9 +1591,24 @@ git push origin feature/test-pr
 
 ## คำถามท้ายการทดลอง
 1. docker compose คืออะไร มีความสำคัญอย่างไร
+  -Docker Compose คือเครื่องมือที่ใช้ในการจัดการ multi-container application (ระบบที่มีหลาย container ทำงานร่วมกัน เช่น web + db + cache) โดยเขียนกำหนดการทำงานในไฟล์ docker-compose.yml
+ความสำคัญ
+ลดความซับซ้อนในการสั่งรันหลาย container
+สามารถกำหนด services, networks, volumes ได้ในไฟล์เดียว
+ใช้คำสั่ง docker compose up ก็รันทั้งระบบได้เลย
+
 2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
+  -GitHub Pipeline ก็คือ GitHub Actions Workflow ที่เราสร้างขึ้นมาให้รันอัตโนมัติเมื่อมี event เช่น push code, pull request, หรือ schedule
+ความเกี่ยวข้องกับ CI/CD
+CI (Continuous Integration): pipeline จะช่วยรันการทดสอบ (unit test, integration test) อัตโนมัติทุกครั้งที่ push code
+CD (Continuous Deployment/Delivery): pipeline จะสามารถ build image, deploy code ไปยัง server หรือ cloud ได้แบบอัตโนมัติ
+
 3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
-4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
+  -volumes → ใช้สำหรับเก็บข้อมูลถาวร (persistent data) เช่น Database data, logs, files ไม่หายไปเมื่อ container ถูกลบ
+networks → กำหนด network สำหรับการเชื่อมต่อระหว่าง container เช่น web service เชื่อมกับ database
+healthcheck → ใช้ตรวจสอบว่า container ทำงานได้จริงหรือยัง เช่น database พร้อมให้เชื่อมต่อหรือยัง (ช่วยให้ service อื่นไม่เริ่มก่อน db พร้อม)
+
+5. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
 ```yaml
 jobs:
   test:
@@ -1610,6 +1630,11 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 ```
+  -pipeline นี้กำหนด job ชื่อ test
+รันบน ubuntu-latest
+มี service database (Postgres) เพื่อให้ใช้ทดสอบร่วมกับโค้ด
+healthcheck จะรอจนกว่า database พร้อมใช้งาน จึงเริ่ม job ได้
+  
 5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
 ```yaml
     steps:
@@ -1622,4 +1647,14 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
 ```
+  -actions/checkout@v4 → step ที่ใช้ดึงโค้ดจาก repo (checkout) เข้ามาใน runner ของ GitHub Actions
+  -actions/setup-python@v5 → step ที่ติดตั้ง Python ตาม version ที่กำหนด
+  -cache: pip → cache dependency ของ pip เพื่อให้ build รันเร็วขึ้น
+  
 6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+  -Snyk คือเครื่องมือ Security สำหรับนักพัฒนา ใช้ตรวจสอบช่องโหว่ในโค้ดและ dependency
+ความสามารถ
+ตรวจหา vulnerabilities ใน library ที่ใช้งาน
+แนะนำวิธีแก้ไข เช่น update version ที่ปลอดภัย
+ตรวจสอบ Docker image, IaC (Infrastructure as Code) เช่น Terraform, Kubernetes
+ทำงานร่วมกับ CI/CD pipeline ได้ → ป้องกันไม่ให้ deploy โค้ดที่มีช่องโหว่ไป production
