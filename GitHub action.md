@@ -1621,3 +1621,92 @@ jobs:
           cache: 'pip'
 ```
 6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+
+## ตอบคำถามท้ายการทดลอง
+
+1. Docker Compose คืออะไร มีความสำคัญอย่างไร
+
+  -Docker Compose คือเครื่องมือที่ช่วยให้คุณสามารถสร้างและรัน หลาย container ของ Docker พร้อมกันได้ โดยใช้ไฟล์ docker-compose.yml เป็นตัวกำหนดคอนฟิกของแต่ละ container เช่น image,   port, volume, network
+
+ความสำคัญ:
+  -ช่วยจัดการ service หลายตัว (เช่น web server + database + cache) ให้ทำงานร่วมกันได้ง่าย
+  -ทำให้การตั้งค่า environment สำหรับ development, testing, หรือ production ทำซ้ำได้ง่าย
+  -ลดความซับซ้อนในการรันหลาย contai2. GitHub Pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
+
+2. GitHub Pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
+-GitHub pipeline คือ workflow อัตโนมัติ ที่ GitHub Actions ใช้เพื่อรันงานต่าง ๆ เช่น build, test, deploy
+-เกี่ยวข้องกับ CI/CD:
+  -CI (Continuous Integration): pipeline ช่วยรันการทดสอบโค้ดอัตโนมัติเมื่อมีการ push หรือ pull request
+  -CD (Continuous Delivery/Deployment): pipeline สามารถ deploy แอปไปยัง environment ต่าง ๆ ได้อัตโนมัติ
+
+-สรุป: pipeline เป็น เครื่องมือสำคัญสำหรับทำ CI/CD ทำให้โค้ดปลอดภัยและ deployment รวดเร็วขึ้น
+
+3. จากไฟล์ docker compose ส่วนของ volumes, networks และ healthcheck มีความสำคัญอย่างไร
+-volumes:
+  -ใช้สำหรับเก็บข้อมูลของ container แบบถาวร (persistent storage)
+  -ตัวอย่าง: database container ใช้ volume เก็บข้อมูลเพื่อไม่ให้ข้อมูลหายแม้ container ถูกลบ
+-networks:
+  -กำหนดการสื่อสารระหว่าง container
+  -ช่วยให้ container ของ service ต่าง ๆ ติดต่อกันได้ เช่น web container ติดต่อกับ database container
+-healthcheck:
+  -ตรวจสอบว่า container ทำงานปกติหรือไม่
+  -Docker จะสามารถ restart container ที่ล้มเหลวโดยอัตโนมัติหาก healthcheck ล้มเหลว
+  -ตัวอย่าง: pg_isready -U testuser สำหรับเช็คว่า PostgreSQL พร้อมใช้งาน
+
+4. อธิบาย Code ของไฟล์ YAML ในส่วนนี้
+```yaml
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_PASSWORD: testpass
+          POSTGRES_USER: testuser
+          POSTGRES_DB: testdb
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U testuser"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+```
+-jobs: test → job ชื่อ test รันบน ubuntu-latest
+-services: postgres → ใช้ service PostgreSQL ภายใน job
+  -image → ใช้ docker image postgres:16-alpine
+  -env → กำหนด environment variable สำหรับ postgres
+    -POSTGRES_PASSWORD, POSTGRES_USER, POSTGRES_DB
+  -ports → map port 5432 ของ container กับ host
+  -options → กำหนด healthcheck ของ container
+    -pg_isready -U testuser → เช็ค readiness ของ database
+    -interval, timeout, retries → กำหนดความถี่และเงื่อนไข healthcheck
+
+5. จาก Code ในส่วนของ uses: actions/checkout@v4 และ uses: actions/setup-python@v5 คืออะไร
+```yaml
+steps:
+  - name: Checkout code
+    uses: actions/checkout@v4
+
+  - name: Set up Python
+    uses: actions/setup-python@v5
+    with:
+      python-version: ${{ env.PYTHON_VERSION }}
+      cache: 'pip'
+```
+-actions/checkout@v4 → ใช้ดึงโค้ดจาก GitHub repository ลงมาที่ runner
+-actions/setup-python@v5 → ติดตั้ง Python เวอร์ชันที่กำหนดใน runner
+  -python-version → กำหนดเวอร์ชัน Python
+  -cache: 'pip' → ใช้ caching เพื่อลดเวลา install dependencies
+
+6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+-Snyk เป็นเครื่องมือสำหรับ ตรวจสอบความปลอดภัยของซอฟต์แวร์
+-ความสามารถหลัก:
+  -ตรวจสอบ vulnerabilities ของ dependencies (Python, Node.js, Java, etc.)
+  -ตรวจสอบ container images และ infrastructure as code (IaC)
+  -แนะนำวิธี แก้ไขช่องโหว่
+  -Integrate กับ GitHub, GitLab, CI/CD pipeline เพื่อตรวจสอบโค้ดอัตโนมัติ
+-สรุป: ช่วยลดความเสี่ยงเรื่อง security vulnerability และทำให้โค้ดปลอดภัยขึ้น
