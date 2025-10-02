@@ -1653,4 +1653,9 @@ ports
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
 ```
+
+actions/checkout@v4 → ใช้ดึงซอร์สโค้ดจาก GitHub repository มารันใน workflow actions/setup-python@v5 → ใช้ติดตั้ง Python เวอร์ชันที่ต้องการ (กำหนดจาก env) และ cache dependencies ของ pip เพื่อทำให้การรันครั้งถัดไปเร็วขึ้น
+
 6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+
+Snyk คือเครื่องมือสำหรับตรวจสอบความปลอดภัยของโค้ดและ dependencies -ตรวจหาช่องโหว่ในแพ็กเกจ (Vulnerability Scanning) -วิเคราะห์โค้ดหาช่องโหว่ (SAST) -ตรวจสอบ Docker Image -ตรวจสอบ Infrastructure as Code (เช่น Kubernetes, Terraform) -มอนิเตอร์ dependencies และแจ้งเตือนเมื่อมีช่องโหว่ใหม่
