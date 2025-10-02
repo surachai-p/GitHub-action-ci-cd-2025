@@ -538,7 +538,7 @@ jobs:
             ## 🚀 CI/CD Pipeline Results
             
             | Job | Status | Result |
-            |-----|--------|---------|
+            
             | Tests | \${statusEmoji[testStatus] || '❓'} | \${testStatus} |
             | Snyk Security | \${statusEmoji[snykStatus] || '❓'} | \${snykStatus} |
             | Additional Security | \${statusEmoji[additionalSecurityStatus] || '❓'} | \${additionalSecurityStatus} |
@@ -588,7 +588,7 @@ permissions:
 
 ---
 
-#ขั้นตอนการทดลอง
+# ขั้นตอนการทดลอง
 
 ### การทดลองที่ 1: สร้าง Docker Compose Project
 
@@ -637,7 +637,7 @@ services:
       redis:
         condition: service_healthy        # รอจนกว่า redis จะ healthy
     volumes:
-      - .:/app
+      - ./backend:/app
     restart: unless-stopped
     networks:
       - app-network
@@ -1042,12 +1042,12 @@ curl -s http://localhost:5000/ | python3 -m json.tool
 docker compose exec db psql -U user
 
 ```sql
-# ทดสอบคำสั่ง SQL
+#### ทดสอบคำสั่ง SQL
 psql> SELECT version();
 psql> \l          (list databases)
 psql> \q          (quit)
 ```
-
+```bash 
 # เข้าไปใน Redis container
 docker compose exec redis redis-cli
 
@@ -1140,12 +1140,20 @@ docker system prune -f
 - [ ] API endpoints ตอบกลับถูกต้อง
 - [ ] Tests ผ่านทั้งหมด
 - [ ] Database และ Redis เชื่อมต่อได้
-```
+- [ ] 
+```bash
 ## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
+<<<<<<< HEAD
 ![alt text](image.png)
 ![alt text](image-1.png)
 ![alt text](image-2.png)
 ### การทดลองที่ 2: สร้าง GitHub Actions Workflow
+=======
+
+```
+
+## การทดลองที่ 2: สร้าง GitHub Actions Workflow
+>>>>>>> upstream/main
 
 #### ขั้นตอนที่ 1: สร้าง GitHub Repository
 
@@ -1168,7 +1176,7 @@ git push -u origin main
 3. คลิก **New repository secret** แล้วเพิ่ม key ต่าง ๆ ตามข้อมูลด้านล่าง:
 
 |      Name*   | Secret*     |
-|-------------|----------------|
+
 | `POSTGRES_PASSWORD` | `python -c "import secrets; print(secrets.token_urlsafe(24))"` |
 | `POSTGRES_USER` | `postgres` |
 | `POSTGRES_DB` | `test_db` |
@@ -1511,8 +1519,7 @@ jobs:
           echo "✓ Test: ${{ needs.test.result }}"
           echo "✓ Snyk: ${{ needs.security-snyk.result }}"
           echo "✓ Security: ${{ needs.security-additional.result }}"
-          echo "✓ Build: ${{ needs.build.result }}"
-          echo "=========================="
+          echo 
 
 
 ```
@@ -1584,9 +1591,13 @@ git push origin feature/test-pr
 ---
 
 ## คำถามท้ายการทดลอง
+<<<<<<< HEAD
 1. docker compose คืืออะไร มีความสำคัญอย่างไร
 เป็นเครื่องมือที่ช่วยให้เราสามารถ จัดการหลาย container พร้อมกัน ได้ง่าย ๆ โดยใช้ไฟล์ docker-compose.yml เพียงไฟล์เดียว
 
+
+1. docker compose คืออะไร มีความสำคัญอย่างไร
+>>>>>>> upstream/main
 2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
 GitHub Pipeline (ที่จริงคือ GitHub Actions Workflow) คือ ระบบอัตโนมัติ ที่อยู่บน GitHub ใช้สำหรับจัดการขั้นตอนการทำงาน (workflow) ตั้งแต่ เขียนโค้ด → ทดสอบ → build → deploy
 
