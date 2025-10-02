@@ -1133,18 +1133,20 @@ docker system prune -f
 
 ### Checklist ก่อนไปขั้นตอนถัดไป:
 
-- [ ] ไฟล์ทั้งหมดถูกสร้างครบ
-- [ ] .env มี passwords ที่ปลอดภัย
-- [ ] `docker compose config` ไม่มี error
-- [ ] Services ทั้งหมด status เป็น "Up" และ "healthy"
-- [ ] API endpoints ตอบกลับถูกต้อง
-- [ ] Tests ผ่านทั้งหมด
-- [ ] Database และ Redis เชื่อมต่อได้
-- [ ] 
-```bash
-## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
+- [✓] ไฟล์ทั้งหมดถูกสร้างครบ
+- [✓] .env มี passwords ที่ปลอดภัย
+- [✓] `docker compose config` ไม่มี error
+- [✓] Services ทั้งหมด status เป็น "Up" และ "healthy"
+- [✓] API endpoints ตอบกลับถูกต้อง
+- [x] Tests ผ่านทั้งหมด
+- [✓] Database และ Redis เชื่อมต่อได้
+- [✓] 
 
-```
+## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
+<img width="1470" height="956" alt="ภาพถ่ายหน้าจอ 2568-10-02 เวลา 15 31 04" src="https://github.com/user-attachments/assets/86799622-1650-402e-9a84-a5a7e1e21b12" />
+<img width="1470" height="956" alt="ภาพถ่ายหน้าจอ 2568-10-02 เวลา 15 31 11" src="https://github.com/user-attachments/assets/4279d75e-ac06-49b0-855d-a13fce6d28c5" />
+
+
 
 ## การทดลองที่ 2: สร้าง GitHub Actions Workflow
 
@@ -1529,10 +1531,8 @@ git push origin main
 # ตรวจสอบผลลัพธ์ใน GitHub Actions 
 ```
 ## บันทึกรูปผลการทดลอง หน้า GitHub Actions
-```bash
+<img width="1470" height="844" alt="ภาพถ่ายหน้าจอ 2568-10-02 เวลา 15 58 46" src="https://github.com/user-attachments/assets/4845d7e7-1127-4478-b660-189ebbdbd42e" />
 
-
-```
 
 #### ขั้นตอนที่ 5: ทดสอบ Pull Request
 
@@ -1547,10 +1547,8 @@ git push origin feature/test-pr
 # ตรวจสอบ workflow การทำงานและ comment ที่ถูกสร้าง
 ```
 ## บันทึกรูปผลการทดลอง 
-```bash
+<img width="1470" height="844" alt="ภาพถ่ายหน้าจอ 2568-10-02 เวลา 15 58 46" src="https://github.com/user-attachments/assets/581e8f96-1717-4941-a6f6-1923e5e5e227" />
 
-
-```
 
 
 ---
@@ -1586,9 +1584,44 @@ git push origin feature/test-pr
 
 ## คำถามท้ายการทดลอง
 1. docker compose คืออะไร มีความสำคัญอย่างไร
+-Docker Compose คือเครื่องมือของ Docker ที่ใช้ในการ สร้างและจัดการหลาย container พร้อมกัน โดยใช้ไฟล์กำหนดค่าชื่อ docker-compose.yml
 2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
+-GitHub Pipeline คือชุดคำสั่งอัตโนมัติที่รันเมื่อเกิดเหตุการณ์บางอย่างบน GitHub เช่น push, pull request หรือ schedule
 3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
+-ช่วยให้ระบบรู้ว่า container พร้อมให้บริการหรือไม่ ใช้กับ load balancer หรือ service อื่น ๆ ที่ต้องรอ container พร้อม
 4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
+jobs:
+ระบุงาน (job) ที่จะรันใน pipeline ซึ่ง job แต่ละอันจะรันแยกกัน
+test:
+ชื่อ identifier ของ job นี้ (internal reference)
+name: Run Tests:
+ชื่อที่แสดงบนหน้า GitHub Actions UI
+runs-on: ubuntu-latest:
+ระบุ runner หรือ environment ที่จะรัน job นี้ ในที่นี้คือเครื่อง virtual machine ของ GitHub ที่ใช้ Ubuntu เวอร์ชันล่าสุด
+services:
+เป็น container เสริมที่ job ของเราต้องใช้ เช่น database, cache
+postgres:
+ชื่อ service (สามารถใช้เป็น host name จาก container หลัก เช่น postgres)
+image: postgres:16-alpine:
+ใช้ image ของ Docker เป็น PostgreSQL เวอร์ชัน 16 แบบ Alpine (ขนาดเล็ก)
+env:
+กำหนด environment variables สำหรับ container PostgreSQL
+POSTGRES_PASSWORD, POSTGRES_USER, POSTGRES_DB:
+ตั้งค่า รหัสผ่าน, ผู้ใช้, ชื่อฐานข้อมูล ที่ container จะสร้างให้ตอนเริ่ม
+ports:
+map port จาก container → runner host
+ในที่นี้ 5432:5432 คือ PostgreSQL ใน container ฟัง port 5432 และ runner สามารถเข้าถึงได้ port 5432 เช่นกัน
+options:
+ใส่ options เพิ่มเติมให้ container รัน เช่น healthcheck
+--health-cmd "pg_isready -U testuser":
+ตรวจสอบว่าฐานข้อมูลพร้อมให้เชื่อมต่อหรือไม่
+--health-interval 10s:
+ตรวจสอบทุก ๆ 10 วินาที
+--health-timeout 5s:
+กำหนด timeout ของคำสั่ง healthcheck 5 วินาที
+--health-retries 5:
+หากล้มเหลว จะ retry 5 ครั้งก่อนถือว่า container ไม่พร้อม
+
 ```yaml
 jobs:
   test:
@@ -1611,6 +1644,9 @@ jobs:
           --health-retries 5
 ```
 5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
+-actions/checkout@v4 เอาโค้ดจาก repo ลง runner
+-actions/setup-python@v5ติดตั้ง Python เวอร์ชันที่ต้องการ และตั้งค่า environment สำหรับรัน Python script/test
+
 ```yaml
     steps:
       - name: Checkout code
@@ -1623,3 +1659,4 @@ jobs:
           cache: 'pip'
 ```
 6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+-เครื่องมือสำหรับ ตรวจสอบความปลอดภัย (security) ของซอฟต์แวร์ โดยเฉพาะ dependency และ container
