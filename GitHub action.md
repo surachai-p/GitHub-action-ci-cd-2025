@@ -1133,18 +1133,20 @@ docker system prune -f
 
 ### Checklist ก่อนไปขั้นตอนถัดไป:
 
-- [ ] ไฟล์ทั้งหมดถูกสร้างครบ
-- [ ] .env มี passwords ที่ปลอดภัย
-- [ ] `docker compose config` ไม่มี error
-- [ ] Services ทั้งหมด status เป็น "Up" และ "healthy"
-- [ ] API endpoints ตอบกลับถูกต้อง
-- [ ] Tests ผ่านทั้งหมด
-- [ ] Database และ Redis เชื่อมต่อได้
-- [ ] 
-```bash
-## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
+- [ ✓ ] ไฟล์ทั้งหมดถูกสร้างครบ
+- [  ] .env มี passwords ที่ปลอดภัย
+- [   ] `docker compose config` ไม่มี error
+- [  ✓ ] Services ทั้งหมด status เป็น "Up" และ "healthy"
+- [  ✓ ] API endpoints ตอบกลับถูกต้อง
+- [ ✓  ] Tests ผ่านทั้งหมด
+- [  ✓  ] Database และ Redis เชื่อมต่อได้ 
 
-```
+## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
+<img width="1916" height="565" alt="image" src="https://github.com/user-attachments/assets/84f9f620-f675-4253-b690-9884d2c2effa" />
+<img width="1918" height="551" alt="image" src="https://github.com/user-attachments/assets/aef61cfc-e43e-48eb-b912-197b897c1bb5" />
+<img width="1607" height="838" alt="image" src="https://github.com/user-attachments/assets/8f8c3c24-95be-4f60-9bcd-111a0e6b501f" />
+
+
 
 ## การทดลองที่ 2: สร้าง GitHub Actions Workflow
 
@@ -1547,13 +1549,11 @@ git push origin feature/test-pr
 # ตรวจสอบ workflow การทำงานและ comment ที่ถูกสร้าง
 ```
 ## บันทึกรูปผลการทดลอง 
-```bash
 
 
-```
 
+<img width="1912" height="1001" alt="image" src="https://github.com/user-attachments/assets/07fed1c4-0c9e-463b-bc39-d629d14c0173" />
 
----
 
 
 ## Resources และเอกสารอ้างอิง
@@ -1586,8 +1586,28 @@ git push origin feature/test-pr
 
 ## คำถามท้ายการทดลอง
 1. docker compose คืออะไร มีความสำคัญอย่างไร
+
+คือ เครื่องมือจัดการ หลาย container พร้อมกัน ใช้ไฟล์ docker-compose.yml เพื่อ define service เช่น web, db, redis ทำให้ dev/test/prod environment เหมือนกัน, จัดการง่าย 
+
+
 2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
+
+คือ workflow automation ของ GitHub Actions CI: build + test อัตโนมัติ ทุกครั้งที่ push/PR CD: deploy หรือ build image อัตโนมัติ หลัง test ผ่าน
+
+
+
 3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
+
+
+ตอบ Volumes: เก็บข้อมูลถาวร (DB, cache)
+
+Networks: ให้ containers คุยกันด้วยชื่อ service
+
+Healthcheck: เช็กว่า service พร้อมก่อนที่ container อื่นจะใช้งาน
+
+
+
+
 4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
 ```yaml
 jobs:
@@ -1610,6 +1630,12 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 ```
+
+
+ตอบ mage: postgres:16-alpine → ใช้ Postgres เบา  env: → ตั้ง user/password/db ports: → เปิดพอร์ต 5432  options: → healthcheck ด้วย pg_isready
+
+
+
 5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
 ```yaml
     steps:
@@ -1622,4 +1648,13 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
 ```
+
+
+ตอบ actions/checkout@v4 → โหลด source code จาก repo  actions/setup-python@v5 → ตั้งค่า Python version + pip cache
+
+
+
+
 6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+
+ตอบ เครื่องมือ security ตรวจหา ช่องโหว่ ตรวจได้ทั้ง dependencies, source code, container image, IaC config ใช้ใน pipeline เพื่อป้องกันปัญหาก่อน deploy
