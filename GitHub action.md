@@ -1138,8 +1138,8 @@ docker system prune -f
 - [✓ ] `docker compose config` ไม่มี error
 - [✓ ] Services ทั้งหมด status เป็น "Up" และ "healthy"
 - [✓ ] API endpoints ตอบกลับถูกต้อง
-- [ ] Tests ผ่านทั้งหมด
-- [ ] Database และ Redis เชื่อมต่อได้
+- [✓ ] Tests ผ่านทั้งหมด
+- [ ✓] Database และ Redis เชื่อมต่อได้
 - [✓ ] 
 ```bash
 ## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
@@ -1147,7 +1147,8 @@ docker system prune -f
 ```
 <img width="1919" height="1086" alt="image" src="https://github.com/user-attachments/assets/ade77740-25a8-40fc-b0ca-ee5a6c2c64e8" />
 <img width="1919" height="1100" alt="image" src="https://github.com/user-attachments/assets/cb099407-3817-4a71-badb-eefc7ce6f458" />
-<img width="1919" height="1105" alt="image" src="https://github.com/user-attachments/assets/f15f285c-7eb4-40f9-bc03-45ca175afaec" />
+<img width="1919" height="1146" alt="image" src="https://github.com/user-attachments/assets/1f606dc0-8deb-4e9f-811e-6e79a5a7741d" />
+
 
 ## การทดลองที่ 2: สร้าง GitHub Actions Workflow
 
@@ -1534,8 +1535,8 @@ git push origin main
 ## บันทึกรูปผลการทดลอง หน้า GitHub Actions
 ```bash
 ```
-<img width="1919" height="1018" alt="image" src="https://github.com/user-attachments/assets/a4016074-b52d-42f6-b307-b9e603a082ea" />
-<img width="1919" height="1012" alt="image" src="https://github.com/user-attachments/assets/40919560-32e6-458d-858f-ffbd72573f6d" />
+<img width="1919" height="1031" alt="image" src="https://github.com/user-attachments/assets/318ecaf8-72ae-443f-950a-38c48d002a3e" />
+
 
 #### ขั้นตอนที่ 5: ทดสอบ Pull Request
 
