@@ -1148,7 +1148,7 @@ git push origin feature/test-pr
 ---
 
 ## คำถามท้ายการทดลอง
-1. docker compose คืืออะไร มีความสำคัญอย่างไร
+1. docker compose คืออะไร มีความสำคัญอย่างไร
 - Docker Compose คือเครื่องมือสำหรับกำหนดและจัดการ multi-container application ด้วยไฟล์ YAML เดียว เช่น web, database, cache ฯลฯ สามารถสั่ง build, start, stop ทุก service พร้อมกันได้ง่าย ช่วยให้การพัฒนาและทดสอบแอปพลิเคชันที่มีหลายส่วนสะดวกและเป็นระบบมากขึ้น
 2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
 - GitHub pipeline (หรือ GitHub Actions workflow) คือกระบวนการอัตโนมัติที่กำหนดขั้นตอนการ build, test, deploy โค้ดทุกครั้งที่มีการเปลี่ยนแปลงใน repository โดยเป็นหัวใจของ CI/CD (Continuous Integration/Continuous Delivery) ช่วยให้โค้ดถูกตรวจสอบและนำขึ้น production ได้อย่างปลอดภัยและรวดเร็ว
