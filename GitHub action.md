@@ -1626,6 +1626,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 ```
+
     jobs: → pipeline job ที่จะรัน (ชื่อ job = test)
     runs-on: ubuntu-latest → ใช้ VM image ของ GitHub ที่เป็น Ubuntu ล่าสุด
     services: → บริการเสริมที่ job ต้องใช้
@@ -1633,7 +1634,9 @@ jobs:
     env: → กำหนด environment variables ของ DB เช่น user, password, db name
     ports: → map port 5432 ของ container → 5432 บน host (ให้ test code connect ได้)
     options: → ตั้งค่า healthcheck ของ Postgres โดยใช้ pg_isready ตรวจสอบทุก 10 วินาที timeout 5 วินาที ถ้า fail ซ้ำ 5 ครั้งถือว่าไม่พร้อม
+
 5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
+
 ```yaml
     steps:
       - name: Checkout code
@@ -1645,12 +1648,12 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
 ```
-  uses: actions/checkout@v4
-  → Action ที่ใช้ clone / checkout source code จาก GitHub repository มายัง VM ที่ pipeline รันอยู่
-  uses: actions/setup-python@v5
-  → Action ที่ใช้ติดตั้งและตั้งค่า Python environment
-  python-version → ดึงค่ามาจากตัวแปร PYTHON_VERSION
-  cache: 'pip' → เก็บ cache ของ dependency ที่ติดตั้งด้วย pip เพื่อลดเวลา build
+    uses: actions/checkout@v4
+    → Action ที่ใช้ clone / checkout source code จาก GitHub repository มายัง VM ที่ pipeline รันอยู่
+    uses: actions/setup-python@v5
+    → Action ที่ใช้ติดตั้งและตั้งค่า Python environment
+    python-version → ดึงค่ามาจากตัวแปร PYTHON_VERSION
+    cache: 'pip' → เก็บ cache ของ dependency ที่ติดตั้งด้วย pip เพื่อลดเวลา build
 
 6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
 Snyk คือเครื่องมือ Security ที่ใช้ตรวจสอบ vulnerabilities (ช่องโหว่) ในโค้ดและ dependency
