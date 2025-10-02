@@ -1585,7 +1585,7 @@ git push origin feature/test-pr
 ---
 
 ## คำถามท้ายการทดลอง
-1. docker compose คืืออะไร มีความสำคัญอย่างไร
+1. docker compose คืออะไร มีความสำคัญอย่างไร
 2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
 3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
 4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
