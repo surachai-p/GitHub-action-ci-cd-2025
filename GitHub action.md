@@ -1528,10 +1528,9 @@ git push origin main
 # ตรวจสอบผลลัพธ์ใน GitHub Actions 
 ```
 ## บันทึกรูปผลการทดลอง หน้า GitHub Actions
-```bash
 
+<img width="1916" height="893" alt="image" src="https://github.com/user-attachments/assets/029bdb5e-79a5-4c47-8323-f9b3ff403d4f" />
 
-```
 
 #### ขั้นตอนที่ 5: ทดสอบ Pull Request
 
@@ -1546,10 +1545,9 @@ git push origin feature/test-pr
 # ตรวจสอบ workflow การทำงานและ comment ที่ถูกสร้าง
 ```
 ## บันทึกรูปผลการทดลอง 
-```bash
 
+<img width="1913" height="886" alt="image" src="https://github.com/user-attachments/assets/fcce177a-a508-4a7a-ada2-2ce5108723c6" />
 
-```
 
 
 ---
