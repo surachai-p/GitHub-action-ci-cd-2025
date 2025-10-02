@@ -1141,10 +1141,11 @@ docker system prune -f
 - [ ] Tests ผ่านทั้งหมด
 - [ ] Database และ Redis เชื่อมต่อได้
 - [ ] 
-```bash
-## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
 
-```
+## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
+<img width="1592" height="892" alt="image" src="https://github.com/user-attachments/assets/33ed2e19-6462-42ad-b5cc-10f85932b823" />
+
+
 
 ## การทดลองที่ 2: สร้าง GitHub Actions Workflow
 
@@ -1529,10 +1530,9 @@ git push origin main
 # ตรวจสอบผลลัพธ์ใน GitHub Actions 
 ```
 ## บันทึกรูปผลการทดลอง หน้า GitHub Actions
-```bash
 
 
-```
+<img width="1918" height="887" alt="image" src="https://github.com/user-attachments/assets/352e3179-d2cb-4c82-8e69-a6be4dc8bf51" />
 
 #### ขั้นตอนที่ 5: ทดสอบ Pull Request
 
@@ -1547,10 +1547,8 @@ git push origin feature/test-pr
 # ตรวจสอบ workflow การทำงานและ comment ที่ถูกสร้าง
 ```
 ## บันทึกรูปผลการทดลอง 
-```bash
+<img width="1918" height="945" alt="image" src="https://github.com/user-attachments/assets/547904d6-948d-496a-b3b7-e4adad1bff9b" />
 
-
-```
 
 
 ---
@@ -1585,9 +1583,16 @@ git push origin feature/test-pr
 ---
 
 ## คำถามท้ายการทดลอง
+
 1. docker compose คืออะไร มีความสำคัญอย่างไร
+- ตัวช่วยจัดการหลายคอนเทนเนอร์แบบง่าย ๆ ด้วยไฟล์ YAML เดียว → สำคัญมากสำหรับการพัฒนาแอปที่มีหลาย service ทำงานร่วมกัน
 2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
+- GitHub Pipeline = Workflow อัตโนมัติที่เรากำหนดไว้ใน GitHub Actions
+- CI/CD = แนวคิดที่ Pipeline ช่วยทำให้เกิดขึ้นจริง (CI = ทดสอบ/รวมโค้ดอัตโนมัติ, CD = deploy อัตโนมัติ)
 3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
+- Volumes → เก็บข้อมูลถาวร ป้องกันข้อมูลหาย
+- Networks → เชื่อม container ด้วยชื่อ service และเพิ่มความปลอดภัย
+- Healthcheck → ตรวจสอบว่า service พร้อมใช้งานจริงก่อนให้ container อื่นใช้งาน
 4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
 ```yaml
 jobs:
@@ -1610,6 +1615,11 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 ```
+- jobs.test → pipeline job สำหรับรัน test บน Ubuntu
+- services.postgres → สร้าง PostgreSQL container ให้ใช้ระหว่างการ test
+- env → ตั้ง user, password, db สำหรับทดสอบ
+- ports → เปิดพอร์ต 5432 ให้เข้าถึง database
+- healthcheck → ตรวจสอบว่า database พร้อมก่อนจะใช้งานจริง
 5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
 ```yaml
     steps:
@@ -1622,4 +1632,12 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
 ```
+- actions/checkout@v4 → โหลดโค้ดจาก GitHub Repo มายัง runner
+- actions/setup-python@v5 → ติดตั้ง Python version ที่กำหนด + เปิด cache สำหรับ pip
 6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+  - Snyk = เครื่องมือ DevSecOps สำหรับนักพัฒนา
+- ใช้ตรวจสอบช่องโหว่ ใน Dependency, Container, IaC, Source Code
+- แนะนำการแก้ไข เช่นอัปเดต library หรือแก้ config
+- Integrate ได้ใน CI/CD pipeline → ทำให้โค้ดปลอดภัยตั้งแต่ขั้นพัฒนา
+  
+https://github.com/rattapum1269/flask-ci-cd-demo-2025
