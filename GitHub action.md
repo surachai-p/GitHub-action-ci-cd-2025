@@ -1521,13 +1521,14 @@ jobs:
 
 ```bash
 git add .github/workflows/ci-cd.yml
-git commit -m "Add CI/CD pipeline"
+git commit -m "Add CI/CD pipeli  ne"
 git push origin main
 
 # ตรวจสอบผลลัพธ์ใน GitHub Actions 
 ```
 ## บันทึกรูปผลการทดลอง หน้า GitHub Actions
-```bash
+bash
+<img width="1897" height="970" alt="image" src="https://github.com/user-attachments/assets/1555d1cd-3184-4488-97ba-e0d1f98a14ac" />
 
 
 ```
@@ -1536,7 +1537,7 @@ git push origin main
 
 ```bash
 git checkout -b feature/test-pr
-echo "# Test PR" >> README.md
+echo "# Test PR" >> README.md  
 git add README.md
 git commit -m "Test PR workflow"
 git push origin feature/test-pr
@@ -1545,8 +1546,9 @@ git push origin feature/test-pr
 # ตรวจสอบ workflow การทำงานและ comment ที่ถูกสร้าง
 ```
 ## บันทึกรูปผลการทดลอง 
-```bash
+bash
 
+<img width="1877" height="489" alt="image" src="https://github.com/user-attachments/assets/b63e4586-90e8-4565-b299-5aa6f6b0cb42" />
 
 ```
 
@@ -1584,8 +1586,16 @@ git push origin feature/test-pr
 
 ## คำถามท้ายการทดลอง
 1. docker compose คืืออะไร มีความสำคัญอย่างไร
+Docker Compose คือเครื่องมือที่ใช้ในการจัดการ multi-container application ด้วยไฟล์ docker-compose.yml เพียงไฟล์เดียว เราสามารถกำหนด service ต่าง ๆ เช่น web, database, cache และสั่ง docker compose up เพื่อรันทั้งหมดได้พร้อมกัน
 2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
+GitHub Pipeline (หรือ GitHub Actions Workflow) คือ กระบวนการอัตโนมัติ ที่กำหนดขั้นตอนการ build, test, deploy โค้ดของเรา
+เกี่ยวข้องกับ CI/CD:
+CI (Continuous Integration) → pipeline จะช่วยทดสอบและ build ทุกครั้งที่มีการ push code
+CD (Continuous Delivery/Deployment) → pipeline สามารถต่อยอดไป deploy application ไปยัง server/ cloud ได้โดยอัตโนมัติ
 3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
+volumes: ใช้เก็บข้อมูลถาวร เช่น database ไม่หายไปแม้ container ถูกลบ
+networks: ใช้กำหนด network ที่ container ต่าง ๆ จะสื่อสารกัน เช่น web service ติดต่อ database service
+healthcheck: ใช้ตรวจสอบว่าสถานะของ container ทำงานปกติหรือไม่ เช่น เช็กว่า PostgreSQL พร้อมรับ connection แล้ว
 4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
 ```yaml
 jobs:
@@ -1607,6 +1617,53 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+
+ตอบ 
+อธิบาย Code ของไฟล์ yaml
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+
+
+กำหนด job ชื่อ test รันบนเครื่องจำลอง Ubuntu
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_PASSWORD: testpass
+          POSTGRES_USER: testuser
+          POSTGRES_DB: testdb
+
+
+สร้าง service PostgreSQL เวอร์ชัน 16-alpine
+
+กำหนด environment variable เช่น username, password, database
+
+        ports:
+          - 5432:5432
+
+
+เปิดพอร์ต 5432 ให้ service ภายใน workflow เข้าถึงฐานข้อมูลได้
+
+        options: >-
+          --health-cmd "pg_isready -U testuser"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+
+ใช้ healthcheck เพื่อตรวจสอบว่าฐานข้อมูลพร้อมใช้งาน
+
+ใช้คำสั่ง pg_isready เช็กการเชื่อมต่อ
+
+รันทุก 10 วินาที
+
+ถ้าเกิน 5 วินาทีแล้วยังไม่ตอบถือว่า fail
+
+เช็กซ้ำสูงสุด 5 ครั้งก่อนถือว่า service fail
+
 ```
 5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
 ```yaml
@@ -1620,4 +1677,30 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
 ```
+ตอบ 
+name: Checkout code
+  uses: actions/checkout@v4
+Action นี้ใช้เพื่อ checkout source code จาก repository มายัง runner (เครื่องที่ workflow รันอยู่)
+
+yaml
+Copy code
+- name: Set up Python
+  uses: actions/setup-python@v5
+  with:
+    python-version: ${{ env.PYTHON_VERSION }}
+    cache: 'pip'
+Action นี้ใช้เพื่อติดตั้ง Python ตาม version ที่กำหนด
+
+cache: 'pip' → ช่วยเก็บ dependency ของ Python เพื่อลดเวลา install รอบต่อไป
 6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+Snyk เป็นเครื่องมือด้าน Security ที่ใช้ตรวจสอบและแก้ไขช่องโหว่ของโค้ดและ dependencies
+
+ความสามารถ:
+
+ตรวจสอบช่องโหว่ (vulnerabilities) ใน dependency (npm, pip, Maven ฯลฯ)
+
+ตรวจสอบ container image และ Kubernetes config
+
+แนะนำวิธีแก้ไข เช่น อัปเดต package หรือ patch
+
+ใช้ใน pipeline CI/CD เพื่อตรวจสอบความปลอดภัยอัตโนมัติ
