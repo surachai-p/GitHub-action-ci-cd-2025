@@ -1141,8 +1141,15 @@ docker system prune -f
 - [ ] Tests ผ่านทั้งหมด
 - [ ] Database และ Redis เชื่อมต่อได้
 ```
-## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
+##บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
+```
+<img width="1919" height="1023" alt="image" src="https://github.com/user-attachments/assets/7e36eba1-26ae-48f9-823c-c48bf9c57702" />
 
+<img width="1918" height="941" alt="image" src="https://github.com/user-attachments/assets/ac6d5ab2-0f10-431e-83ec-2227613cc2a3" />
+
+<img width="1919" height="852" alt="image" src="https://github.com/user-attachments/assets/0312c53b-5c29-4994-8b03-8524f0f55b95" />
+
+```
 
 ### การทดลองที่ 2: สร้าง GitHub Actions Workflow
 
@@ -1527,8 +1534,8 @@ git push origin main
 # ตรวจสอบผลลัพธ์ใน GitHub Actions 
 ```
 ## บันทึกรูปผลการทดลอง หน้า GitHub Actions
-```bash
 
+<img width="1919" height="648" alt="image" src="https://github.com/user-attachments/assets/98c9921a-1538-4a7b-a33f-f7fd528255dc" />
 
 ```
 
@@ -1545,13 +1552,10 @@ git push origin feature/test-pr
 # ตรวจสอบ workflow การทำงานและ comment ที่ถูกสร้าง
 ```
 ## บันทึกรูปผลการทดลอง 
-```bash
 
+<img width="1911" height="904" alt="image" src="https://github.com/user-attachments/assets/01b9a70e-9c6c-4fd6-8985-e1a9a56c730f" />
 
 ```
-
-
----
 
 
 ## Resources และเอกสารอ้างอิง
@@ -1583,9 +1587,13 @@ git push origin feature/test-pr
 ---
 
 ## คำถามท้ายการทดลอง
-1. docker compose คืืออะไร มีความสำคัญอย่างไร
-2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
-3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
+1. docker compose คืออะไร มีความสำคัญอย่างไร ตอบ คือเครื่องมือของ Docker ที่ใช้ จัดการหลาย ๆ container พร้อมกัน ความสำคัญ คือ ลดความซับซ้อนในการจัดการหลาย container
+ทำให้ environment ของเครื่อง dev/production ใกล้เคียงกัน
+ช่วยให้ทีมงานคนอื่น setup project ได้ง่าย
+2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร ตอบ คือ workflow อัตโนมัติที่ทำงานบน GitHub  เป็นตัวช่วยให้ ทำ CI/CD ได้ง่ายและอัตโนมัติ
+3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร ตอบ Volumes : ใช้เก็บข้อมูล persistent ที่ไม่หายเมื่อ container ถูกลบ
+Networks : ใช้เชื่อมต่อ container หลายตัวให้สื่อสารกันได้
+Healthcheck: เป็นคำสั่งตรวจสอบว่า service ทำงานปกติหรือไม่
 4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
 ```yaml
 jobs:
@@ -1607,6 +1615,13 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+ตอบ jobs → กำหนดงานหรือขั้นตอนใหญ่ของ pipeline
+test → ชื่อ job
+runs-on: ubuntu-latest → job นี้จะรันบน VM Ubuntu ล่าสุด
+services: postgres / redis
+สร้าง container ชั่วคราวสำหรับ job เพื่อให้ environment เหมือน production
+กำหนด image, environment, ports, health check
+pg_isready -U testuser → ตรวจสอบว่า PostgreSQL พร้อมใช้งานก่อนรัน test
 ```
 5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
 ```yaml
@@ -1619,5 +1634,13 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
+ตอบ actions/checkout@v4 → โหลด source code ของ repository เข้ามาใน VM ให้ job สามารถเข้าถึงไฟล์โค้ดได้
+actions/setup-python@v5 → ติดตั้ง Python version ที่เรากำหนด เช่น 3.9 และตั้งค่า pip cache เพื่อให้ติดตั้ง dependencies เร็วขึ้น
 ```
 6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+ตอบ เครื่องมือสแกนความปลอดภัยสำหรับโค้ดและ dependencies
+ความสามารถหลัก :
+ตรวจสอบ dependencies ว่ามีช่องโหว่หรือไม่
+สแกน source code หา vulnerability หรือ coding issue
+monitor project ต่อเนื่องและแจ้งเตือนเมื่อพบปัญหา
+integrate กับ GitHub Actions ได้ ทำให้ CI/CD pipeline มี security check อัตโนมัติ
