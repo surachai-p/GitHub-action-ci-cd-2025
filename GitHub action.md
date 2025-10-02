@@ -1620,6 +1620,25 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 ```
+jobs
+
+คือ root ของส่วน workflow ที่กำหนดงาน (job) ต่างๆ ที่จะรัน
+test
+ชื่อของ job นี้ ชื่อภายใน GitHub Actions
+name: Run Tests
+เป็นชื่อที่จะแสดงบนหน้า GitHub Actions UI ว่า job นี้ทำอะไร
+runs-on: ubuntu-latest
+บอกให้ GitHub ใช้ runner ที่เป็น Ubuntu เวอร์ชันล่าสุดในการรัน job
+services
+หมายถึง GitHub Actions จะรัน container ขึ้นมาพร้อมๆ กับ job นี้
+โดยในที่นี้ใช้ container ที่เป็น PostgreSQL
+image: postgres:16-alpine
+ใช้ Docker image ของ PostgreSQL เวอร์ชัน 16 บน Alpine Linux (ขนาดเล็ก, เร็ว)
+env
+กำหนด environment variables สำหรับ PostgreSQL
+เพื่อสร้างฐานข้อมูลเริ่มต้นชื่อ testdb, user testuser และ password testpass
+ports
+ทำการแมปพอร์ต 5432 ของ host (GitHub runner) เข้ากับ container ทำให้โค้ดของคุณใน job นี้สามารถเชื่อมต่อกับ PostgreSQL ที่รันอยู่ใน container ได้ หมายเหตุ: บางครั้งไม่จำเป็นต้องแมป port ก็สามารถเชื่อมต่อกันได้ภายใน runner ผ่าน hostname localhost หรือ postgres
 5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
 ```yaml
     steps:
