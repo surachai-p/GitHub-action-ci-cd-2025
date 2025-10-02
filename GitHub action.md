@@ -1,5 +1,4 @@
 # Lab 00: Preparing Knowledge - YAML for Docker Compose & GitHub Actions
-
 ## วัตถุประสงค์
 เพื่อเตรียมความพร้อมในการเขียนไฟล์ YAML สำหรับ Docker Compose และ GitHub Actions 
 
@@ -1141,10 +1140,12 @@ docker system prune -f
 - [ ] Tests ผ่านทั้งหมด
 - [ ] Database และ Redis เชื่อมต่อได้
 - [ ] 
-```bash
 ## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
+### docker
+<img width="1600" height="840" alt="image" src="https://github.com/user-attachments/assets/1d2a3db1-daf3-4029-ad1e-9dfc7be85a57" />
+### หน้าเว็บ
+<img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/83de00d6-7a38-4694-b36d-7ee7800a3166" />
 
-```
 
 ## การทดลองที่ 2: สร้าง GitHub Actions Workflow
 
@@ -1529,10 +1530,8 @@ git push origin main
 # ตรวจสอบผลลัพธ์ใน GitHub Actions 
 ```
 ## บันทึกรูปผลการทดลอง หน้า GitHub Actions
-```bash
+<img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/692a89b2-26ad-494c-a081-dc2e3a08faa8" />
 
-
-```
 
 #### ขั้นตอนที่ 5: ทดสอบ Pull Request
 
@@ -1547,13 +1546,8 @@ git push origin feature/test-pr
 # ตรวจสอบ workflow การทำงานและ comment ที่ถูกสร้าง
 ```
 ## บันทึกรูปผลการทดลอง 
-```bash
+<img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/6d2e9418-d5a6-4a2e-a057-a26ce4c58e7b" />
 
-
-```
-
-
----
 
 
 ## Resources และเอกสารอ้างอิง
@@ -1586,8 +1580,20 @@ git push origin feature/test-pr
 
 ## คำถามท้ายการทดลอง
 1. docker compose คืออะไร มีความสำคัญอย่างไร
+- คือ ไฟล์/เครื่องมือกำหนดคอนฟิกแอปหลายคอนเทนเนอร์ด้วย YAML (services, networks, volumes) แล้วสั่งขึ้นทั้งสแต็กด้วยคำสั่งเดียว (docker compose up).
+- สำคัญ เพราะ:
+  - สปิน dev/test/prod สม่ำเสมอ (reproducible)
+  - ลดความซับซ้อนในการรันหลายบริการ (web + db + cache)
+  - มี healthcheck, depends_on, networks, volumes ให้จัดลำดับ-สภาพแวดล้อมได้ครบ
 2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
+- คือ ชุดงาน (workflows/jobs/steps) ที่ GitHub Actions รันอัตโนมัติเมื่อเกิดเหตุการณ์ (push, PR, tag).
+- เกี่ยวกับ CI/CD
+  - CI: ติดตั้ง deps → รันทดสอบ/โค้ดสแกน → รายงานผลทุกครั้งที่มีการเปลี่ยนแปลง
+  - CD: สร้างและผลัก (push) Docker image, deploy ไปที่ env เป้าหมายแบบอัตโนมัติ (ตามเงื่อนไขสาขา/แท็ก)
 3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
+- volumes: เก็บข้อมูล ถาวร (ไม่หายเมื่อคอนเทนเนอร์หยุด/ลบ) เช่นข้อมูล Postgres/Redis; แยก data ออกจากอิมเมจ → อัปเดตเวอร์ชันได้ปลอดภัยกว่า
+- networks: สร้างเครือข่ายเสมือนให้บริการคุยกันด้วย ชื่อ service (DNS ภายใน) → ลดการเปิดพอร์ตสู่ภายนอกโดยไม่จำเป็น และแยกสภาพแวดล้อม
+- healthcheck: นิยามวิธีวัด “สุขภาพ” เซอร์วิส (เช่น pg_isready, curl /health) → ใช้คู่กับ depends_on: condition: service_healthy เพื่อให้ลำดับการสตาร์ต/รีสตาร์ต เชื่อถือได้
 4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
 ```yaml
 jobs:
@@ -1610,6 +1616,17 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 ```
+- services: = บอก GitHub Actions ว่า job นี้ต้องการ คอนเทนเนอร์ประกบ เพื่อใช้ระหว่างรันเทสต์ (เทียบได้กับ docker-compose ที่ประกาศ service DB/Cache)
+- postgres: = ชื่อ service (และเป็น hostname ภายใน ถ้า job รันใน container)
+- image: = รูปคอนเทนเนอร์ที่จะใช้
+- env: = ค่าติดตั้งเริ่มต้นของ Postgres (สร้าง user/db ให้พร้อม)
+- ports: = เปิดพอร์ตให้ โค้ดทดสอบบน runner เข้าหาได้ที่ localhost:5432
+- options: + --health-* = เซ็ต healthcheck ให้ Docker คอยเช็กว่า Postgres “พร้อมใช้งานจริง” ก่อนเราไปคิวรี
+  - --health-cmd: ใช้ pg_isready ตรวจว่ารับคอนเนกชันได้
+  - --health-interval: เช็กทุก 10 วินาที
+  - --health-timeout: คำสั่งตรวจไม่ควรเกิน 5 วินาที
+  - --health-retries: ต้องผ่านกี่ครั้งจึงถือว่า healthy
+
 5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
 ```yaml
     steps:
@@ -1622,4 +1639,25 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
 ```
+- actions/checkout@v4
+  - ดึงซอร์สโค้ดของRepo เข้า workspace ของ runner (รวมถึงซับโมดูล/ประวัติ ตามออปชัน) เพื่อให้สเต็ปถัดไปรันบนโค้ดปัจจุบันได้
+- actions/setup-python@v5
+  - ติดตั้ง/สลับเวอร์ชัน Python บน runner (ตาม python-version) และตั้งแคช pip ให้ด้วย (เมื่อระบุ cache: 'pip') → ติดตั้งแพ็กเกจเร็วขึ้นและได้เวอร์ชันที่คุมได้
 6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+- Snyk คือแพลตฟอร์มด้านความปลอดภัยสำหรับนักพัฒนา (DevSecOps Tool) ที่ช่วยตรวจสอบและป้องกันช่องโหว่ด้านความปลอดภัยในโค้ดและระบบ โดยมีความสามารถหลัก ๆ ดังนี้:
+1. SCA (Software Composition Analysis)
+- ตรวจสอบ ช่องโหว่ใน dependencies / ไลบรารีภายนอก (เช่น requirements.txt ของ Python)
+- แนะนำเวอร์ชันใหม่หรือแพตช์ที่ปลอดภัยกว่า
+2. SAST (Static Application Security Testing)
+- วิเคราะห์ ซอร์สโค้ดของโปรเจกต์ เพื่อหาช่องโหว่ด้านความปลอดภัย เช่น SQL Injection, XSS, SSRF
+- ให้คำแนะนำในการแก้ไข (remediation hints)
+3. Container & IaC Security
+- สแกน Docker image หาช่องโหว่ของระบบปฏิบัติการหรือแพ็กเกจที่ติดตั้งใน container
+- ตรวจสอบไฟล์ Infrastructure as Code (เช่น Kubernetes YAML, Terraform) หาการตั้งค่าไม่ปลอดภัย
+4. Monitoring & Alerts
+- ผูกกับ repository หรือ image registry
+- เมื่อมี CVE ใหม่ ที่กระทบ dependency ของเรา Snyk จะแจ้งเตือนทันที
+5. Policy & Governance
+- สรุปรายงานความเสี่ยง (Risk report)
+- สามารถกำหนด policy ได้ เช่น อนุญาตเฉพาะช่องโหว่ระดับต่ำ-กลาง แต่ถ้าเจอ High/ Critical จะบล็อก PR อัตโนมัติ
+- ใช้ร่วมกับ CI/CD pipeline เพื่อให้โค้ดไม่ถูก merge ถ้าเกินเกณฑ์ที่กำหนด
