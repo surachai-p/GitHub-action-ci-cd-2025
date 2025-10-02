@@ -1133,15 +1133,18 @@ docker system prune -f
 
 ### Checklist ก่อนไปขั้นตอนถัดไป:
 
-- [ ] ไฟล์ทั้งหมดถูกสร้างครบ
-- [ ] .env มี passwords ที่ปลอดภัย
-- [ ] `docker compose config` ไม่มี error
-- [ ] Services ทั้งหมด status เป็น "Up" และ "healthy"
-- [ ] API endpoints ตอบกลับถูกต้อง
-- [ ] Tests ผ่านทั้งหมด
-- [ ] Database และ Redis เชื่อมต่อได้
-```
+- [✅ ] ไฟล์ทั้งหมดถูกสร้างครบ
+- [ ✅] .env มี passwords ที่ปลอดภัย
+- [ ✅] `docker compose config` ไม่มี error
+- [ ✅] Services ทั้งหมด status เป็น "Up" และ "healthy"
+- [✅ ] API endpoints ตอบกลับถูกต้อง
+- [✅ ] Tests ผ่านทั้งหมด
+- [ ✅] Database และ Redis เชื่อมต่อได้
+
 ## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
+![alt text](image.png)
+![alt text](image-1.png)
+![alt text](image-2.png)
 
 
 ### การทดลองที่ 2: สร้าง GitHub Actions Workflow
@@ -1527,8 +1530,8 @@ git push origin main
 # ตรวจสอบผลลัพธ์ใน GitHub Actions 
 ```
 ## บันทึกรูปผลการทดลอง หน้า GitHub Actions
-```bash
-
+`bash
+![alt text](image-3.png)
 
 ```
 
@@ -1545,11 +1548,8 @@ git push origin feature/test-pr
 # ตรวจสอบ workflow การทำงานและ comment ที่ถูกสร้าง
 ```
 ## บันทึกรูปผลการทดลอง 
-```bash
-
-
-```
-
+bash
+![alt text](image-5.png)
 
 ---
 
@@ -1584,8 +1584,16 @@ git push origin feature/test-pr
 
 ## คำถามท้ายการทดลอง
 1. docker compose คืืออะไร มีความสำคัญอย่างไร
+Docker Compose คือเครื่องมือสำหรับจัดการหลาย ๆ Container พร้อมกันผ่านไฟล์กำหนดค่าแบบ YAML เพียงไฟล์เดียว เช่น Web, Database, Redis สามารถถูกสั่งรันพร้อมกันได้ด้วยคำสั่ง docker compose up โดยไม่ต้องเปิดทีละ container สำคัญตรงที่ช่วยให้การพัฒนาและ deploy ระบบที่มีหลาย service ทำได้ง่าย รวดเร็ว และลดความซับซ้อนในการจัดการ environment
+
 2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
+GitHub Pipeline (หรือ GitHub Actions) คือ workflow automation ที่รันบน GitHub โดยสามารถกำหนดให้ทำงานอัตโนมัติเมื่อมี event เช่น push, pull request เป็นต้น เกี่ยวข้องกับ CI/CD ตรงที่มันช่วยทำ CI (Continuous Integration) เช่น การทดสอบโค้ด, ตรวจ security, และ CD (Continuous Deployment) เช่น การ build และ deploy ขึ้น server หรือ container registry ได้อัตโนมัติ
+
 3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
+volumes: ใช้เก็บข้อมูลถาวรนอก container เช่น ข้อมูล database จะไม่หายเมื่อ container ถูก restart หรือลบ
+networks: ใช้สร้างเครือข่ายภายในระหว่าง service ทำให้ container ต่าง ๆ ติดต่อกันได้ด้วยชื่อ service เช่น db, redis
+healthcheck: เป็นการตรวจสอบว่าสถานะ container พร้อมใช้งานหรือไม่ เช่น database ตอบ pg_isready แล้วถึงจะให้ container อื่นเชื่อมต่อได้
+
 4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
 ```yaml
 jobs:
@@ -1608,6 +1616,13 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 ```
+jobs: กำหนดชุดงาน (job) ที่ pipeline จะรัน
+test: คือชื่อ job
+runs-on: ubuntu-latest หมายถึงรันบนเครื่องเสมือนที่ใช้ Ubuntu
+services: กำหนด service เสริมที่ job ต้องการ เช่น postgres, redis
+ส่วน postgres: ใช้ image postgres:16-alpine และกำหนด environment variable เช่น POSTGRES_USER และ POSTGRES_DB
+options ใส่ healthcheck (pg_isready) เพื่อตรวจสอบว่า postgres พร้อมทำงานก่อนจะรัน test
+
 5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
 ```yaml
     steps:
@@ -1620,4 +1635,15 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
 ```
+actions/checkout@v4: เป็น GitHub Action ที่ใช้ดึง source code ของ repo มายังเครื่องที่รัน workflow
+actions/setup-python@v5: เป็น GitHub Action ที่ใช้ตั้งค่า environment ให้รองรับ Python version ที่กำหนด เช่น 3.9 พร้อม cache package ที่ติดตั้งด้วย pip เพื่อลดเวลา build
+
+
 6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+Snyk คือเครื่องมือสำหรับตรวจสอบและจัดการความปลอดภัยของซอฟต์แวร์แบบอัตโนมัติ มีความสามารถ เช่น
+
+ตรวจหาช่องโหว่ใน dependency (ไลบรารีที่โค้ดใช้งาน)
+ตรวจช่องโหว่ใน source code (SAST)
+ตรวจ secret ที่หลุดใน repo
+สแกน container image หา package ที่ไม่ปลอดภัย
+มีระบบ monitor แจ้งเตือนเมื่อ dependency ที่ใช้อยู่ถูกค้นพบว่ามีช่องโหว่ใหม่
