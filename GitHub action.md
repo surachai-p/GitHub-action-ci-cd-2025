@@ -1549,6 +1549,10 @@ git push origin feature/test-pr
 ```
 ## บันทึกรูปผลการทดลอง 
 ```bash
+```
+<img width="947" height="875" alt="image" src="https://github.com/user-attachments/assets/4422488f-25be-4b73-bc7a-254cd5c942fc" />
+
+```
 
 
 ```
