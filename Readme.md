@@ -1,7 +1,52 @@
-## LAB-01
+# Flask CI/CD Demo
 
-<img width="1919" height="543" alt="image" src="https://github.com/user-attachments/assets/5fea69a9-bfc4-4a97-964b-505be49c7845" />
+Demo project สำหรับ Lab 00 - Docker Compose และ GitHub Actions
 
-<img width="1919" height="574" alt="image" src="https://github.com/user-attachments/assets/6d27e872-0003-4b7b-904c-24c689b2abce" />
+## Requirements
 
-<img width="1919" height="983" alt="image" src="https://github.com/user-attachments/assets/50dd45a5-8328-4a85-963b-766bd3ce37cb" />
+- Docker Desktop
+- Git
+
+## Quick Start
+
+1. Clone repository:
+\`\`\`bash
+git clone <your-repo-url>
+cd my-flask-app
+\`\`\`
+
+2. Setup environment:
+\`\`\`bash
+cp .env.example .env
+# แก้ไขค่าใน .env
+\`\`\`
+
+3. Start services:
+\`\`\`bash
+docker compose up -d
+\`\`\`
+
+4. Test API:
+\`\`\`bash
+curl http://localhost:5000/
+curl http://localhost:5000/health
+\`\`\`
+
+## Project Structure
+
+\`\`\`
+my-flask-app/
+├── backend/
+│   ├── app.py
+│   ├── requirements.txt
+│   └── tests/
+│       └── test_app.py
+├── .github/
+│   └── workflows/
+│       └── ci-cd.yml
+├── docker-compose.yml
+├── Dockerfile
+├── .env.example
+├── .gitignore
+└── README.md
+\`\`\`
