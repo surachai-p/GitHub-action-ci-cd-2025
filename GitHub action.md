@@ -1589,8 +1589,18 @@ git push origin feature/test-pr
 
 ## คำถามท้ายการทดลอง
 1. docker compose คืออะไร มีความสำคัญอย่างไร
+คือเครื่องมือของ Docker ที่ช่วยกำหนด เรียกใช้งาน จัดการ container หลายๆ ตัวที่ทำงานร่วมกันได้ง่าย
+ความสำคัญของ Docker Compose
+ง่ายในการจัดการหลาย container
+ลดการพึ่งพามือ: ไม่ต้องพิมพ์คำสั่ง docker ยาวๆ หลายบรรทัด ใช้ร่วมกับ CI/CD ได้ง่าย: Build และ deploy เป็นระบบ ช่วยให้ dev และ production environment เหมือนกัน
 2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
+   GitHub Actions เป็นระบบ Automation ของ GitHub สำหรับรันคำสั่งต่างๆ อัตโนมัติรันการทดสอบอัตโนมัติ Build Docker image Deploy ไปยัง server ตรวจสอบโค้ด หรือ lint
+   CI (Continuous Integration) การทดสอบรวมโค้ดอัตโนมัติ
+   CD (Continuous Delivery/Deployment) การ deploy โค้ดอัตโนมัติ
 3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
+   volumes - การจัดการข้อมูลถาวร ใช้สำหรับ เก็บข้อมูลแบบถาวร แม้ container จะถูกลบ เช่นฐานข้อมูล (PostgreSQL, MySQL) → ถ้าไม่มี volume ข้อมูลจะหายเมื่อ container หยุด
+   networks – การเชื่อมต่อระหว่าง container ช่วยให้ container หลายตัว สื่อสารกันได้ ถ้าอยู่ใน network เดียวกัน → เรียกกันได้ด้วยชื่อ service
+   healthcheck – ตรวจสอบสถานะของ container ใช้เช็กว่า container หรือ service ยังทำงานอยู่หรือไม่ ถ้าไม่ healthy → Docker สามารถพยายาม restart หรือแจ้งเตือนได้
 4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
 ```yaml
 jobs:
@@ -1613,6 +1623,27 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 ```
+jobs
+
+คือ root ของส่วน workflow ที่กำหนดงาน (job) ต่างๆ ที่จะรัน
+test
+ชื่อของ job นี้ ชื่อภายใน GitHub Actions
+name: Run Tests
+เป็นชื่อที่จะแสดงบนหน้า GitHub Actions UI ว่า job นี้ทำอะไร
+runs-on: ubuntu-latest
+บอกให้ GitHub ใช้ runner ที่เป็น Ubuntu เวอร์ชันล่าสุดในการรัน job
+services
+หมายถึง GitHub Actions จะรัน container ขึ้นมาพร้อมๆ กับ job นี้
+โดยในที่นี้ใช้ container ที่เป็น PostgreSQL
+image: postgres:16-alpine
+ใช้ Docker image ของ PostgreSQL เวอร์ชัน 16 บน Alpine Linux (ขนาดเล็ก, เร็ว)
+env
+กำหนด environment variables สำหรับ PostgreSQL
+เพื่อสร้างฐานข้อมูลเริ่มต้นชื่อ testdb, user testuser และ password testpass
+ports
+ทำการแมปพอร์ต 5432 ของ host (GitHub runner) เข้ากับ container ทำให้โค้ดของคุณใน job นี้สามารถเชื่อมต่อกับ PostgreSQL ที่รันอยู่ใน container ได้ หมายเหตุ: บางครั้งไม่จำเป็นต้องแมป port ก็สามารถเชื่อมต่อกันได้ภายใน runner ผ่าน hostname localhost หรือ postgres
+
+
 5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
 ```yaml
     steps:
@@ -1625,4 +1656,9 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
 ```
+
+actions/checkout@v4 → ใช้ดึงซอร์สโค้ดจาก GitHub repository มารันใน workflow actions/setup-python@v5 → ใช้ติดตั้ง Python เวอร์ชันที่ต้องการ (กำหนดจาก env) และ cache dependencies ของ pip เพื่อทำให้การรันครั้งถัดไปเร็วขึ้น
+
 6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+
+Snyk คือเครื่องมือสำหรับตรวจสอบความปลอดภัยของโค้ดและ dependencies -ตรวจหาช่องโหว่ในแพ็กเกจ (Vulnerability Scanning) -วิเคราะห์โค้ดหาช่องโหว่ (SAST) -ตรวจสอบ Docker Image -ตรวจสอบ Infrastructure as Code (เช่น Kubernetes, Terraform) -มอนิเตอร์ dependencies และแจ้งเตือนเมื่อมีช่องโหว่ใหม่
