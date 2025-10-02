@@ -1544,13 +1544,7 @@ git push origin feature/test-pr
 # ตรวจสอบ workflow การทำงานและ comment ที่ถูกสร้าง
 ```
 ## บันทึกรูปผลการทดลอง 
-```bash
-
-
-```
-
-
----
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/07f755b7-6d0c-4f33-8e24-db847629b529" />
 
 
 ## Resources และเอกสารอ้างอิง
