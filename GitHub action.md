@@ -1154,7 +1154,9 @@ git push origin feature/test-pr
 - GitHub pipeline (หรือ GitHub Actions workflow) คือกระบวนการอัตโนมัติที่กำหนดขั้นตอนการ build, test, deploy โค้ดทุกครั้งที่มีการเปลี่ยนแปลงใน repository โดยเป็นหัวใจของ CI/CD (Continuous Integration/Continuous Delivery) ช่วยให้โค้ดถูกตรวจสอบและนำขึ้น production ได้อย่างปลอดภัยและรวดเร็ว
 3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
 - volumes: ใช้สำหรับเก็บข้อมูลถาวรหรือแชร์ไฟล์ระหว่าง host กับ container เช่น ฐานข้อมูล
+
 networks: กำหนด network เฉพาะสำหรับ container ในโปรเจค ให้แต่ละ service ติดต่อกันได้อย่างปลอดภัย
+
 healthcheck: ใช้ตรวจสอบสุขภาพของ service ว่าพร้อมใช้งานหรือไม่ เช่น ตรวจสอบว่า web หรือ database ตอบสนองปกติ
 4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
 ```yaml
