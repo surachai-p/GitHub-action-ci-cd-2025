@@ -1133,18 +1133,22 @@ docker system prune -f
 
 ### Checklist ก่อนไปขั้นตอนถัดไป:
 
-- [ ] ไฟล์ทั้งหมดถูกสร้างครบ
-- [ ] .env มี passwords ที่ปลอดภัย
-- [ ] `docker compose config` ไม่มี error
-- [ ] Services ทั้งหมด status เป็น "Up" และ "healthy"
-- [ ] API endpoints ตอบกลับถูกต้อง
-- [ ] Tests ผ่านทั้งหมด
-- [ ] Database และ Redis เชื่อมต่อได้
-- [ ] 
-```bash
+- [ ✓ ] ไฟล์ทั้งหมดถูกสร้างครบ
+- [ ✓ ] .env มี passwords ที่ปลอดภัย
+- [ ✓ ] `docker compose config` ไม่มี error
+- [ ✓ ] Services ทั้งหมด status เป็น "Up" และ "healthy"
+- [ ✓ ] API endpoints ตอบกลับถูกต้อง
+- [ ✓ ] Tests ผ่านทั้งหมด
+- [ ✓ ] Database และ Redis เชื่อมต่อได้
+
 ## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
 
-```
+<img width="1915" height="1079" alt="image" src="https://github.com/user-attachments/assets/f0a7d1d1-d683-4a27-8175-eade0488f39b" />
+<img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/23791249-bfae-472d-957e-331c778cb884" />
+<img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/35143167-83e1-4ace-8da4-da1ffaa5aa15" />
+
+
+
 
 ## การทดลองที่ 2: สร้าง GitHub Actions Workflow
 
