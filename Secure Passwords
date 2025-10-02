@@ -1,0 +1,5 @@
+import secrets
+
+print("# Generated Secure Values")
+print(f"POSTGRES_PASSWORD={secrets.token_urlsafe(24)}")
+print(f"SECRET_KEY={secrets.token_urlsafe(32)}")
