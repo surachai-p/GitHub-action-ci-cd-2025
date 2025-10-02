@@ -1133,18 +1133,19 @@ docker system prune -f
 
 ### Checklist ก่อนไปขั้นตอนถัดไป:
 
-- [ ] ไฟล์ทั้งหมดถูกสร้างครบ
-- [ ] .env มี passwords ที่ปลอดภัย
-- [ ] `docker compose config` ไม่มี error
-- [ ] Services ทั้งหมด status เป็น "Up" และ "healthy"
-- [ ] API endpoints ตอบกลับถูกต้อง
-- [ ] Tests ผ่านทั้งหมด
-- [ ] Database และ Redis เชื่อมต่อได้
-- [ ] 
-```bash
-## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
+- [ ✔ ] ไฟล์ทั้งหมดถูกสร้างครบ
+- [ ✔ ] .env มี passwords ที่ปลอดภัย
+- [ ✔ ] `docker compose config` ไม่มี error
+- [ ✔ ] Services ทั้งหมด status เป็น "Up" และ "healthy"
+- [ ✔ ] API endpoints ตอบกลับถูกต้อง
+- [ ✔ ] Tests ผ่านทั้งหมด
+- [ ✔ ] Database และ Redis เชื่อมต่อได้
+- [ ✔ ] 
 
-```
+## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
+![alt text](image.png)
+![alt text](image-1.png)
+![alt text](image-2.png)
 
 ## การทดลองที่ 2: สร้าง GitHub Actions Workflow
 
@@ -1529,10 +1530,7 @@ git push origin main
 # ตรวจสอบผลลัพธ์ใน GitHub Actions 
 ```
 ## บันทึกรูปผลการทดลอง หน้า GitHub Actions
-```bash
-
-
-```
+![alt text](image-3.png)
 
 #### ขั้นตอนที่ 5: ทดสอบ Pull Request
 
@@ -1546,11 +1544,9 @@ git push origin feature/test-pr
 # สร้าง Pull Request บน GitHub
 # ตรวจสอบ workflow การทำงานและ comment ที่ถูกสร้าง
 ```
-## บันทึกรูปผลการทดลอง 
-```bash
-
-
-```
+## บันทึกรูปผลการทดลอง
+![alt text](image-5.png)
+![alt text](image-4.png)
 
 
 ---
