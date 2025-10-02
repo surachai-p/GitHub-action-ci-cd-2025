@@ -65,7 +65,7 @@ services:
     build: .
     container_name: flask_app
     ports:
-      - "5000:5000"
+      - "5000:5000"                       #port host:docker
     environment:
       - FLASK_ENV=development
       - DATABASE_URL=postgresql://user:pass@db:5432/mydb
@@ -1010,7 +1010,7 @@ docker compose logs db
 docker compose logs redis
 
 # ตรวจสอบ health status
-docker compose ps --format "table {{.Name}}\t{{.State}}\t{{.Health}}"
+docker compose ps --format "table {{.Name}}\t{{.State}}\t{{.Health}}" #เป็นการจัดรูปแบบการแสดงผลให้อยู่ในรูปแบบตารางที่อ่านง่ายขึ้น โดยจะแสดงข้อมูล 3 คอลัมน์คือ: 1. {{.Name}}: ชื่อของ container ดังนั้น เมื่อรันคำสั่งนี้รวมกัน จะเป็นการแสดงตารางสรุปสถานะและสถานะสุขภาพของทุก service ในโปรเจคของเรา ทำให้เราเห็นภาพรวมของระบบได้อย่างรวดเร็วว่า service ไหนทำงานปกติ, service ไหนมีปัญหา หรือ service ไหนยังไม่พร้อมใช้งาน
 ```
 
 #### ขั้นตอนที่ 6: ทดสอบ API Endpoints
@@ -1027,7 +1027,7 @@ curl http://localhost:5000/health
 # {"status":"healthy","database":"connected","redis":"connected"}
 
 # ทดสอบด้วย curl แบบ pretty print
-curl -s http://localhost:5000/ | python3 -m json.tool
+curl -s http://localhost:5000/ | python -m json.tool
 
 
 # ทดสอบด้วย browser
@@ -1133,13 +1133,13 @@ docker system prune -f
 
 ### Checklist ก่อนไปขั้นตอนถัดไป:
 
-- [ ] ไฟล์ทั้งหมดถูกสร้างครบ
-- [ ] .env มี passwords ที่ปลอดภัย
-- [ ] `docker compose config` ไม่มี error
-- [ ] Services ทั้งหมด status เป็น "Up" และ "healthy"
-- [ ] API endpoints ตอบกลับถูกต้อง
-- [ ] Tests ผ่านทั้งหมด
-- [ ] Database และ Redis เชื่อมต่อได้
+- [✅] ไฟล์ทั้งหมดถูกสร้างครบ
+- [✅] .env มี passwords ที่ปลอดภัย
+- [✅] `docker compose config` ไม่มี error
+- [✅] Services ทั้งหมด status เป็น "Up" และ "healthy"
+- [✅] API endpoints ตอบกลับถูกต้อง
+- [✅] Tests ผ่านทั้งหมด
+- [✅] Database และ Redis เชื่อมต่อได้
 ```
 ## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
 
