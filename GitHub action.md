@@ -1530,11 +1530,11 @@ git push origin main
 # ตรวจสอบผลลัพธ์ใน GitHub Actions 
 ```
 ## บันทึกรูปผลการทดลอง หน้า GitHub Actions
-```bash
+
 <img width="1346" height="450" alt="image" src="https://github.com/user-attachments/assets/1d3d58cd-03be-4d10-978e-10d8782af1ad" />
 
 
-```
+
 
 #### ขั้นตอนที่ 5: ทดสอบ Pull Request
 
@@ -1549,13 +1549,9 @@ git push origin feature/test-pr
 # ตรวจสอบ workflow การทำงานและ comment ที่ถูกสร้าง
 ```
 ## บันทึกรูปผลการทดลอง 
-```bash
+<img width="2485" height="1027" alt="image" src="https://github.com/user-attachments/assets/4d5490fa-228d-4f37-90df-6c2049fd3a98" />
 
-
-```
-
-
----
+<img width="1461" height="1009" alt="image" src="https://github.com/user-attachments/assets/33fc071c-652d-4085-81a4-a93c12a8cb41" />
 
 
 ## Resources และเอกสารอ้างอิง
@@ -1612,6 +1608,8 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 ```
+ตอบ สร้าง job ชื่อ test ใช้ runner บน Ubuntu สร้าง container PostgreSQL กำหนด env สำหรับใช้งาน DB เปิดพอร์ต 5432 เพื่อเชื่อมต่อ DB ตรวจสอบว่า DB พร้อมทำงานก่อนรัน test ถ้าไม่พร้อมใน 5 ครั้ง จะล้มเหลว
+
 5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
 ```yaml
     steps:
@@ -1624,4 +1622,8 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
 ```
+ตอบ uses: ดึง source code จาก repo มายัง runner จำเป็นก่อน build/test, setup-python@v5 ติดตั้ง Python version ที่กำหนด เปิดการ cache ของ pip เพื่อรันเร็วขึ้น
+
 6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+
+ตอบ คือเครื่องมือสำหรับ ตรวจหาช่องโหว่ด้านความปลอดภัย ใน: Dependencies (เช่น Python packages, Node.js packages) Docker images IaC (Infrastructure as Code) เช่น Terraform, Kubernetes ความสามารถ สแกนช่องโหว่ (Vulnerabilities) แจ้งเตือนความเสี่ยง แนะนำวิธีแก้ไข (เช่น upgrade version) ผสานเข้ากับ GitHub, GitLab, CI/CD ได้
