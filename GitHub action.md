@@ -1585,8 +1585,25 @@ git push origin feature/test-pr
 
 ## คำถามท้ายการทดลอง
 1. docker compose คืออะไร มีความสำคัญอย่างไร
+    Docker Compose คือเครื่องมือที่ใช้สำหรับจัดการ multi-container applications (หลาย container) โดยใช้ไฟล์ docker-compose.yml
+    สามารถกำหนดบริการ (services), network, volume และการตั้งค่าต่าง ๆ ของ container ได้ในไฟล์เดียว
+    ความสำคัญ:
+    ลดความซับซ้อนของการรันหลาย container
+    ควบคุม lifecycle ของ container ได้ง่าย (up, down, restart)
+ใช้ได้ทั้ง dev/test/prod เพื่อให้ environment เหมือนกัน
+
 2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
+  GitHub pipeline ก็คือ workflow ที่ถูกกำหนดใน GitHub Actions ผ่านไฟล์ .github/workflows/*.yml
+  ใช้ในการรันงานอัตโนมัติ เช่น build, test, deploy เมื่อมีเหตุการณ์บางอย่าง เช่น push, pull request
+  ความเกี่ยวข้องกับ CI/CD:
+  CI (Continuous Integration): pipeline ช่วยรันการทดสอบอัตโนมัติเมื่อมี code ใหม่เข้า repo
+  CD (Continuous Delivery/Deployment): pipeline สามารถนำ code ที่ผ่านการทดสอบไป deploy อัตโนมัติไปยัง server หรือ cloud
+
 3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
+    volumes → ใช้เก็บข้อมูลถาวร (persistent data) เช่น database, logs แม้ container ถูกลบข้อมูลก็ไม่หาย
+networks → ใช้กำหนดการเชื่อมต่อระหว่าง container ให้สื่อสารกันได้ใน environment เดียว
+healthcheck → ใช้ตรวจสอบว่า service ทำงานปกติหรือยัง เช่น DB พร้อมให้ connect หรือยัง ถ้าไม่พร้อม container อื่น ๆ จะไม่เริ่มทำงาน
+
 4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
 ```yaml
 jobs:
@@ -1609,6 +1626,13 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 ```
+    jobs: → pipeline job ที่จะรัน (ชื่อ job = test)
+    runs-on: ubuntu-latest → ใช้ VM image ของ GitHub ที่เป็น Ubuntu ล่าสุด
+    services: → บริการเสริมที่ job ต้องใช้
+    postgres: → รัน container Postgres version 16-alpine
+    env: → กำหนด environment variables ของ DB เช่น user, password, db name
+    ports: → map port 5432 ของ container → 5432 บน host (ให้ test code connect ได้)
+    options: → ตั้งค่า healthcheck ของ Postgres โดยใช้ pg_isready ตรวจสอบทุก 10 วินาที timeout 5 วินาที ถ้า fail ซ้ำ 5 ครั้งถือว่าไม่พร้อม
 5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
 ```yaml
     steps:
@@ -1621,4 +1645,18 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
 ```
+  uses: actions/checkout@v4
+  → Action ที่ใช้ clone / checkout source code จาก GitHub repository มายัง VM ที่ pipeline รันอยู่
+  uses: actions/setup-python@v5
+  → Action ที่ใช้ติดตั้งและตั้งค่า Python environment
+  python-version → ดึงค่ามาจากตัวแปร PYTHON_VERSION
+  cache: 'pip' → เก็บ cache ของ dependency ที่ติดตั้งด้วย pip เพื่อลดเวลา build
+
 6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+Snyk คือเครื่องมือ Security ที่ใช้ตรวจสอบ vulnerabilities (ช่องโหว่) ในโค้ดและ dependency
+
+  ความสามารถหลัก:
+  ตรวจหาและแก้ไข ช่องโหว่ด้านความปลอดภัย ใน dependency (เช่น pip, npm, Maven)
+  วิเคราะห์ Docker image เพื่อหาช่องโหว่ใน base image
+  ใช้ใน CI/CD pipeline เพื่อป้องกันไม่ให้โค้ดที่มีช่องโหว่ถูก deploy
+  มี feature แนะนำการ update dependency ที่ปลอดภัยกว่า
