@@ -1140,9 +1140,11 @@ docker system prune -f
 - [ ] API endpoints ตอบกลับถูกต้อง
 - [ ] Tests ผ่านทั้งหมด
 - [ ] Database และ Redis เชื่อมต่อได้
-```
-## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
 
+## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
+![alt text](image.png)
+![alt text](image-1.png)
+![alt text](image-2.png)
 
 ### การทดลองที่ 2: สร้าง GitHub Actions Workflow
 
@@ -1525,10 +1527,10 @@ git commit -m "Add CI/CD pipeline"
 git push origin main
 
 # ตรวจสอบผลลัพธ์ใน GitHub Actions 
-```
+
 ## บันทึกรูปผลการทดลอง หน้า GitHub Actions
 ```bash
-
+![alt text](image-3.png)
 
 ```
 
@@ -1584,29 +1586,25 @@ git push origin feature/test-pr
 
 ## คำถามท้ายการทดลอง
 1. docker compose คืืออะไร มีความสำคัญอย่างไร
+
+
+Docker Compose คือ เครื่องมือที่ใช้จัดการ Container หลายตัวพร้อมกัน โดยเราสามารถกำหนด Service ต่าง ๆ เช่น web, database, redis ไว้ในไฟล์เดียว แล้วใช้คำสั่งเดียวในการ run ได้ มีความสำคัญเพราะช่วยให้การพัฒนาและทดสอบระบบที่มีหลายส่วนประกอบทำได้สะดวกและสอดคล้องกับการทำงานจริง
+
+
 2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
+
+GitHub Pipeline คือ Workflow ที่เราสร้างบน GitHub Actions เพื่อกำหนดขั้นตอนการทำงาน เช่น การทดสอบ (Test) การ Build และการ Deploy ซึ่งเกี่ยวข้องกับ CI/CD โดยตรง เพราะ CI/CD คือกระบวนการที่เน้นการทดสอบและนำโค้ดขึ้นใช้งานอัตโนมัติทุกครั้งที่มีการเปลี่ยนแปลงโค้ด
+
+
 3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
+
+ในไฟล์ docker compose ส่วนของ volumes ใช้เก็บข้อมูลให้คงอยู่แม้ Container ถูกลบ networks ใช้เชื่อมต่อ Service ต่าง ๆ ให้คุยกันได้ และ healthcheck ใช้ตรวจสอบสถานะของ Container ว่าพร้อมใช้งานหรือไม่ เพื่อให้ Service อื่น ๆ รอจนกว่าจะพร้อมก่อนทำงานต่อ
+
+
 4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
-```yaml
-jobs:
-  test:
-    name: Run Tests
-    runs-on: ubuntu-latest
-    
-    services:
-      postgres:
-        image: postgres:16-alpine
-        env:
-          POSTGRES_PASSWORD: testpass
-          POSTGRES_USER: testuser
-          POSTGRES_DB: testdb
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U testuser"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+
+
+```ในไฟล์ docker compose ส่วนของ volumes ใช้เก็บข้อมูลให้คงอยู่แม้ Container ถูกลบ networks ใช้เชื่อมต่อ Service ต่าง ๆ ให้คุยกันได้ และ healthcheck ใช้ตรวจสอบสถานะของ Container ว่าพร้อมใช้งานหรือไม่ เพื่อให้ Service อื่น ๆ รอจนกว่าจะพร้อมก่อนทำงานต่อ
 ```
 5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
 ```yaml
