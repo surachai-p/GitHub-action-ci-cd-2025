@@ -1542,6 +1542,7 @@ git push origin main
 
 
 ```
+<img width="1360" height="638" alt="image" src="https://github.com/user-attachments/assets/df89b057-e8a4-46f1-9499-2e79ad975853" />
 
 #### ขั้นตอนที่ 5: ทดสอบ Pull Request
 
@@ -1560,7 +1561,6 @@ git push origin feature/test-pr
 
 
 ```
-<img width="1360" height="638" alt="image" src="https://github.com/user-attachments/assets/df89b057-e8a4-46f1-9499-2e79ad975853" />
 
 
 ---
@@ -1596,8 +1596,20 @@ git push origin feature/test-pr
 
 ## คำถามท้ายการทดลอง
 1. docker compose คืออะไร มีความสำคัญอย่างไร
+```
+ANS Docker Compose เป็นเครื่องมือสำหรับ จัดการหลาย container พร้อมกัน ในโปรเจกต์เดียว
+```
 2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
+```
+ANS GitHub Pipeline คือระบบที่ช่วยให้เราสร้าง workflow อัตโนมัติ เช่น การ build, test, deploy code
+```
 3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
+```
+ANS 
+volumes : ใช้สำหรับ เก็บข้อมูลถาวร ของ container เช่น database และ ป้องกันข้อมูลหายเมื่อ container ถูกลบหรือ recreate
+networks : กำหนดการสื่อสารระหว่าง container และ ช่วยให้ container ต่าง ๆ สามารถติดต่อกันได้อย่างปลอดภัย และแยกจาก network ภายนอก
+healthcheck  : ตรวจสอบว่า container พร้อมทำงานหรือไม่ และ Docker สามารถ restart container อัตโนมัติถ้า healthcheck fail
+```
 4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
 ```yaml
 jobs:
@@ -1620,6 +1632,24 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 ```
+```
+ANS 
+    jobs > test: สร้าง job ชื่อ Run Tests
+    runs-on: ubuntu-latest: รัน job บน Ubuntu VM
+    services > postgres: รัน PostgreSQL container เพื่อให้ environment สำหรับทดสอบ
+    image: ใช้ image postgres:16-alpine
+    env: ตั้งค่า environment ของ database
+    username: testuser
+    password: testpass
+    database: testdb
+    ports: map port ของ container 5432 → host 5432
+    options >-: ตั้งค่า healthcheck ของ container
+    pg_isready -U testuser: ตรวจสอบว่าฐานข้อมูลพร้อมใช้งาน
+    --health-interval 10s: ตรวจสอบทุก 10 วินาที
+    --health-timeout 5s: ถ้าไม่ตอบภายใน 5 วินาทีถือว่า fail
+    --health-retries 5: retry 5 ครั้งก่อน mark ว่า unhealthy
+container Postgres จะรันและพร้อมให้ job ใช้งานก่อนรัน test
+```
 5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
 ```yaml
     steps:
@@ -1632,4 +1662,17 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
 ```
+```
+ANS 
+    actions/checkout@v4
+    ทำหน้าที่ ดึง code จาก repository มาไว้ใน runner
+    เป็นขั้นตอนแรกที่ต้องทำก่อนจะ build/test
+    actions/setup-python@v5
+    ติดตั้ง Python เวอร์ชันที่กำหนด บน runner
+    python-version: ${{ env.PYTHON_VERSION }}: ใช้เวอร์ชันจาก environment variable
+    cache: 'pip': cache dependencies ของ Python เพื่อลดเวลา install
+```
 6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+```
+ANS  Snyk เป็นเครื่องมือ ตรวจสอบความปลอดภัย ของ code, dependencies, container, และ infrastructure
+```
