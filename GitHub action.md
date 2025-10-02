@@ -1630,8 +1630,7 @@ image: ใช้ image ของ postgres แบบเบา (alpine)
 env: กำหนดค่า environment (user, password, db)
 ports: map port 5432
 options: กำหนด healthcheck ของ container นี้ เช่น ตรวจว่า db พร้อมหรือยัง
-```
-```
+
 5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
 ```yaml
     steps:
@@ -1643,15 +1642,13 @@ options: กำหนด healthcheck ของ container นี้ เช่น 
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
-```
 uses: actions/checkout@v4: ดึง source code จาก repo นี้ลงมาใน runner
 uses: actions/setup-python@v5: ตั้งค่า Python environment ให้ runner
 python-version: ใช้ version จาก environment variable PYTHON_VERSION
 cache: 'pip': เก็บ cache ของ pip packages เพื่อการติดตั้งเร็วขึ้น
 ```
-```
 6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
-7. Snyk เป็นเครื่องมือด้าน Security DevOps ใช้สำหรับตรวจหาช่องโหว่ด้านความปลอดภัยใน:
+Snyk เป็นเครื่องมือด้าน Security DevOps ใช้สำหรับตรวจหาช่องโหว่ด้านความปลอดภัยใน:
 โค้ด (SAST) – ตรวจโค้ด source หาช่องโหว่
 dependencies (SCA) – ตรวจไลบรารีภายนอกว่ามีช่องโหว่หรือไม่
 Docker images – ตรวจ security ของ container image
