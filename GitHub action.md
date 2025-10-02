@@ -1533,7 +1533,7 @@ git push origin main
 
 
 ```
-
+<img width="3420" height="880" alt="image" src="https://github.com/user-attachments/assets/535f4c50-7a6b-41d0-9927-c94ac26584eb" />
 #### ขั้นตอนที่ 5: ทดสอบ Pull Request
 
 ```bash
@@ -1551,7 +1551,7 @@ git push origin feature/test-pr
 
 
 ```
-
+<img width="3420" height="1502" alt="image" src="https://github.com/user-attachments/assets/8e0a44f2-a64b-40d6-9f94-b6765baed095" />
 
 ---
 
@@ -1586,8 +1586,29 @@ git push origin feature/test-pr
 
 ## คำถามท้ายการทดลอง
 1. docker compose คืออะไร มีความสำคัญอย่างไร
+  Docker Compose คือเครื่องมือของ Docker ที่ใช้ จัดการหลายๆ container พร้อมกัน ผ่านไฟล์ docker-compose.yml โดยกำหนด services, networks, volumes, environment variables และ dependencies ของแต่ละ container
+ความสำคัญ:
+ลดความซับซ้อนในการรันหลาย container พร้อมกัน เช่น Web app + Database + Cache
+รองรับการกำหนด config ที่ reproducible ทำให้ทีมพัฒนาใช้ environment เดียวกันง่ายขึ้น
+เหมาะกับ Dev/Test/CI/CD เพราะทำให้ environment แบบเดียวกันทุกเครื่อง
 2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
+GitHub Pipeline คือชุดขั้นตอน (workflow) ที่ GitHub Actions ใช้ อัตโนมัติในการ build, test, deploy โค้ด
+ความเกี่ยวข้องกับ CI/CD:
+CI (Continuous Integration): ทุกครั้งที่ push โค้ดใหม่ GitHub Pipeline จะทำการ build และ run tests อัตโนมัติ
+CD (Continuous Deployment/Delivery): หลังจากผ่าน CI, pipeline สามารถ deploy แอปขึ้น server หรือ cloud อัตโนมัติ
+Pipeline ทำให้ลดข้อผิดพลาดที่เกิดจาก manual deployment และเร่งเวลา release
 3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
+   1. volumes
+ใช้เก็บข้อมูลถาวรของ container (persistent data)
+ตัวอย่าง: postgres ต้องเก็บ database ข้อมูลหาก container ถูกลบก็ยังไม่สูญหาย
+volumes:
+  db-data:
+2. networks
+ใช้เชื่อมต่อ container ต่างๆ ให้สื่อสารกันได้โดยไม่ต้อง expose port ทุกครั้ง
+ปลอดภัยและควบคุม traffic ภายใน network
+3. healthcheck
+ตรวจสอบว่าบริการภายใน container พร้อมใช้งานหรือไม่
+ตัวอย่าง: pg_isready ตรวจสอบว่า PostgreSQL พร้อมรับ connection
 4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
 ```yaml
 jobs:
@@ -1610,6 +1631,18 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 ```
+อธิบายทีละส่วน:
+jobs.test: job ชื่อ Run Tests จะรันบน ubuntu-latest
+services.postgres: สร้าง PostgreSQL container เพื่อใช้สำหรับ test
+image: postgres:16-alpine: ใช้ image Postgres เวอร์ชัน 16 แบบ Alpine (เล็กและเร็ว)
+env: กำหนด username, password, database สำหรับ container
+ports: map port 5432 ของ host กับ container
+options: กำหนด healthcheck เพื่อตรวจสอบ container ว่า ready ก่อนรัน test
+--health-cmd "pg_isready -U testuser" → เช็คว่า DB พร้อมรับ connection
+--health-interval 10s → ตรวจทุก 10 วินาที
+--health-timeout 5s → timeout 5 วินาที
+--health-retries 5 → retry 5 ครั้งก่อนถือว่า fail
+สรุป: job นี้สร้าง container PostgreSQL พร้อม test environment อัตโนมัติ
 5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
 ```yaml
     steps:
@@ -1622,4 +1655,20 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
 ```
+อธิบาย:
+actions/checkout@v4
+ดึง โค้ดจาก GitHub repository มาใช้งานใน workflow
+จำเป็นก่อน build/test เพราะ container หรือ runner ต้องเข้าถึงโค้ด
+actions/setup-python@v5
+ติดตั้ง Python version ที่กำหนดใน python-version
+cache: 'pip' → cache dependencies ของ pip เพื่อลดเวลา install
+สรุป: ขั้นตอนเหล่านี้เตรียม environment สำหรับรัน Python script หรือ test อัตโนมัติ
 6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+Snyk คือเครื่องมือ ตรวจสอบความปลอดภัย (security) สำหรับโค้ด, dependencies, container, และ infrastructure
+ความสามารถหลัก:
+ตรวจหา vulnerabilities ใน dependencies (Python, Node.js, Java, etc.)
+ตรวจสอบ Docker image vulnerabilities
+ตรวจสอบ IaC (Infrastructure as Code) เช่น Terraform, Kubernetes YAML
+มีระบบแนะนำวิธีแก้ไข (fix suggestion, upgrade dependency)
+สามารถ integrate กับ GitHub pipeline ให้ scan อัตโนมัติเมื่อ push code
+สรุป: Snyk ช่วยให้ CI/CD pipeline ปลอดภัยมากขึ้นโดยตรวจหาช่องโหว่ตั้งแต่ขั้นตอน build
