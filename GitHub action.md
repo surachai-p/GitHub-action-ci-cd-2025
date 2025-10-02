@@ -1581,10 +1581,36 @@ git push origin feature/test-pr
 ---
 
 ## คำถามท้ายการทดลอง
+```
 1. docker compose คืออะไร มีความสำคัญอย่างไร
 
+  - คือ คำสั่งที่เอาไว้สร้าง container หลายๆอันขึ้นมาพร้อมกัน โดยใช้คำสั่งเดียว
+  
+      -> มีความสำคัญโดยลดความซับซ้อน จากการที่ต้องรัน Container หลายตัว
+```
+
+---
+
+```
 2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
+
+  - คือ ชุดขั้นตอนอัตโนมัติที่กำหนดไว้ใน GitHub Actions เพื่อจัดการกระบวนการพัฒนาซอฟต์แวร์ตั้งแต่โค้ดถูกเขียนจนถึงการนำไปใช้งานจริงใน Production โดยอัตโนมัติ
+
+      -> เกี่ยวข้องกับ CI/CD ที่ GitHub Pipeline ก็คือ เครื่องจักรที่ทำ CI/CD ให้เเบบอัตโนมัติบน GitHub
+```
+
+---
+
+```
 3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
+
+  - volumes เก็บข้อมูล ถาวร ของ container
+  - networks จัดการการ เชื่อมต่อระหว่าง container ให้ติดต่อกันได้อย่างปลอดภัย
+  - healthcheck ตรวจสอบว่า container ทำงานปกติหรือไม่
+```
+
+---
+
 4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
 ```yaml
 jobs:
@@ -1607,6 +1633,17 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 ```
+```
+  - jobs → test : กำหนดงานชื่อ Run Tests
+    runs-on : รันบน VM ubuntu-latest
+    services → postgres : สร้าง container PostgreSQL สำหรับทดสอบ
+    image : ใช้ postgres:16-alpine
+    env : กำหนด user, password, database
+    ports : แมพ port 5432 ของ container ↔ host
+    options/healthcheck : ตรวจสอบว่า PostgreSQL พร้อมใช้งาน ก่อนรัน test (pg_isready)
+```
+---
+
 5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
 ```yaml
     steps:
@@ -1619,4 +1656,23 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
 ```
+```
+  - uses : actions/checkout@v4
+      โค้ดโปรเจคจาก GitHub repo มายัง runner เพื่อให้ขั้นตอนต่อไปใช้งานได้
+  - uses : actions/setup-python@v5
+      ติดตั้ง Python เวอร์ชันที่กำหนด บน runner พร้อมตั้งค่า cache ของ pip เพื่อรัน Python script หรือ test ได้
+```
+---
+```
 6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+
+  - Snyk คือ เครื่องมือความปลอดภัยสำหรับซอฟต์แวร์ ช่วยตรวจจับช่องโหว่และปัญหาด้านความปลอดภัยในโค้ด, dependencies, container, และ Infrastructure as Code
+
+    -> มีความสามารถอย่างไรบ้าง
+        - สแกน dependencies → หาช่องโหว่ใน libraries/packages
+        - สแกน container → ตรวจ Docker image ว่าปลอดภัยไหม
+        - สแกนโค้ด (SAST) → ตรวจช่องโหว่ใน source code
+        - สแกน Infrastructure as Code → ตรวจ config cloud/infra
+        - แนะนำวิธีแก้ไข → update/patch dependencies ให้ปลอดภัย
+        - รวมกับ CI/CD ได้ง่าย → ใช้ใน GitHub, GitLab, pipelines
+```
