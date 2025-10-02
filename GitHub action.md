@@ -1039,7 +1039,7 @@ curl -s http://localhost:5000/ | python3 -m json.tool
 
 ```bash
 # เข้าไปใน PostgreSQL container
-docker compose exec db psql -U user
+docker compose exec db psql -U user -d mydb
 
 ```sql
 #### ทดสอบคำสั่ง SQL
@@ -1142,7 +1142,10 @@ docker system prune -f
 - [ ] Database และ Redis เชื่อมต่อได้
 - [ ] 
 ```bash
-## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
+<img width="1919" height="1012" alt="image" src="https://github.com/user-attachments/assets/ea4cfdf9-b33e-4aec-8459-6bfcab31ba32" />
+<img width="808" height="218" alt="Screenshot 2025-10-02 144121" src="https://github.com/user-attachments/assets/c4583837-41d7-4f48-b79c-11b058e3c67d" />
+<img width="707" height="235" alt="Screenshot 2025-10-02 144127" src="https://github.com/user-attachments/assets/b5389597-5f06-448c-a5ce-6d139df3ec14" />
+
 
 ```
 
