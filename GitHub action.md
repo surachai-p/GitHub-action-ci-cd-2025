@@ -1604,18 +1604,12 @@ GitHub Pipeline คือ Workflow ที่เราสร้างบน GitHu
 4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
 
 
-```ในไฟล์ docker compose ส่วนของ volumes ใช้เก็บข้อมูลให้คงอยู่แม้ Container ถูกลบ networks ใช้เชื่อมต่อ Service ต่าง ๆ ให้คุยกันได้ และ healthcheck ใช้ตรวจสอบสถานะของ Container ว่าพร้อมใช้งานหรือไม่ เพื่อให้ Service อื่น ๆ รอจนกว่าจะพร้อมก่อนทำงานต่อ
-```
-5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
-```yaml
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+ในโค้ด YAML jobs: test: คือการสร้างงานชื่อ Run Tests โดยรันบน ubuntu-latest และมี services คือ postgres และ redis ที่ถูกกำหนดให้ใช้งานในขั้นตอนการทดสอบ ส่วน options ที่ใช้ health-cmd, health-interval, health-timeout, health-retries คือการกำหนดวิธีตรวจสอบว่าสถานะ Database พร้อมทำงานหรือยัง
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          cache: 'pip'
-```
+5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
+
+ในส่วน uses: actions/checkout@v4 คือการสั่งให้ Workflow ดาวน์โหลดโค้ดจาก GitHub Repo ลงมาที่เครื่อง Runner และ uses: actions/setup-python@v5 คือการติดตั้งและตั้งค่า Python เวอร์ชันที่เราต้องการใช้งาน พร้อม Cache เพื่อลดเวลาในการติดตั้ง dependencies
+
 6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+
+Snyk คือเครื่องมือสำหรับตรวจสอบช่องโหว่ด้านความปลอดภัยของโค้ดและ dependency ที่เราใช้งาน มีความสามารถทั้งการสแกนช่องโหว่ของไลบรารี ตรวจสอบโค้ดเบื้องต้น รวมถึงติดตามและแจ้งเตือนเมื่อ dependency ที่เราใช้มีการค้นพบช่องโหว่ใหม่
