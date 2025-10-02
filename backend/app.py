@@ -22,4 +22,8 @@ def health():
     })
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    # Use environment variable for debug mode in production
+    debug_mode = os.getenv('FLASK_DEBUG', 'False').lower() == 'true'
+    # Use environment variable for host binding
+    host = os.getenv('FLASK_HOST', '127.0.0.1')
+    app.run(host=host, port=5000, debug=debug_mode)

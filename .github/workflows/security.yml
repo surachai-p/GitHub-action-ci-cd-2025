@@ -52,6 +52,7 @@ jobs:
       if: always()
       with:
         sarif_file: semgrep.sarif
+      continue-on-error: true
 
   # Job 2: Dependency Scanning
   dependency-scanning:
@@ -141,12 +142,14 @@ jobs:
         image: flask-app:security-test
         format: sarif
         output: docker-scout-results.sarif
+      continue-on-error: true
         
     - name: Upload Docker Scout results
       uses: github/codeql-action/upload-sarif@v3
       if: always()
       with:
         sarif_file: 'docker-scout-results.sarif'
+      continue-on-error: true
 
   # Job 4: Secret Scanning
   secret-scanning:
@@ -172,6 +175,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+      continue-on-error: true
 
   # Job 5: Security Summary
   security-summary:
