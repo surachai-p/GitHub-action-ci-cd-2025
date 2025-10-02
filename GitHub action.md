@@ -1039,7 +1039,7 @@ curl -s http://localhost:5000/ | python3 -m json.tool
 
 ```bash
 # เข้าไปใน PostgreSQL container
-docker compose exec db psql -U user
+docker compose exec db psql -U user -d mydb
 
 ```sql
 #### ทดสอบคำสั่ง SQL
@@ -1133,18 +1133,17 @@ docker system prune -f
 
 ### Checklist ก่อนไปขั้นตอนถัดไป:
 
-- [ ] ไฟล์ทั้งหมดถูกสร้างครบ
-- [ ] .env มี passwords ที่ปลอดภัย
-- [ ] `docker compose config` ไม่มี error
-- [ ] Services ทั้งหมด status เป็น "Up" และ "healthy"
-- [ ] API endpoints ตอบกลับถูกต้อง
-- [ ] Tests ผ่านทั้งหมด
-- [ ] Database และ Redis เชื่อมต่อได้
-- [ ] 
-```bash
-## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
+- [ ✓ ] ไฟล์ทั้งหมดถูกสร้างครบ
+- [ ✓ ] .env มี passwords ที่ปลอดภัย
+- [ ✓ ] `docker compose config` ไม่มี error
+- [ ✓ ] Services ทั้งหมด status เป็น "Up" และ "healthy"
+- [ ✓ ] API endpoints ตอบกลับถูกต้อง
+- [ ✓ ] Tests ผ่านทั้งหมด
+- [ ✓ ] Database และ Redis เชื่อมต่อได้
 
-```
+<img width="1919" height="1012" alt="image" src="https://github.com/user-attachments/assets/ea4cfdf9-b33e-4aec-8459-6bfcab31ba32" />
+<img width="808" height="218" alt="Screenshot 2025-10-02 144121" src="https://github.com/user-attachments/assets/c4583837-41d7-4f48-b79c-11b058e3c67d" />
+<img width="707" height="235" alt="Screenshot 2025-10-02 144127" src="https://github.com/user-attachments/assets/b5389597-5f06-448c-a5ce-6d139df3ec14" />
 
 ## การทดลองที่ 2: สร้าง GitHub Actions Workflow
 
@@ -1529,10 +1528,8 @@ git push origin main
 # ตรวจสอบผลลัพธ์ใน GitHub Actions 
 ```
 ## บันทึกรูปผลการทดลอง หน้า GitHub Actions
-```bash
+<img width="1418" height="371" alt="image" src="https://github.com/user-attachments/assets/3462c57f-17e9-4580-a68c-6aa1fa002b67" />
 
-
-```
 
 #### ขั้นตอนที่ 5: ทดสอบ Pull Request
 
@@ -1547,10 +1544,8 @@ git push origin feature/test-pr
 # ตรวจสอบ workflow การทำงานและ comment ที่ถูกสร้าง
 ```
 ## บันทึกรูปผลการทดลอง 
-```bash
+<img width="1065" height="552" alt="image" src="https://github.com/user-attachments/assets/baba725f-fa2d-43d4-9c22-e46b6c9e858d" />
 
-
-```
 
 
 ---
@@ -1586,8 +1581,14 @@ git push origin feature/test-pr
 
 ## คำถามท้ายการทดลอง
 1. docker compose คืออะไร มีความสำคัญอย่างไร
+- คือเครื่องมือจัดการ container หลายตัวพร้อมกันผ่านไฟล์ YAML มีความสำคัญในการทำให้ระบบซับซ้อนรันได้ง่ายและเป็นมาตรฐานเดียวกัน
+
 2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
+- คือขั้นตอนการทำงานอัตโนมัติบน GitHub Actions ซึ่งเกี่ยวข้องกับ CI/CD เพราะช่วย build, test และ deploy โค้ดได้ต่อเนื่อง
+
 3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
+- Volumes เก็บข้อมูลถาวร, Networks เชื่อมต่อ service ต่าง ๆ และ Healthcheck ใช้ตรวจสอบว่าบริการพร้อมใช้งานจริง
+
 4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
 ```yaml
 jobs:
@@ -1610,6 +1611,8 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 ```
+- ในโค้ดนี้ job ชื่อ test จะถูกรันบนเครื่องเสมือน ubuntu-latest และมีการกำหนด service postgres โดยใช้ image postgres:16-alpine พร้อมตั้งค่า environment (user, password, db) และเปิดพอร์ต 5432 เพื่อให้ job สามารถเชื่อมต่อฐานข้อมูลได้
+
 5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
 ```yaml
     steps:
@@ -1622,4 +1625,9 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
 ```
+- actions/checkout@v4 มีหน้าที่ดึงซอร์สโค้ดจาก GitHub Repository มายังเครื่อง runner ของ GitHub Actions ทำให้ pipeline สามารถเข้าถึงไฟล์โค้ดทั้งหมดเพื่อทำการ build หรือทดสอบได้
+ส่วน actions/setup-python@v5 ใช้ติดตั้ง Python ตามเวอร์ชันที่กำหนด พร้อมรองรับการ cache dependency จาก pip เพื่อเร่งความเร็วการรัน workflow และทำให้การทดสอบหรือ deploy ด้วย Python มีสภาพแวดล้อมที่เหมือนกันทุกครั้ง
+
 6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+- คือแพลตฟอร์มด้าน Security ที่สามารถสแกนหาช่องโหว่ใน dependency, Docker image, Infrastructure as Code (IaC) และ source code โดยทำงานอัตโนมัติร่วมกับ CI/CD pipeline
+
