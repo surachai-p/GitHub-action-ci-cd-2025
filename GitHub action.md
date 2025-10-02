@@ -1617,7 +1617,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 ```
-5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
+5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร  actions/checkout@v4 ใช้ดึงโค้ดจาก GitHub repository มาให้ runner ใช้งาน ส่วน actions/setup-python@v5 ใช้ติดตั้ง Python เวอร์ชันที่กำหนดพร้อมระบบแคช pip เพื่อเร่งการติดตั้ง dependencies
 ```yaml
     steps:
       - name: Checkout code
@@ -1629,4 +1629,4 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
 ```
-6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง Snyk คือเครื่องมือสแกนความปลอดภัยที่ตรวจช่องโหว่ใน dependencies, โค้ด, และ container image พร้อมสร้างรายงานและแจ้งเตือนอัตโนมัติผ่าน CI/CD pipeline
