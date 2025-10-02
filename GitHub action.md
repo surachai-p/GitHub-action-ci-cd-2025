@@ -1590,9 +1590,14 @@ git push origin feature/test-pr
 ---
 
 ## คำถามท้ายการทดลอง
-1. docker compose คืืออะไร มีความสำคัญอย่างไร
+1. docker compose คืออะไร มีความสำคัญอย่างไร
+   ตอบ จัดการและรันหลาย Docker containers พร้อมกันได้อย่างสะดวก
 2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
+   ตอบ GitHub Pipeline คือเครื่องมือที่ทำให้ CI/CD เกิดขึ้นได้จริงใน GitHub จัดการขั้นตอนการพัฒนาและส่งมอบซอฟต์แวร์แบบต่อเนื่อง 
 3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
+   ตอบ volumes ใช้เก็บข้อมูลที่ต้องการคงอยู่แม้ container ถูกลบหรือ restart
+       networks ใช้แยกกลุ่ม container ออกจากกัน เช่น frontend กับ backend
+       healthcheck ใช้ตรวจสอบว่า container ทำงานปกติหรือไม่
 4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
 ```yaml
 jobs:
@@ -1615,6 +1620,10 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 ```
+ตอบ  ตั้งค่าฐานข้อมูลด้วย user, password, และชื่อ database ผ่าน environment variables
+     เปิดพอร์ต 5432 เพื่อให้โค้ดทดสอบเชื่อมต่อกับ PostgreSQL ได้
+     กำหนด healthcheck เพื่อเช็คว่า PostgreSQL พร้อมใช้งานก่อนเริ่มทดสอบจริง ๆ
+     ช่วยให้การทดสอบใน pipeline มีความเสถียรและแม่นยำมากขึ้น เพราะจะรันเมื่อฐานข้อมูลพร้อมแล้วเท่านั้น
 5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
 ```yaml
     steps:
@@ -1627,4 +1636,11 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
 ```
+ตอบ uses: actions/checkout@v4 	เป็นการเรียกใช้งาน Action ที่ชื่อว่า checkout เวอร์ชัน 4
+        	ดึงโค้ดจาก repository ที่ workflow นี้ทำงานอยู่ มาไว้ใน runner
+          uses: actions/setup-python@v5 เป็นการเรียกใช้งาน Action ที่ชื่อว่า checkout เวอร์ชัน 5
+          เปิดการ cache สำหรับ pip เพื่อให้การติดตั้งแพ็กเกจเร็วขึ้นในครั้งถัดไป
+          
 6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+ตอบ เครื่องมือด้านความปลอดภัยสำหรับนักพัฒนา ที่ช่วยตรวจสอบและแก้ไขช่องโหว่ในโค้ด
+    สามารถตรวจสอบช่องโหว่ ผสานกับ CI/CD 
