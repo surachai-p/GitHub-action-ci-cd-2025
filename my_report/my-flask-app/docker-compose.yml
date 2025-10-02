@@ -14,7 +14,7 @@ services:
       redis:
         condition: service_healthy        # รอจนกว่า redis จะ healthy
     volumes:
-      - .:/app
+      - ./backend:/app
     restart: unless-stopped
     networks:
       - app-network
