@@ -1586,8 +1586,18 @@ git push origin feature/test-pr
 
 ## คำถามท้ายการทดลอง
 1. docker compose คืออะไร มีความสำคัญอย่างไร
+คือเครื่องมือของ Docker ที่ช่วยกำหนด เรียกใช้งาน จัดการ container หลายๆ ตัวที่ทำงานร่วมกันได้ง่าย
+ความสำคัญของ Docker Compose
+ง่ายในการจัดการหลาย container
+ลดการพึ่งพามือ: ไม่ต้องพิมพ์คำสั่ง docker ยาวๆ หลายบรรทัด ใช้ร่วมกับ CI/CD ได้ง่าย: Build และ deploy เป็นระบบ ช่วยให้ dev และ production environment เหมือนกัน
 2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
+   GitHub Actions เป็นระบบ Automation ของ GitHub สำหรับรันคำสั่งต่างๆ อัตโนมัติรันการทดสอบอัตโนมัติ Build Docker image Deploy ไปยัง server ตรวจสอบโค้ด หรือ lint
+   CI (Continuous Integration) การทดสอบรวมโค้ดอัตโนมัติ
+   CD (Continuous Delivery/Deployment) การ deploy โค้ดอัตโนมัติ
 3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
+   volumes - การจัดการข้อมูลถาวร ใช้สำหรับ เก็บข้อมูลแบบถาวร แม้ container จะถูกลบ เช่นฐานข้อมูล (PostgreSQL, MySQL) → ถ้าไม่มี volume ข้อมูลจะหายเมื่อ container หยุด
+   networks – การเชื่อมต่อระหว่าง container ช่วยให้ container หลายตัว สื่อสารกันได้ ถ้าอยู่ใน network เดียวกัน → เรียกกันได้ด้วยชื่อ service
+   healthcheck – ตรวจสอบสถานะของ container ใช้เช็กว่า container หรือ service ยังทำงานอยู่หรือไม่ ถ้าไม่ healthy → Docker สามารถพยายาม restart หรือแจ้งเตือนได้
 4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
 ```yaml
 jobs:
