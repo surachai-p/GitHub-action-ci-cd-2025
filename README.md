@@ -7,6 +7,9 @@
 ### Lab 1: Docker Compose
 ![Docker Compose Results](IMG/Screenshot1.png)
 
+### Lab 1: Docker Compose - Terminal Results
+![Docker Compose Terminal Results](IMG/Screenshot%202568-10-02%20at%2012.02.51.png)
+
 ### Lab 2: Flask CI/CD Pipeline
 ![Flask CI/CD Pipeline](IMG/FlaskCICD.png)
 
