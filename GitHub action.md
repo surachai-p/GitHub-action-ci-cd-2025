@@ -1133,18 +1133,21 @@ docker system prune -f
 
 ### Checklist ก่อนไปขั้นตอนถัดไป:
 
-- [ ] ไฟล์ทั้งหมดถูกสร้างครบ
-- [ ] .env มี passwords ที่ปลอดภัย
-- [ ] `docker compose config` ไม่มี error
-- [ ] Services ทั้งหมด status เป็น "Up" และ "healthy"
-- [ ] API endpoints ตอบกลับถูกต้อง
-- [ ] Tests ผ่านทั้งหมด
-- [ ] Database และ Redis เชื่อมต่อได้
+- [ ✓ ] ไฟล์ทั้งหมดถูกสร้างครบ
+- [ ✓ ] .env มี passwords ที่ปลอดภัย
+- [ ✓ ] `docker compose config` ไม่มี error
+- [ ✓ ] Services ทั้งหมด status เป็น "Up" และ "healthy"
+- [ ✓ ] API endpoints ตอบกลับถูกต้อง
+- [ ✓ ] Tests ผ่านทั้งหมด
+- [ ✓ ] Database และ Redis เชื่อมต่อได้
 - [ ] 
 ```bash
 ## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
 
 ```
+<img width="954" height="352" alt="image" src="https://github.com/user-attachments/assets/a65d0d16-c8f2-49ef-915c-9ba02a70def2" />
+<img width="954" height="373" alt="image" src="https://github.com/user-attachments/assets/97d86975-ac0d-4ae1-9dca-8f71088c5784" />
+
 
 ## การทดลองที่ 2: สร้าง GitHub Actions Workflow
 
@@ -1530,6 +1533,7 @@ git push origin main
 ```
 ## บันทึกรูปผลการทดลอง หน้า GitHub Actions
 ```bash
+<img width="1919" height="777" alt="image" src="https://github.com/user-attachments/assets/968ca483-be1d-4c31-8da0-ce2b7c9589c5" />
 
 
 ```
@@ -1548,6 +1552,7 @@ git push origin feature/test-pr
 ```
 ## บันทึกรูปผลการทดลอง 
 ```bash
+<img width="550" height="783" alt="image" src="https://github.com/user-attachments/assets/24e63736-e984-438f-bef4-f2170f808aab" />
 
 
 ```
