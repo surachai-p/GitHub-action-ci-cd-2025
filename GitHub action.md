@@ -1140,7 +1140,7 @@ docker system prune -f
 - [ / ] API endpoints ตอบกลับถูกต้อง
 - [ / ] Tests ผ่านทั้งหมด
 - [ / ] Database และ Redis เชื่อมต่อได้
-```
+
 ## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
 
 <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/6e6f6d41-9ba2-48ba-9e61-99fda61440d0" />
