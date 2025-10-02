@@ -1561,6 +1561,7 @@ git push origin feature/test-pr
 
 
 ```
+<img width="969" height="458" alt="image" src="https://github.com/user-attachments/assets/7f06c8f1-6836-4a7b-9146-457427f1021e" />
 
 
 ---
