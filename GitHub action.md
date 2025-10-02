@@ -1140,9 +1140,11 @@ docker system prune -f
 - [ ] API endpoints ตอบกลับถูกต้อง
 - [ ] Tests ผ่านทั้งหมด
 - [ ] Database และ Redis เชื่อมต่อได้
-```
-## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
 
+## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
+![alt text](image.png)
+![alt text](image-1.png)
+![alt text](image-2.png)
 
 ### การทดลองที่ 2: สร้าง GitHub Actions Workflow
 
@@ -1525,12 +1527,12 @@ git commit -m "Add CI/CD pipeline"
 git push origin main
 
 # ตรวจสอบผลลัพธ์ใน GitHub Actions 
-```
+
 ## บันทึกรูปผลการทดลอง หน้า GitHub Actions
-```bash
+
+![alt text](image-3.png)
 
 
-```
 
 #### ขั้นตอนที่ 5: ทดสอบ Pull Request
 
@@ -1545,8 +1547,8 @@ git push origin feature/test-pr
 # ตรวจสอบ workflow การทำงานและ comment ที่ถูกสร้าง
 ```
 ## บันทึกรูปผลการทดลอง 
-```bash
 
+![alt text](image-4.png)
 
 ```
 
@@ -1584,40 +1586,30 @@ git push origin feature/test-pr
 
 ## คำถามท้ายการทดลอง
 1. docker compose คืืออะไร มีความสำคัญอย่างไร
-2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
-3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
-4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
-```yaml
-jobs:
-  test:
-    name: Run Tests
-    runs-on: ubuntu-latest
-    
-    services:
-      postgres:
-        image: postgres:16-alpine
-        env:
-          POSTGRES_PASSWORD: testpass
-          POSTGRES_USER: testuser
-          POSTGRES_DB: testdb
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U testuser"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-```
-5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
-```yaml
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          cache: 'pip'
-```
+
+Docker Compose คือ เครื่องมือที่ใช้จัดการ Container หลายตัวพร้อมกัน โดยเราสามารถกำหนด Service ต่าง ๆ เช่น web, database, redis ไว้ในไฟล์เดียว แล้วใช้คำสั่งเดียวในการ run ได้ มีความสำคัญเพราะช่วยให้การพัฒนาและทดสอบระบบที่มีหลายส่วนประกอบทำได้สะดวกและสอดคล้องกับการทำงานจริง
+
+
+2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
+
+GitHub Pipeline คือ Workflow ที่เราสร้างบน GitHub Actions เพื่อกำหนดขั้นตอนการทำงาน เช่น การทดสอบ (Test) การ Build และการ Deploy ซึ่งเกี่ยวข้องกับ CI/CD โดยตรง เพราะ CI/CD คือกระบวนการที่เน้นการทดสอบและนำโค้ดขึ้นใช้งานอัตโนมัติทุกครั้งที่มีการเปลี่ยนแปลงโค้ด
+
+
+3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
+
+ในไฟล์ docker compose ส่วนของ volumes ใช้เก็บข้อมูลให้คงอยู่แม้ Container ถูกลบ networks ใช้เชื่อมต่อ Service ต่าง ๆ ให้คุยกันได้ และ healthcheck ใช้ตรวจสอบสถานะของ Container ว่าพร้อมใช้งานหรือไม่ เพื่อให้ Service อื่น ๆ รอจนกว่าจะพร้อมก่อนทำงานต่อ
+
+
+4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
+
+
+ในโค้ด YAML jobs: test: คือการสร้างงานชื่อ Run Tests โดยรันบน ubuntu-latest และมี services คือ postgres และ redis ที่ถูกกำหนดให้ใช้งานในขั้นตอนการทดสอบ ส่วน options ที่ใช้ health-cmd, health-interval, health-timeout, health-retries คือการกำหนดวิธีตรวจสอบว่าสถานะ Database พร้อมทำงานหรือยัง
+
+5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
+
+ในส่วน uses: actions/checkout@v4 คือการสั่งให้ Workflow ดาวน์โหลดโค้ดจาก GitHub Repo ลงมาที่เครื่อง Runner และ uses: actions/setup-python@v5 คือการติดตั้งและตั้งค่า Python เวอร์ชันที่เราต้องการใช้งาน พร้อม Cache เพื่อลดเวลาในการติดตั้ง dependencies
+
 6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+
+Snyk คือเครื่องมือสำหรับตรวจสอบช่องโหว่ด้านความปลอดภัยของโค้ดและ dependency ที่เราใช้งาน มีความสามารถทั้งการสแกนช่องโหว่ของไลบรารี ตรวจสอบโค้ดเบื้องต้น รวมถึงติดตามและแจ้งเตือนเมื่อ dependency ที่เราใช้มีการค้นพบช่องโหว่ใหม่
