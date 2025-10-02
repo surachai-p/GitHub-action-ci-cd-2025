@@ -1133,16 +1133,19 @@ docker system prune -f
 
 ### Checklist ก่อนไปขั้นตอนถัดไป:
 
-- [ ] ไฟล์ทั้งหมดถูกสร้างครบ
-- [ ] .env มี passwords ที่ปลอดภัย
-- [ ] `docker compose config` ไม่มี error
-- [ ] Services ทั้งหมด status เป็น "Up" และ "healthy"
-- [ ] API endpoints ตอบกลับถูกต้อง
-- [ ] Tests ผ่านทั้งหมด
-- [ ] Database และ Redis เชื่อมต่อได้
-- [ ] 
-```bash
+- [ได้ ] ไฟล์ทั้งหมดถูกสร้างครบ
+- [ ได้] .env มี passwords ที่ปลอดภัย
+- [ ได้] `docker compose config` ไม่มี error
+- [ ได้] Services ทั้งหมด status เป็น "Up" และ "healthy"
+- [ได้ ] API endpoints ตอบกลับถูกต้อง
+- [ได้ ] Tests ผ่านทั้งหมด
+- [ได้ ] Database และ Redis เชื่อมต่อได้
+- [ ไม่ได้] 
+bash
 ## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
+<img width="1400" height="656" alt="image" src="https://github.com/user-attachments/assets/96637ad7-4053-4054-83a5-6749803940d2" />
+<img width="1253" height="646" alt="image" src="https://github.com/user-attachments/assets/5e3481de-084e-40e8-82ef-e2a2be13ae16" />
+
 
 ```
 
@@ -1528,7 +1531,9 @@ git push origin main
 
 # ตรวจสอบผลลัพธ์ใน GitHub Actions 
 ```
-## บันทึกรูปผลการทดลอง หน้า GitHub Actions
+## บันทึกรูปผลการทดลอง หน้า GitHub Actions\
+<img width="1912" height="919" alt="image" src="https://github.com/user-attachments/assets/2b470cd1-207d-473e-bdbc-e77013746448" />
+
 ```bash
 
 
@@ -1547,7 +1552,8 @@ git push origin feature/test-pr
 # ตรวจสอบ workflow การทำงานและ comment ที่ถูกสร้าง
 ```
 ## บันทึกรูปผลการทดลอง 
-```bash
+
+<img width="1200" height="575" alt="image" src="https://github.com/user-attachments/assets/5918db7a-ec39-44a1-9eaf-a69a54cd7920" />
 
 
 ```
@@ -1586,8 +1592,17 @@ git push origin feature/test-pr
 
 ## คำถามท้ายการทดลอง
 1. docker compose คืออะไร มีความสำคัญอย่างไร
+Docker Compose คือเครื่องมือที่ใช้ในการจัดการการรันแอปพลิเคชันที่ประกอบด้วยหลายๆ คอนเทนเนอร์ Docker ด้วยการกำหนดค่าผ่านไฟล์ docker-compose.yml โดยไม่ต้องตั้งค่าแต่ละคอนเทนเนอร์แยกกัน
+ความสำคัญ การจัดการหลายคอนเทนเนอร์: หากแอปพลิเคชันของคุณใช้หลายคอนเทนเนอร์ (เช่น เว็บเซิร์ฟเวอร์, ฐานข้อมูล, ระบบแคช) Docker Compose ช่วยให้คุณสามารถจัดการและรันทั้งหมดในคำสั่งเดียว
 2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
+GitHub Pipeline คือกระบวนการอัตโนมัติที่ใช้ในการสร้างและทดสอบซอฟต์แวร์ โดยจะทำงานเมื่อมีการเปลี่ยนแปลงในโค้ด (เช่น การ push โค้ดใหม่เข้า repository) ผ่านการใช้ GitHub Actions
+CI/CD ย่อมาจาก Continuous Integration (CI) และ Continuous Deployment/Delivery (CD)
+CI (Continuous Integration): กระบวนการที่ทำให้โค้ดที่พัฒนาใหม่ถูกบูรณาการเข้ากับโค้ดหลักอย่างต่อเนื่อง โดยอัตโนมัติผ่านการทดสอบต่างๆ เพื่อให้มั่นใจว่าโค้ดใหม่ไม่ทำให้เกิดปัญหาในแอป
+CD (Continuous Delivery/Deployment): การนำโค้ดที่ผ่านการทดสอบแล้วไปใช้งานจริง (Delivery) หรือ deploy ไปยังเซิร์ฟเวอร์ (Deployment) โดยอัตโนมัติ
+GitHub Pipeline จึงเป็นส่วนหนึ่งของกระบวนการ CI/CD ที่ช่วยให้สามารถทดสอบและส่งมอบซอฟต์แวร์ได้เร็วขึ้น
 3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
+Volumes ใช้ในการแชร์ข้อมูลระหว่างคอนเทนเนอร์และเครื่องโฮสต์ (host machine) หรือระหว่างคอนเทนเนอร์ด้วยกัน
+ความสำคัญ: ช่วยให้ข้อมูลที่คอนเทนเนอร์ใช้งานไม่สูญหายเมื่อคอนเทนเนอร์หยุดทำงาน เช่น ฐานข้อมูลหรือไฟล์คอนฟิก
 4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
 ```yaml
 jobs:
@@ -1610,6 +1625,13 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 ```
+jobs: ประกอบด้วยงานที่ GitHub Actions จะทำ เช่น การทดสอบ (test)
+test: คือ job ที่ชื่อว่า test ซึ่งจะทำการรันทดสอบบน ubuntu-latest
+services: คือการระบุบริการเพิ่มเติมที่ต้องการในขั้นตอนนี้ ในที่นี้คือ PostgreSQL database
+image: postgres:16-alpine: ใช้ Docker image ของ PostgreSQL เวอร์ชัน 16 ที่เป็นแบบ alpine
+env: กำหนด environment variables สำหรับเชื่อมต่อ PostgreSQL
+ports: กำหนดการเปิดพอร์ต 5432 เพื่อให้บริการจาก PostgreSQL สามารถเข้าถึงได้จากภายนอก
+options: กำหนด healthcheck เพื่อให้ตรวจสอบว่าบริการ PostgreSQL ทำงานปกติหรือไม่
 5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
 ```yaml
     steps:
@@ -1622,4 +1644,17 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
 ```
+uses: actions/checkout@v4:
+ใช้สำหรับเช็คเอาท์ (checkout) โค้ดจาก GitHub repository เพื่อให้โค้ดสามารถใช้งานได้ในขั้นตอนถัดไป
+จะดาวน์โหลดโค้ดจาก GitHub มาใน CI/CD pipeline เพื่อทำการทดสอบหรือ build ต่อไป
+uses: actions/setup-python@v5:
+ใช้เพื่อ setup Python ใน workflow
+ในกรณีนี้จะใช้เวอร์ชัน Python ที่กำหนดในตัวแปร PYTHON_VERSION (ตัวแปรนี้สามารถกำหนดไว้ใน environment หรือใน yaml configuration)
 6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+Snyk คือเครื่องมือที่ใช้ในการตรวจจับช่องโหว่ในโค้ด, คอนเทนเนอร์, และ Dependencies ที่ใช้ในโปรเจกต์ซอฟต์แวร์
+ความสามารถของ Snyk:
+การตรวจสอบช่องโหว่: ตรวจสอบช่องโหว่ในโค้ดและ dependencies ต่างๆ เช่น ในแพ็กเกจของ Python, Node.js, และ Docker images
+
+
+
+### link repositoies https://github.com/sarasinee2005/ci-cd.git 
