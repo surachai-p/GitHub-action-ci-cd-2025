@@ -1554,10 +1554,8 @@ git push origin feature/test-pr
 ```
 ## บันทึกรูปผลการทดลอง 
 bash
-<img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/7fb5ae22-3233-45b9-ab70-0667bdea00ea" />
 
----
-
+<img width="1919" height="1078" alt="image" src="https://github.com/user-attachments/assets/8c977cb3-7ac3-49a0-b8ed-27960f063836" />
 
 ## Resources และเอกสารอ้างอิง
 
@@ -1589,8 +1587,19 @@ bash
 
 ## คำถามท้ายการทดลอง
 1. docker compose คืออะไร มีความสำคัญอย่างไร
+
+ไฟล์และเครื่องมือใช้จัดการหลาย container พร้อมกันในโปรเจกต์เดียว เช่น web + db + redis โดยใช้คำสั่งเดียว (docker compose up) ช่วยให้พัฒนาและ deploy ได้ง่ายขึ้น
+
 2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
+
+workflow อัตโนมัติ ที่ GitHub Actions ใช้ในการทำ CI/CD เช่น รันทดสอบ (CI) และ build/deploy แอป (CD) ทุกครั้งที่มีการ push โค้ด
+
 3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
+
+volumes: เก็บข้อมูลถาวร เช่น ฐานข้อมูล ไม่หายแม้ลบ container
+networks: ให้ container เชื่อมต่อกันในเครือข่ายเดียว
+healthcheck: ตรวจว่า container พร้อมทำงานจริงก่อนให้บริการ
+
 4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
 ```yaml
 jobs:
@@ -1613,6 +1622,8 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 ```
+- สำหรับรันทดสอบ โดยตั้งค่าให้ใช้ PostgreSQL ใน container เป็น service พร้อมกำหนด environment และ healthcheck เพื่อรอจนฐานข้อมูลพร้อมก่อนทดสอบ
+
 5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
 ```yaml
     steps:
@@ -1625,4 +1636,10 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
 ```
+
+actions/checkout@v4: ดึงโค้ดจาก repo มาใช้ใน workflow
+actions/setup-python@v5: ติดตั้ง Python เวอร์ชันที่ต้องการใน runner
+
 6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+
+เครื่องมือสแกนช่องโหว่ความปลอดภัยในโค้ด ไลบรารี และ Docker image ช่วยหาช่องโหว่และแนะนำวิธีแก้ เพื่อให้แอปปลอดภัยมากขึ้น
