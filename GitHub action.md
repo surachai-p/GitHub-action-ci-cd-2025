@@ -2,562 +2,127 @@
 
 ## วัตถุประสงค์
 เพื่อเตรียมความพร้อมในการเขียนไฟล์ YAML สำหรับ Docker Compose และ GitHub Actions 
-
----
-
-## ทฤษฎีก่อนการทดลอง
-## ส่วนที่ 1: ความรู้พื้นฐาน YAML
-
-### YAML คืออะไร?
-- **YAML** = YAML Ain't Markup Language
-- เป็นรูปแบบการเก็บข้อมูลที่อ่านได้ง่าย เหมาะสำหรับไฟล์คอนฟิกูเรชัน
-- ใช้การเว้นวรรค (indentation) แทนการใช้วงเล็บ
-- Case-sensitive (แยกตัวพิมพ์เล็กใหญ่)
-
-### กฎการเขียน YAML
-```yaml
-# นี่คือ comment (ความคิดเห็น)
-key: value                    # คู่ key-value พื้นฐาน
-number: 42                    # ตัวเลข
-boolean: true                 # boolean (true/false)
-list:                         # รายการ (array)
-  - item1
-  - item2
-  - item3
-nested:                       # nested object
-  child_key: child_value
-multiline: |                  # multi-line string
-  This is a
-  multi-line
-  string
-```
-
----
-
-## ส่วนที่ 2: Docker Compose YAML
-
-### ทฤษฎี Docker Compose
-Docker Compose เป็นเครื่องมือที่ใช้ในการจัดการแอปพลิเคชันที่ประกอบด้วยหลาย containers โดยใช้ไฟล์ YAML ในการกำหนดค่า
-
-### โครงสร้างพื้นฐาน docker-compose.yml (Modern)
-```yaml
-# Modern Docker Compose - ไม่ต้องระบุ version
-# ใช้ Compose Specification V2 อัตโนมัติ
-
-services:                   # กำหนด services ต่างๆ
-  service_name:             # ชื่อ service
-    # การกำหนดค่า service
-networks:                   # กำหนดเครือข่าย (optional)
-volumes:                    # กำหนด volumes (optional)
-```
-
-
-### ตัวอย่างที่ 1: Flask Application พื้นฐาน
-
-สร้างไฟล์ `docker-compose.yml`:
-
-```yaml
-# Modern Docker Compose - ไม่ต้องระบุ version
-
-services:
-  # Web Application Service
-  web:
-    build: .
-    container_name: flask_app
-    ports:
-      - "5000:5000"
-    environment:
-      - FLASK_ENV=development
-      - DATABASE_URL=postgresql://user:pass@db:5432/mydb
-    depends_on:
-      db:
-        condition: service_healthy        # รอจนกว่า db จะ healthy
-      redis:
-        condition: service_healthy        # รอจนกว่า redis จะ healthy
-    volumes:
-      - .:/app
-    restart: unless-stopped
-    networks:
-      - app-network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-
-  # Database Service
-  db:
-    image: postgres:16-alpine             # PostgreSQL 16 Alpine
-    container_name: postgres_db
-    environment:
-      POSTGRES_DB: mydb
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: pass             # ในการใช้งานจริงใช้ secrets
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-    restart: unless-stopped
-    networks:
-      - app-network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user -d mydb"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
-
-  # Redis Service
-  redis:
-    image: redis:7-alpine                 # Redis 7 Alpine
-    container_name: redis_cache
-    command: redis-server --appendonly yes
-    volumes:
-      - redis_data:/data
-    ports:
-      - "6379:6379"
-    restart: unless-stopped
-    networks:
-      - app-network
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
-
-networks:
-  app-network:
-    driver: bridge
-
-volumes:
-  postgres_data:
-    driver: local
-  redis_data:
-    driver: local
-```
-
-### คำอธิบายแต่ละส่วนใน Docker Compose
-
-#### Services
-แต่ละ service คือ container หนึ่งตัว:
-
-- **build**: สร้าง image จาก Dockerfile
-- **image**: ใช้ image ที่มีอยู่แล้ว (แนะนำใช้ Alpine variants)
-- **container_name**: กำหนดชื่อ container
-- **ports**: map port จาก host ไป container
-- **environment**: ตั้งค่าตัวแปรสภาพแวดล้อม
-- **depends_on**: กำหนดลำดับการเริ่มต้น service พร้อมเงื่อนไข
-  - `condition: service_healthy` - รอจนกว่า service จะผ่าน healthcheck
-  - `condition: service_started` - รอจนกว่า service จะเริ่มต้น
-- **volumes**: mount ข้อมูลระหว่าง host กับ container
-- **restart**: กำหนด restart policy
-- **networks**: เครือข่ายที่ container จะเข้าร่วม
-- **healthcheck**: ตรวจสอบสถานะสุขภาพของ service
-
-#### Health Checks (สำคัญมาก!)
-```yaml
-healthcheck:
-  test: ["CMD-SHELL", "pg_isready -U user"]  # คำสั่งตรวจสอบ
-  interval: 10s                               # ตรวจสอบทุก 10 วินาที
-  timeout: 5s                                 # timeout 5 วินาที
-  retries: 5                                  # ลองใหม่ 5 ครั้ง
-  start_period: 30s                          # รอ 30 วินาทีก่อนเริ่มตรวจสอบ
-```
-
-#### Networks และ Volumes
-- **Networks**: กำหนดเครือข่ายสำหรับให้ containers สื่อสารกัน
-- **Volumes**: จัดเก็บข้อมูลแบบถาวร ไม่หายเมื่อ container ปิด
-
-### คำสั่ง Docker Compose V2
-
-```bash
-# เริ่มต้น services ทั้งหมด
-docker compose up -d
-
-# ดู status ของ services
-docker compose ps
-
-# ดู logs
-docker compose logs -f
-
-# ดู logs เฉพาะ service
-docker compose logs web
-
-# ตรวจสอบ health status
-docker compose ps --format json | jq '.[].Health'
-
-# Restart service
-docker compose restart web
-
-# หยุด services
-docker compose down
-
-# หยุดและลบ volumes
-docker compose down -v
-
-# Validate configuration
-docker compose config
-
-# ดู services ที่กำหนดไว้
-docker compose config --services
-```
-
-**หมายเหตุ:** ใช้ `docker compose` (มีช่องว่าง) ไม่ใช่ `docker-compose` (มีขีด)
-
----
-
-## ส่วนที่ 3: GitHub Actions YAML
-
-### ทฤษฎี GitHub Actions
-GitHub Actions เป็นระบบ CI/CD ที่สร้างไว้ใน GitHub ใช้ไฟล์ YAML ในการกำหนด workflows ที่จะทำงานอัตโนมัติ
-
-### โครงสร้างพื้นฐาน .github/workflows/ci.yml
-```yaml
-name: Workflow Name           # ชื่อ workflow
-on:                          # กำหนดว่าเมื่อไหร่จะทำงาน
-  push:
-  pull_request:
-
-# SECURITY: จำกัดสิทธิ์ (Least Privilege)
-permissions:
-  contents: read
-  packages: write
-
-jobs:                        # กำหนด jobs ต่างๆ
-  job_name:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Step name
-        uses: action@version
-      - name: Another step
-        run: command
-```
-
-### ตัวอย่างที่ 2: CI/CD Pipeline สำหรับ Flask App
-
-สร้างไฟล์ `.github/workflows/ci-cd.yml`:
-
-```yaml
-name: Flask CI/CD Pipeline
-
-on:
-  push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ main ]
-
-env:
   PYTHON_VERSION: '3.9'
 
-# SECURITY: จำกัดสิทธิ์ตาม Least Privilege Principle
-permissions:
-  contents: read
-  packages: write
-  security-events: write
-  pull-requests: write
-  actions: read
+#### Step-by-step สำหรับ Windows (PowerShell)
 
-jobs:
-  # Job ที่ 1: ทดสอบโค้ด
-  test:
-    name: Run Tests
-    runs-on: ubuntu-latest
-    
-    services:
-      postgres:
-        image: postgres:16-alpine
-        env:
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U $POSTGRES_USER "
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-          
-      redis:
-        image: redis:7-alpine
-        ports:
-          - 6379:6379
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+**ขั้นตอนที่ 1: เตรียมโครงสร้างโปรเจค**
+> โครงสร้างและไฟล์ทั้งหมดใน `my-flask-app` ของคุณถูกสร้างครบแล้ว
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+**ขั้นตอนที่ 2: ตั้งค่า Environment Variables**
+1. คัดลอกไฟล์ template:
+```powershell
+Copy-Item .\my-flask-app\.env.example .\my-flask-app\.env
+```
+2. สร้างรหัสผ่านที่ปลอดภัย (ใน PowerShell):
+```powershell
+python -c "import secrets; print('POSTGRES_PASSWORD=' + secrets.token_urlsafe(24)); print('SECRET_KEY=' + secrets.token_urlsafe(32))"
+```
+นำค่าที่ได้ไปแก้ไขในไฟล์ `.env` ด้วย Notepad หรือ VS Code:
+```powershell
+notepad .\my-flask-app\.env
+# หรือ
+code .\my-flask-app\.env
+```
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          cache: 'pip'
+**ขั้นตอนที่ 3: ตรวจสอบและ Validate docker-compose.yml**
+```powershell
+cd .\my-flask-app
+docker compose config
+```
+ถ้าไม่มี error แสดงว่า YAML ถูกต้อง
 
-      - name: Install dependencies
-        run: |
-          cd backend
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+**ขั้นตอนที่ 4: สร้างและเริ่มต้น Services ด้วย Docker Compose**
+```powershell
+docker compose up -d --build
+```
+รอประมาณ 30 วินาทีให้ services พร้อม:
+```powershell
+Start-Sleep -Seconds 30
+```
 
-      - name: Set up test environment
-        run: |
-          echo "DATABASE_URL=postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@localhost:5432/${{ secrets.POSTGRES_DB }}" >> $GITHUB_ENV
-          echo "REDIS_URL=redis://localhost:6379" >> $GITHUB_ENV
-          echo "FLASK_ENV=testing" >> $GITHUB_ENV
+**ขั้นตอนที่ 5: ตรวจสอบสถานะและ logs**
+```powershell
+docker compose ps
+docker compose logs
+docker compose logs web
+docker compose logs db
+docker compose logs redis
+docker compose ps --format "table {{.Name}}\t{{.State}}\t{{.Health}}"
+```
 
-      - name: Wait for services
-        run: |
-          timeout 60 bash -c 'until pg_isready -h localhost -p 5432 -U ${{ secrets.POSTGRES_USER }}; do sleep 2; done'
-          echo "✅ PostgreSQL is ready!"
-          timeout 60 bash -c 'until redis-cli -h localhost -p 6379 ping | grep -q PONG; do sleep 2; done'
-          echo "✅ Redis is ready!"
-
-      - name: Run tests with coverage
-        run: |
-          cd backend
-          pytest tests/ -v --cov=. --cov-report=xml --cov-report=html
-        env:
-          DATABASE_URL: ${{ env.DATABASE_URL }}
-          SECRET_KEY: ${{ secrets.SECRET_KEY }}
-
-      - name: Upload coverage reports
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: coverage-report
-          path: backend/htmlcov/
-          retention-days: 5
-
-  # Job ที่ 2: Security Scanning ด้วย Snyk
-  security-snyk:
-    name: Snyk Security Scan
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          cache: 'pip'
-
-      - name: Install dependencies
-        run: |
-          cd backend
-          pip install -r requirements.txt
-
-      # SCA - Dependencies Scan
-      - name: Run Snyk Dependencies Scan
-        uses: snyk/actions/python@master
-        continue-on-error: true
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: --severity-threshold=high --file=backend/requirements.txt
-          command: test
-
-      # SAST - Code Scan
-      - name: Run Snyk Code Scan
-        uses: snyk/actions/python@master
-        continue-on-error: true
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: --severity-threshold=medium --sarif-file-output=snyk-code.sarif
-          command: code test
-
-      - name: Upload SARIF to GitHub Security
-        uses: github/codeql-action/upload-sarif@v3
-        if: always()
-        with:
-          sarif_file: snyk-code.sarif
-
-      - name: Monitor with Snyk
-        if: github.ref == 'refs/heads/main'
-        uses: snyk/actions/python@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: --file=backend/requirements.txt
-          command: monitor
-
-  # Job ที่ 3: Additional Security Scans
-  security-additional:
-    name: Additional Security Scans
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          cache: 'pip'
-
-      - name: Run Safety check
-        run: |
-          pip install safety
-          cd backend
-          safety check --json --output safety-report.json || echo "⚠️ Safety warnings found"
-        continue-on-error: true
-
-      - name: Run Bandit SAST
-        run: |
-          pip install bandit[toml]
-          cd backend
-          bandit -r . -f json -o bandit-report.json -ll || echo "⚠️ Bandit warnings found"
-        continue-on-error: true
-
-      - name: Run Semgrep
-        uses: returntocorp/semgrep-action@v1
-        with:
-          config: auto
-          generateSarif: "1"
-        continue-on-error: true
-
-      - name: Secret Scanning with TruffleHog
-        uses: trufflesecurity/trufflehog@main
-        with:
-          path: ./
-          base: ${{ github.event.repository.default_branch }}
-          head: HEAD
-          extra_args: --only-verified
-
-      - name: Upload security artifacts
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: security-reports
-          path: |
-            backend/safety-report.json
-            backend/bandit-report.json
-          retention-days: 30
-
-  # Job ที่ 4: Build Docker Image
-  build:
-    name: Build Docker Image
-    runs-on: ubuntu-latest
-    needs: [test, security-snyk, security-additional]
-    if: |
-      always() && 
-      needs.test.result == 'success' && 
-      (needs.security-snyk.result == 'success' || needs.security-snyk.result == 'skipped')
-
-    env:
-      REGISTRY: ghcr.io
-      IMAGE_NAME: ${{ github.repository }}
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Log in to Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Extract metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=sha,prefix={{branch}}-
-            type=raw,value=latest,enable={{is_default_branch}}
-
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Run Trivy container scan
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-
-      - name: Upload Trivy results
-        uses: github/codeql-action/upload-sarif@v3
-        if: always()
-        with:
-          sarif_file: 'trivy-results.sarif'
-
-  # Job ที่ 5: Notify Results
-  notify:
-    name: Notify Results
-    runs-on: ubuntu-latest
-    needs: [test, security-snyk, security-additional, build]
-    if: always()
-    
-    steps:
-      - name: Create PR comment
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const testStatus = '${{ needs.test.result }}';
-            const snykStatus = '${{ needs.security-snyk.result }}';
-            const additionalSecurityStatus = '${{ needs.security-additional.result }}';
-            const buildStatus = '${{ needs.build.result }}';
-            
-            const statusEmoji = {
-              'success': '✅',
-              'failure': '❌',
-              'cancelled': '⏹️',
-              'skipped': '⏭️'
-            };
-            
-            const comment = \`
-            ## 🚀 CI/CD Pipeline Results
-            
-            | Job | Status | Result |
-            |-----|--------|---------|
-            | Tests | \${statusEmoji[testStatus] || '❓'} | \${testStatus} |
-            | Snyk Security | \${statusEmoji[snykStatus] || '❓'} | \${snykStatus} |
-            | Additional Security | \${statusEmoji[additionalSecurityStatus] || '❓'} | \${additionalSecurityStatus} |
-            | Docker Build | \${statusEmoji[buildStatus] || '❓'} | \${buildStatus} |
-            
-            **Commit**: \\\`${{ github.sha }}\\\`
-            **Branch**: \\\`${{ github.head_ref }}\\\`
-            \`;
-            
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: comment
-            });
-
-      - name: Print summary
-        run: |
+**ขั้นตอนที่ 6: ทดสอบ API Endpoints**
+```powershell
+curl http://localhost:5000/
           echo "=== Pipeline Summary ==="
+```
+หรือเปิดใน browser:  
+- http://localhost:5000/
+- http://localhost:5000/health
+
+**ขั้นตอนที่ 7: ทดสอบ Database และ Redis**
+เข้าไปใน PostgreSQL container:
+```powershell
+docker compose exec db psql -U user
+```
+ตัวอย่างคำสั่งใน psql:
+- `SELECT version();`
+- `\l`
+- `\q`
+
+เข้าไปใน Redis container:
+```powershell
+docker compose exec redis redis-cli
+```
+ตัวอย่างคำสั่งใน redis-cli:
+- `PING`
+- `SET test "Hello Redis"`
+- `GET test`
+- `exit`
+
+ทดสอบจาก web container:
+```powershell
+docker compose exec web bash
+python3 -c "import psycopg2; print('PostgreSQL OK')"
+python3 -c "import redis; print('Redis OK')"
+exit
+```
+
+**ขั้นตอนที่ 8: Run Tests ใน container**
+```powershell
+docker compose exec web pytest tests/ -v
+docker compose exec web pytest tests/ -v --cov=. --cov-report=term
+```
+
+**ขั้นตอนที่ 9: Debugging (ถ้ามีปัญหา)**
+```powershell
+docker compose logs --tail=50 web
+docker compose exec web bash
+# ตรวจสอบไฟล์และ environment
+env | findstr "DATABASE REDIS FLASK"
+exit
+docker compose restart web
+docker compose up -d --build web
+```
+
+**ขั้นตอนที่ 10: Stop/Remove Services**
+```powershell
+docker compose stop
+docker compose start
+docker compose down
+docker compose down -v
+docker compose down -v --rmi all
+docker system prune -f
+```
+
+**Checklist ก่อนจบการทดลอง**
+- [x] ไฟล์ทั้งหมดถูกสร้างครบ
+- [x] .env มี passwords ที่ปลอดภัย
+- [x] `docker compose config` ไม่มี error
+- [x] Services ทั้งหมด status เป็น "Up" และ "healthy"
+- [x] API endpoints ตอบกลับถูกต้อง
+- [x] Tests ผ่านทั้งหมด
+- [x] Database และ Redis เชื่อมต่อได้
           echo "Test: ${{ needs.test.result }}"
           echo "Snyk: ${{ needs.security-snyk.result }}"
           echo "Security: ${{ needs.security-additional.result }}"
@@ -1584,8 +1149,13 @@ git push origin feature/test-pr
 
 ## คำถามท้ายการทดลอง
 1. docker compose คืืออะไร มีความสำคัญอย่างไร
+- Docker Compose คือเครื่องมือสำหรับกำหนดและจัดการ multi-container application ด้วยไฟล์ YAML เดียว เช่น web, database, cache ฯลฯ สามารถสั่ง build, start, stop ทุก service พร้อมกันได้ง่าย ช่วยให้การพัฒนาและทดสอบแอปพลิเคชันที่มีหลายส่วนสะดวกและเป็นระบบมากขึ้น
 2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
+- GitHub pipeline (หรือ GitHub Actions workflow) คือกระบวนการอัตโนมัติที่กำหนดขั้นตอนการ build, test, deploy โค้ดทุกครั้งที่มีการเปลี่ยนแปลงใน repository โดยเป็นหัวใจของ CI/CD (Continuous Integration/Continuous Delivery) ช่วยให้โค้ดถูกตรวจสอบและนำขึ้น production ได้อย่างปลอดภัยและรวดเร็ว
 3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
+- volumes: ใช้สำหรับเก็บข้อมูลถาวรหรือแชร์ไฟล์ระหว่าง host กับ container เช่น ฐานข้อมูล
+networks: กำหนด network เฉพาะสำหรับ container ในโปรเจค ให้แต่ละ service ติดต่อกันได้อย่างปลอดภัย
+healthcheck: ใช้ตรวจสอบสุขภาพของ service ว่าพร้อมใช้งานหรือไม่ เช่น ตรวจสอบว่า web หรือ database ตอบสนองปกติ
 4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
 ```yaml
 jobs:
@@ -1608,6 +1178,12 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 ```
+- กำหนด job ชื่อ test ให้รันบน VM ที่ใช้ Ubuntu ล่าสุด
+สร้าง service ชื่อ postgres โดยใช้ image postgres:16-alpine
+กำหนด environment variables สำหรับ database
+เปิด port 5432 เพื่อให้ workflow เข้าถึงฐานข้อมูล
+options กำหนด healthcheck ให้ตรวจสอบว่า postgres พร้อมใช้งานก่อนรันขั้นตอนถัดไป
+
 5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
 ```yaml
     steps:
@@ -1620,4 +1196,8 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
 ```
+- actions/checkout@v4: เป็น GitHub Action สำหรับ clone โค้ดจาก repository มายัง runner เพื่อให้ workflow สามารถเข้าถึงไฟล์ทั้งหมด
+actions/setup-python@v5: เป็น Action สำหรับติดตั้ง Python version ที่ต้องการบน runner และตั้งค่า cache สำหรับ pip เพื่อเร่งความเร็วในการติดตั้ง dependencies
+
 6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+- Snyk คือเครื่องมือสำหรับตรวจสอบช่องโหว่ด้านความปลอดภัยใน dependencies และ source code ของโปรเจค สามารถสแกนหา vulnerabilities, แนะนำวิธีแก้ไข, ตรวจสอบโค้ด, และ monitor ความปลอดภัยอย่างต่อเนื่อง ทั้งในขั้นตอนพัฒนาและ CI/CD pipeline
