@@ -10,7 +10,7 @@ jobs:
       - name: Check if PR is late
         id: check_date
         run: |
-          DUE_DATE="2025-10-2T12:59:59Z"
+          DUE_DATE="2025-10-2T/23:59:59Z"
           PR_DATE=$(date -d '${{ github.event.pull_request.created_at }}' -u +"%Y-%m-%dT%H:%M:%SZ")
           
           echo "Due date: ${DUE_DATE}"
@@ -41,13 +41,13 @@ jobs:
                 issue_number: prNumber,
                 body: `⚠️ **Submission Deadline Exceeded**
                 
-This pull request was submitted after the due date (**October 2, 2025 at 12:59:59 UTC**) and has been automatically closed.
+This pull request was submitted after the due date (**October 2, 2025 at 23:59:59 UTC**) and has been automatically closed.
 
 **Submission Details:**
 - PR Title: ${prTitle}
 - Author: @${prAuthor}
 - Submitted: ${{ github.event.pull_request.created_at }}
-- Due Date: October 2, 2025 12:59:59 UTC
+- Due Date: October 2, 2025 23:59:59 UTC
 
 If you believe this was closed in error or have any questions, please contact the instructor.`
               });
