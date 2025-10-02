@@ -1129,7 +1129,7 @@ docker compose down -v --rmi all
 
 # ลบ system cache (optional)
 docker system prune -f
-```
+
 
 ### Checklist ก่อนไปขั้นตอนถัดไป:
 
@@ -1142,8 +1142,9 @@ docker system prune -f
 - [ ] Database และ Redis เชื่อมต่อได้
 ```
 ## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
-
-
+![alt text](image.png)
+![alt text](image-1.png)
+![alt text](image-2.png)
 ### การทดลองที่ 2: สร้าง GitHub Actions Workflow
 
 #### ขั้นตอนที่ 1: สร้าง GitHub Repository
@@ -1519,18 +1520,17 @@ jobs:
 
 #### ขั้นตอนที่ 4: Push และทดสอบ
 
-```bash
+bash
 git add .github/workflows/ci-cd.yml
 git commit -m "Add CI/CD pipeline"
 git push origin main
 
 # ตรวจสอบผลลัพธ์ใน GitHub Actions 
-```
+
 ## บันทึกรูปผลการทดลอง หน้า GitHub Actions
-```bash
+bash
+![alt text](image-3.png)
 
-
-```
 
 #### ขั้นตอนที่ 5: ทดสอบ Pull Request
 
@@ -1545,7 +1545,8 @@ git push origin feature/test-pr
 # ตรวจสอบ workflow การทำงานและ comment ที่ถูกสร้าง
 ```
 ## บันทึกรูปผลการทดลอง 
-```bash
+`
+![alt text](image-4.png)
 
 
 ```
@@ -1584,8 +1585,27 @@ git push origin feature/test-pr
 
 ## คำถามท้ายการทดลอง
 1. docker compose คืืออะไร มีความสำคัญอย่างไร
+เป็นเครื่องมือที่ช่วยให้เราสามารถ จัดการหลาย container พร้อมกัน ได้ง่าย ๆ โดยใช้ไฟล์ docker-compose.yml เพียงไฟล์เดียว
+
 2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
+GitHub Pipeline (ที่จริงคือ GitHub Actions Workflow) คือ ระบบอัตโนมัติ ที่อยู่บน GitHub ใช้สำหรับจัดการขั้นตอนการทำงาน (workflow) ตั้งแต่ เขียนโค้ด → ทดสอบ → build → deploy
+
+เกี่ยวข้องกับ CI/CD อย่างไร
+1. CI – Continuous Integration (การรวมโค้ดต่อเนื่อง)
+Pipeline จะรัน test อัตโนมัติ ทุกครั้งที่มี push/PR
+ตรวจว่าโค้ดใหม่ไม่พัง (เช่น pytest ผ่าน, lint ผ่าน)
+
+2. CD – Continuous Delivery / Deployment (การส่งมอบ/ดีพลอยต่อเนื่อง)
+Pipeline สามารถ build Docker image แล้ว push ไปที่ Docker Hub/Registry
+จากนั้น deploy ขึ้น server / cloud (AWS, GCP, Azure, Kubernetes)
+
+
 3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
+เก็บข้อมูลถาวร (Persistent Data)
+เช่น Database (Postgres, MySQL) หรือ Cache (Redis) ถ้าไม่ใช้ volumes ข้อมูลจะหายทุกครั้งที่ container ถูกลบ/restart
+แยกโค้ดออกจาก data → สามารถลบ container แล้วสร้างใหม่ได้ แต่ข้อมูลยังอยู่
+แชร์ไฟล์/ข้อมูลระหว่าง container ได้ เช่น mount source code เข้า web service
+
 4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
 ```yaml
 jobs:
@@ -1607,6 +1627,12 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+
+jobs.test → รัน unit test/integration test
+services.postgres → spin up PostgreSQL container ให้ใช้ใน test
+env → ตั้งค่าฐานข้อมูล (user/db/password)
+ports → map port 5432 สำหรับการเชื่อมต่อ
+options → healthcheck, ป้องกันปัญหา DB ยังไม่พร้อมตอนเริ่ม test
 ```
 5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
 ```yaml
@@ -1619,5 +1645,21 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
+
+คำตอบ
+actions/checkout@v4 = โหลด repo มาที่ runner (เหมือน git clone)
+actions/setup-python@v5 = ติดตั้ง Python environment (ตาม version ที่ระบุ) + cache dependencies
 ```
 6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+ 
+เป็นแพลตฟอร์ม Application Security (AppSec) แบบ Cloud ที่ช่วยนักพัฒนาและทีม DevOps
+ในการค้นหา (Find), แก้ไข (Fix) และป้องกัน (Prevent) ช่องโหว่ด้านความปลอดภัย (Vulnerabilities) ในโค้ด, ไลบรารี, คอนเทนเนอร์ และ Infrastructure as Code (IaC)
+
+ความสามารถหลักของ Snyk
+1. ตรวจหาช่องโหว่ใน Dependency
+2. Auto Fix (แก้ไขให้อัตโนมัติ)
+3. Container Security
+4. IaC Security
+5. Code Security
+6. Integrations
+7. Reporting & Monitoring
