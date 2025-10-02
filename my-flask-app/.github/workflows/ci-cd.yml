@@ -328,4 +328,4 @@ jobs:
           echo "✓ Snyk: ${{ needs.security-snyk.result }}"
           echo "✓ Security: ${{ needs.security-additional.result }}"
           echo "✓ Build: ${{ needs.build.result }}"
-          echo '=========================='
+          echo "=========================="
