@@ -637,7 +637,7 @@ services:
       redis:
         condition: service_healthy        # รอจนกว่า redis จะ healthy
     volumes:
-      - .:/app
+      - ./backend:/app
     restart: unless-stopped
     networks:
       - app-network
@@ -1140,9 +1140,11 @@ docker system prune -f
 - [ ] API endpoints ตอบกลับถูกต้อง
 - [ ] Tests ผ่านทั้งหมด
 - [ ] Database และ Redis เชื่อมต่อได้
-```
+- [ ] 
+```bash
 ## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
 
+```
 
 ### การทดลองที่ 2: สร้าง GitHub Actions Workflow
 
