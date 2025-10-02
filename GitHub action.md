@@ -1140,8 +1140,15 @@ docker system prune -f
 - [ ] API endpoints ตอบกลับถูกต้อง
 - [ ] Tests ผ่านทั้งหมด
 - [ ] Database และ Redis เชื่อมต่อได้
-```
-## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
+
+### บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
+<img width="1575" height="790" alt="image" src="https://github.com/user-attachments/assets/02a0c8f7-b21a-47ac-8e45-04c281e30ffa" />
+
+<img width="780" height="248" alt="image" src="https://github.com/user-attachments/assets/08d1b684-c32f-4b94-b4e3-98109c106798" />
+
+<img width="326" height="323" alt="image" src="https://github.com/user-attachments/assets/76bceb14-b20d-49cd-b304-91bf61261d03" />
+
+
 
 
 ### การทดลองที่ 2: สร้าง GitHub Actions Workflow
@@ -1527,6 +1534,8 @@ git push origin main
 # ตรวจสอบผลลัพธ์ใน GitHub Actions 
 ```
 ## บันทึกรูปผลการทดลอง หน้า GitHub Actions
+<img width="1283" height="985" alt="image" src="https://github.com/user-attachments/assets/9c95ffac-2578-4a73-8ea9-508faa5a0d8d" />
+
 ```bash
 
 
@@ -1545,6 +1554,8 @@ git push origin feature/test-pr
 # ตรวจสอบ workflow การทำงานและ comment ที่ถูกสร้าง
 ```
 ## บันทึกรูปผลการทดลอง 
+<img width="1882" height="894" alt="image" src="https://github.com/user-attachments/assets/69f9a8f9-6654-44cf-822d-4139625a0ca9" />
+
 ```bash
 
 
@@ -1583,10 +1594,10 @@ git push origin feature/test-pr
 ---
 
 ## คำถามท้ายการทดลอง
-1. docker compose คืืออะไร มีความสำคัญอย่างไร
-2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
-3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
-4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
+1. docker compose คืืออะไร มีความสำคัญอย่างไร คือเครื่องมือที่ใช้ในการจัดการและรันหลาย container พร้อมกัน โดยใช้ไฟล์ docker-compose.yml เพื่อกำหนดบริการต่าง ๆ เช่น web, database, cache ฯลฯ
+2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไรคือชุดขั้นตอนอัตโนมัติใน GitHub Actions ใช้สำหรับ CI/CD เพื่อทดสอบและ deploy โค้ดอย่างต่อเนื่อง
+3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร volumes เก็บข้อมูลถาวร, networks เชื่อม container, healthcheck ตรวจสอบความพร้อมก่อนใช้งาน
+4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้  โค้ด YAML นี้สร้าง job สำหรับทดสอบ โดยใช้ PostgreSQL และ Redis เป็น service พร้อม healthcheck เพื่อให้แน่ใจว่าพร้อมก่อนรันเทสต์
 ```yaml
 jobs:
   test:
@@ -1608,7 +1619,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 ```
-5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
+5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร  actions/checkout@v4 ใช้ดึงโค้ดจาก GitHub repository มาให้ runner ใช้งาน ส่วน actions/setup-python@v5 ใช้ติดตั้ง Python เวอร์ชันที่กำหนดพร้อมระบบแคช pip เพื่อเร่งการติดตั้ง dependencies
 ```yaml
     steps:
       - name: Checkout code
@@ -1620,4 +1631,4 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
 ```
-6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง Snyk คือเครื่องมือสแกนความปลอดภัยที่ตรวจช่องโหว่ใน dependencies, โค้ด, และ container image พร้อมสร้างรายงานและแจ้งเตือนอัตโนมัติผ่าน CI/CD pipeline
