@@ -1588,8 +1588,26 @@ git push origin feature/test-pr
 
 ## คำถามท้ายการทดลอง
 1. docker compose คืออะไร มีความสำคัญอย่างไร
+
+Docker Compose คือเครื่องมือที่ช่วยจัดการ container หลาย ๆ ตัวที่ทำงานร่วมกันได้ง่าย ๆ ผ่านไฟล์ YAML (docker-compose.yml)
+คุณสามารถกำหนด service ต่าง ๆ เช่น db, backend, frontend ไว้ในไฟล์เดียว แล้วสั่ง docker compose up ก็จะรันทั้งหมดพร้อมกัน
+ความสำคัญ
+ลดความซับซ้อน → ไม่ต้องจำคำสั่ง docker run ยาว ๆ
+จัดการหลาย container พร้อมกัน → สะดวกสำหรับระบบที่ประกอบด้วยหลาย service เช่น web + db + cache
+ทำให้ environment เหมือนกันทุกที่ → dev, test, production ใช้ไฟล์เดียวกันได้
+
 2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
+GitHub Pipeline (หรือ GitHub Actions) คือ Workflow ที่เรากำหนดขั้นตอนอัตโนมัติให้เกิดขึ้นเมื่อมี event บน GitHub เช่น push code, pull request
+ใช้สำหรับทำ CI/CD (Continuous Integration / Continuous Deployment)
+CI (Integration) → เมื่อมีการ push code ใหม่ ระบบจะ build, run test, lint, ตรวจสอบคุณภาพอัตโนมัติ
+CD (Deployment) → หลังจาก test ผ่าน ระบบจะ deploy ไปยัง server หรือ cloud อัตโนมัติ เช่น AWS, GCP, หรือ Kubernetes
+  
 3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
+ใน docker-compose:
+volumes → เก็บข้อมูลถาวร
+networks → ให้ service สื่อสารกัน
+healthcheck → ตรวจสอบว่าพร้อมใช้งานจริง
+   
 4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
 ```yaml
 jobs:
@@ -1612,6 +1630,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 ```
+คือการตั้งค่า Job สำหรับรันทดสอบ ใน GitHub Actions โดย ใช้ runner ubuntu-latest สร้าง service PostgreSQL จาก image postgres:16-alpine กำหนด user, password, db ผ่าน env เปิด port 5432 ให้ใช้งาน มี healthcheck (pg_isready) เพื่อรอให้ DB พร้อมก่อนเริ่มทดสอบ
 5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
 ```yaml
     steps:
@@ -1624,4 +1643,14 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
 ```
+ใช้ action สำหรับ ติดตั้งและตั้งค่า Python บน runner 
+python-version → ระบุเวอร์ชัน Python จากตัวแปร PYTHON_VERSION
+cache: 'pip' → เปิดการ cache dependency ของ pip เพื่อลดเวลา install รอบถัดไป
+
 6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+Dependency Scanning ตรวจหาช่องโหว่ใน library หรือ package ที่โปรเจกต์ใช้งาน (เช่น pip, npm, Maven, Docker image)
+Code Scanning (Snyk Code) วิเคราะห์ source code หา pattern ที่ไม่ปลอดภัย (static analysis)
+Container Security สแกน Docker image หา vulnerability ของ OS และ dependency ข้างใน
+Infrastructure as Code (IaC) Security ตรวจสอบไฟล์ config เช่น Kubernetes, Terraform ว่ามีความเสี่ยงหรือไม่
+Fix Suggestions แนะนำวิธีแก้ เช่น อัพเดต library เวอร์ชันใหม่ หรือแก้ config ให้ปลอดภัย
+CI/CD Integration ผูกกับ GitHub Actions, GitLab CI, Jenkins ฯลฯ เพื่อตรวจช่องโหว่ อัตโนมัติทุกครั้งที่ build/test/deploy
