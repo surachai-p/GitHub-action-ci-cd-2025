@@ -588,7 +588,7 @@ permissions:
 
 ---
 
-#ขั้นตอนการทดลอง
+# ขั้นตอนการทดลอง
 
 ### การทดลองที่ 1: สร้าง Docker Compose Project
 
@@ -1146,7 +1146,7 @@ docker system prune -f
 
 ```
 
-### การทดลองที่ 2: สร้าง GitHub Actions Workflow
+## การทดลองที่ 2: สร้าง GitHub Actions Workflow
 
 #### ขั้นตอนที่ 1: สร้าง GitHub Repository
 
