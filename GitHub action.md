@@ -1,5 +1,4 @@
-<img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/f15d1dd6-10f4-4d67-a2aa-bd09d116968e" /># Lab 00: Preparing Knowledge - YAML for Docker Compose & GitHub Actions
-
+# Lab 00: Preparing Knowledge - YAML for Docker Compose & GitHub Actions
 ## วัตถุประสงค์
 เพื่อเตรียมความพร้อมในการเขียนไฟล์ YAML สำหรับ Docker Compose และ GitHub Actions 
 
