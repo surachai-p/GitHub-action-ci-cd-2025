@@ -1,68 +1,331 @@
-name: Close Late Pull Requests
+name: Flask CI/CD Pipeline
+
 on:
+  push:
+    branches: [ main, develop ]
   pull_request:
-    types: [opened]
+    branches: [ main ]
+
+env:
+  PYTHON_VERSION: '3.9'
+
+permissions:
+  contents: read
+  packages: write
+  security-events: write
+  pull-requests: write
+  actions: read
 
 jobs:
-  close_late_pr:
+  test:
+    name: Run Tests
     runs-on: ubuntu-latest
-    steps:
-      - name: Check if PR is late
-        id: check_date
-        run: |
-          DUE_DATE="2025-10-2T/23:59:59Z"
-          PR_DATE=$(date -d '${{ github.event.pull_request.created_at }}' -u +"%Y-%m-%dT%H:%M:%SZ")
+    
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_PASSWORD: testpass
+          POSTGRES_USER: testuser
+          POSTGRES_DB: testdb
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U testuser"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
           
-          echo "Due date: ${DUE_DATE}"
-          echo "PR created: ${PR_DATE}"
-          
-          if [[ "${PR_DATE}" > "${DUE_DATE}" ]]; then
-            echo "is_late=true" >> $GITHUB_OUTPUT
-            echo "PR is late!"
-          else
-            echo "is_late=false" >> $GITHUB_OUTPUT
-            echo "PR is on time."
-          fi
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
-      - name: Close late PR
-        if: steps.check_date.outputs.is_late == 'true'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          cd backend
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest-cov
+
+      - name: Install Redis CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y redis-tools
+
+      - name: Wait for services
+        run: |
+          echo "Waiting for PostgreSQL..."
+          timeout 60 bash -c 'until pg_isready -h localhost -p 5432 -U testuser; do sleep 2; done'
+          echo "✅ PostgreSQL is ready!"
+          
+          echo "Waiting for Redis..."
+          timeout 60 bash -c 'until redis-cli -h localhost -p 6379 ping | grep -q PONG; do sleep 2; done'
+          echo "✅ Redis is ready!"
+
+      - name: Run tests with coverage
+        run: |
+          cd backend
+          export PYTHONPATH=.
+          export DATABASE_URL="postgresql://testuser:testpass@localhost:5432/testdb"
+          export REDIS_URL="redis://localhost:6379"
+          export FLASK_ENV=testing
+          pytest tests/ -v --cov=. --cov-report=xml --cov-report=html --cov-report=term
+        env:
+          SECRET_KEY: test-secret-key
+
+      - name: Upload coverage reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: backend/htmlcov/
+          retention-days: 5
+
+      - name: Upload coverage XML
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-xml
+          path: backend/coverage.xml
+          retention-days: 5
+
+  security-snyk:
+    name: Snyk Security Scan
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          cd backend
+          pip install -r requirements.txt
+
+      - name: Run Snyk Dependencies Scan
+        uses: snyk/actions/python@master
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high --file=backend/requirements.txt
+          command: test
+
+      - name: Run Snyk Code Scan
+        uses: snyk/actions/python@master
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=medium
+          command: code test
+
+      - name: Monitor with Snyk
+        if: github.ref == 'refs/heads/main'
+        uses: snyk/actions/python@master
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --file=backend/requirements.txt
+          command: monitor
+
+  security-additional:
+    name: Additional Security Scans
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Run Safety check
+        run: |
+          pip install safety
+          cd backend
+          safety check --json --output safety-report.json || echo "⚠️ Safety warnings found"
+        continue-on-error: true
+
+      - name: Run Bandit SAST
+        run: |
+          pip install bandit
+          cd backend
+          bandit -r . -f json -o bandit-report.json -ll || echo "⚠️ Bandit warnings found"
+        continue-on-error: true
+
+      - name: Run Semgrep
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: auto
+        continue-on-error: true
+
+      - name: Secret Scanning with TruffleHog
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: ${{ github.event.repository.default_branch }}
+          head: HEAD
+          extra_args: --only-verified
+        continue-on-error: true
+
+      - name: Upload security artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: security-reports
+          path: |
+            backend/safety-report.json
+            backend/bandit-report.json
+          retention-days: 30
+
+  build:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+    needs: [test, security-snyk, security-additional]
+    if: |
+      always() && 
+      needs.test.result == 'success'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Prepare Docker metadata
+        id: meta
+        run: |
+          REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          IMAGE_NAME="ghcr.io/${REPO_LOWER}"
+          
+          # Generate tags
+          TAGS="${IMAGE_NAME}:sha-${{ github.sha }}"
+          
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            TAGS="${TAGS},${IMAGE_NAME}:pr-${{ github.event.pull_request.number }}"
+          elif [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            TAGS="${TAGS},${IMAGE_NAME}:latest"
+          elif [ "${{ github.ref }}" == "refs/heads/develop" ]; then
+            TAGS="${TAGS},${IMAGE_NAME}:develop"
+          fi
+          
+          echo "tags=${TAGS}" >> $GITHUB_OUTPUT
+          echo "image_name=${IMAGE_NAME}" >> $GITHUB_OUTPUT
+          
+          echo "🏷️ Tags: ${TAGS}"
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Run Trivy container scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ steps.meta.outputs.image_name }}:sha-${{ github.sha }}
+          format: 'table'
+          exit-code: '0'
+          severity: 'CRITICAL,HIGH'
+        continue-on-error: true
+
+  notify:
+    name: Notify Results
+    runs-on: ubuntu-latest
+    needs: [test, security-snyk, security-additional, build]
+    if: always()
+    
+    steps:
+      - name: Create PR comment
+        if: github.event_name == 'pull_request'
         uses: actions/github-script@v7
         with:
           script: |
-            try {
-              const prNumber = context.payload.pull_request.number;
-              const prTitle = context.payload.pull_request.title;
-              const prAuthor = context.payload.pull_request.user.login;
-              
-              // Add comment explaining why PR was closed
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: prNumber,
-                body: `⚠️ **Submission Deadline Exceeded**
-                
-This pull request was submitted after the due date (**October 2, 2025 at 23:59:59 UTC**) and has been automatically closed.
+            const testStatus = '${{ needs.test.result }}';
+            const snykStatus = '${{ needs.security-snyk.result }}';
+            const additionalSecurityStatus = '${{ needs.security-additional.result }}';
+            const buildStatus = '${{ needs.build.result }}';
+            
+            const statusEmoji = {
+              'success': '✅',
+              'failure': '❌',
+              'cancelled': '⏹️',
+              'skipped': '⏭️'
+            };
+            
+            const comment = `
+            ## 🚀 CI/CD Pipeline Results
+            
+            | Job | Status | Result |
+            |-----|--------|---------|
+            | Tests | ${statusEmoji[testStatus] || '❓'} | ${testStatus} |
+            | Snyk Security | ${statusEmoji[snykStatus] || '❓'} | ${snykStatus} |
+            | Additional Security | ${statusEmoji[additionalSecurityStatus] || '❓'} | ${additionalSecurityStatus} |
+            | Docker Build | ${statusEmoji[buildStatus] || '❓'} | ${buildStatus} |
+            
+            **Commit**: \`${{ github.sha }}\`
+            **Branch**: \`${{ github.head_ref }}\`
+            **Triggered by**: @${{ github.actor }}
+            
+            ---
+            📊 [View detailed results](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            `;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
 
-**Submission Details:**
-- PR Title: ${prTitle}
-- Author: @${prAuthor}
-- Submitted: ${{ github.event.pull_request.created_at }}
-- Due Date: October 2, 2025 23:59:59 UTC
-
-If you believe this was closed in error or have any questions, please contact the instructor.`
-              });
-              
-              // Close the pull request
-              await github.rest.pulls.update({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                pull_number: prNumber,
-                state: 'closed'
-              });
-              
-              console.log(`✅ PR #${prNumber} by ${prAuthor} was closed due to late submission.`);
-              
-            } catch (error) {
-              core.setFailed(`❌ Failed to close late PR: ${error.message}`);
-              throw error;
-            }
+      - name: Print summary
+        run: |
+          echo "=== 🎯 Pipeline Summary ==="
+          echo "✓ Test: ${{ needs.test.result }}"
+          echo "✓ Snyk: ${{ needs.security-snyk.result }}"
+          echo "✓ Security: ${{ needs.security-additional.result }}"
+          echo "✓ Build: ${{ needs.build.result }}"
+          echo "=========================="
