@@ -1141,13 +1141,10 @@ docker system prune -f
 - [ ] Tests ผ่านทั้งหมด
 - [ ] Database และ Redis เชื่อมต่อได้
 - [ ] 
-```bash
+
 <img width="1919" height="1012" alt="image" src="https://github.com/user-attachments/assets/ea4cfdf9-b33e-4aec-8459-6bfcab31ba32" />
 <img width="808" height="218" alt="Screenshot 2025-10-02 144121" src="https://github.com/user-attachments/assets/c4583837-41d7-4f48-b79c-11b058e3c67d" />
 <img width="707" height="235" alt="Screenshot 2025-10-02 144127" src="https://github.com/user-attachments/assets/b5389597-5f06-448c-a5ce-6d139df3ec14" />
-
-
-```
 
 ## การทดลองที่ 2: สร้าง GitHub Actions Workflow
 
