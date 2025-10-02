@@ -588,7 +588,7 @@ permissions:
 
 ---
 
-#ขั้นตอนการทดลอง
+# ขั้นตอนการทดลอง
 
 ### การทดลองที่ 1: สร้าง Docker Compose Project
 
@@ -637,7 +637,7 @@ services:
       redis:
         condition: service_healthy        # รอจนกว่า redis จะ healthy
     volumes:
-      - .:/app
+      - ./backend:/app
     restart: unless-stopped
     networks:
       - app-network
@@ -1042,12 +1042,12 @@ curl -s http://localhost:5000/ | python3 -m json.tool
 docker compose exec db psql -U user
 
 ```sql
-# ทดสอบคำสั่ง SQL
+#### ทดสอบคำสั่ง SQL
 psql> SELECT version();
 psql> \l          (list databases)
 psql> \q          (quit)
 ```
-
+```bash 
 # เข้าไปใน Redis container
 docker compose exec redis redis-cli
 
@@ -1140,11 +1140,13 @@ docker system prune -f
 - [ ] API endpoints ตอบกลับถูกต้อง
 - [ ] Tests ผ่านทั้งหมด
 - [ ] Database และ Redis เชื่อมต่อได้
-```
+- [ ] 
+
 ## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
+![alt text](<Screenshot 2025-10-02 214526.png>)
 
 
-### การทดลองที่ 2: สร้าง GitHub Actions Workflow
+## การทดลองที่ 2: สร้าง GitHub Actions Workflow
 
 #### ขั้นตอนที่ 1: สร้าง GitHub Repository
 
@@ -1527,10 +1529,8 @@ git push origin main
 # ตรวจสอบผลลัพธ์ใน GitHub Actions 
 ```
 ## บันทึกรูปผลการทดลอง หน้า GitHub Actions
-```bash
 
-
-```
+![alt text](image.png)
 
 #### ขั้นตอนที่ 5: ทดสอบ Pull Request
 
@@ -1545,11 +1545,10 @@ git push origin feature/test-pr
 # ตรวจสอบ workflow การทำงานและ comment ที่ถูกสร้าง
 ```
 ## บันทึกรูปผลการทดลอง 
-```bash
 
+![alt text](image-1.png)
 
-```
-
+![alt text](image-2.png)
 
 ---
 
@@ -1583,9 +1582,17 @@ git push origin feature/test-pr
 ---
 
 ## คำถามท้ายการทดลอง
-1. docker compose คืืออะไร มีความสำคัญอย่างไร
+1. docker compose คืออะไร มีความสำคัญอย่างไร
+#### ตอบ ช่วยให้ กำหนด service หลายตัว (เช่น web, database) ได้ในไฟล์เดียว สั่งรัน/หยุดทุก container ได้ด้วยคำสั่งเดียว (docker compose up) เหมาะกับการพัฒนาและทดสอบแอปที่มีหลายส่วน ทำให้จัดการ container หลายตัวได้ง่ายและเป็นระบบ
+---
 2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
+#### ตอบ คือกระบวนการอัตโนมัติที่ทำงานเมื่อมีเหตุการณ์ เช่น push code, pull request ใช้สำหรับทำ CI/CD (Continuous Integration / Continuous Deployment)CI: ทดสอบ, build, lint code อัตโนมัติ CD: deploy แอปอัตโนมัติไปยัง server หรือ cloud ช่วยลดงานมือ, ตรวจจับข้อผิดพลาดเร็ว, deploy ได้ไว
+
+---
 3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
+#### ตอบ volumes:ใช้เก็บข้อมูลถาวร นอก container ป้องกันข้อมูลหายเมื่อ container ถูกลบ, networks:กำหนดว่า container ไหนจะคุยกันได้ แยก service ให้ปลอดภัยและเป็นระบบ, healthcheck:ตรวจสอบว่า container ทำงานปกติหรือไม่ ใช้ restart หรือจัดการ container ที่ไม่ตอบสนอง ทั้ง 3 ช่วยให้แอปเสถียร ปลอดภัย และจัดการง่ายขึ้น
+
+---
 4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
 ```yaml
 jobs:
@@ -1608,6 +1615,9 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 ```
+#### ตอบ สร้าง job ชื่อ test ใช้ runner บน Ubuntu สร้าง container PostgreSQL กำหนด env สำหรับใช้งาน DB เปิดพอร์ต 5432 เพื่อเชื่อมต่อ DB ตรวจสอบว่า DB พร้อมทำงานก่อนรัน test ถ้าไม่พร้อมใน 5 ครั้ง จะล้มเหลว
+
+---
 5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
 ```yaml
     steps:
@@ -1620,4 +1630,8 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
 ```
+#### ตอบ uses: ดึง source code จาก repo มายัง runner จำเป็นก่อน build/test, setup-python@v5 ติดตั้ง Python version ที่กำหนด เปิดการ cache ของ pip เพื่อรันเร็วขึ้น
+
+---
 6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+#### ตอบ คือเครื่องมือสำหรับ ตรวจหาช่องโหว่ด้านความปลอดภัย ใน: Dependencies (เช่น Python packages, Node.js packages) Docker images IaC (Infrastructure as Code) เช่น Terraform, Kubernetes ความสามารถ สแกนช่องโหว่ (Vulnerabilities) แจ้งเตือนความเสี่ยง แนะนำวิธีแก้ไข (เช่น upgrade version) ผสานเข้ากับ GitHub, GitLab, CI/CD ได้
