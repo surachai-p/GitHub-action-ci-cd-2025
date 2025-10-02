@@ -1580,8 +1580,20 @@ git push origin feature/test-pr
 
 ## คำถามท้ายการทดลอง
 1. docker compose คืออะไร มีความสำคัญอย่างไร
+- คือ ไฟล์/เครื่องมือกำหนดคอนฟิกแอปหลายคอนเทนเนอร์ด้วย YAML (services, networks, volumes) แล้วสั่งขึ้นทั้งสแต็กด้วยคำสั่งเดียว (docker compose up).
+- สำคัญ เพราะ:
+  - สปิน dev/test/prod สม่ำเสมอ (reproducible)
+  - ลดความซับซ้อนในการรันหลายบริการ (web + db + cache)
+  - มี healthcheck, depends_on, networks, volumes ให้จัดลำดับ-สภาพแวดล้อมได้ครบ
 2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
+- คือ ชุดงาน (workflows/jobs/steps) ที่ GitHub Actions รันอัตโนมัติเมื่อเกิดเหตุการณ์ (push, PR, tag).
+- เกี่ยวกับ CI/CD
+  - CI: ติดตั้ง deps → รันทดสอบ/โค้ดสแกน → รายงานผลทุกครั้งที่มีการเปลี่ยนแปลง
+  - CD: สร้างและผลัก (push) Docker image, deploy ไปที่ env เป้าหมายแบบอัตโนมัติ (ตามเงื่อนไขสาขา/แท็ก)
 3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
+- volumes: เก็บข้อมูล ถาวร (ไม่หายเมื่อคอนเทนเนอร์หยุด/ลบ) เช่นข้อมูล Postgres/Redis; แยก data ออกจากอิมเมจ → อัปเดตเวอร์ชันได้ปลอดภัยกว่า
+- networks: สร้างเครือข่ายเสมือนให้บริการคุยกันด้วย ชื่อ service (DNS ภายใน) → ลดการเปิดพอร์ตสู่ภายนอกโดยไม่จำเป็น และแยกสภาพแวดล้อม
+- healthcheck: นิยามวิธีวัด “สุขภาพ” เซอร์วิส (เช่น pg_isready, curl /health) → ใช้คู่กับ depends_on: condition: service_healthy เพื่อให้ลำดับการสตาร์ต/รีสตาร์ต เชื่อถือได้
 4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
 ```yaml
 jobs:
@@ -1604,6 +1616,17 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 ```
+- services: = บอก GitHub Actions ว่า job นี้ต้องการ คอนเทนเนอร์ประกบ เพื่อใช้ระหว่างรันเทสต์ (เทียบได้กับ docker-compose ที่ประกาศ service DB/Cache)
+- postgres: = ชื่อ service (และเป็น hostname ภายใน ถ้า job รันใน container)
+- image: = รูปคอนเทนเนอร์ที่จะใช้
+- env: = ค่าติดตั้งเริ่มต้นของ Postgres (สร้าง user/db ให้พร้อม)
+- ports: = เปิดพอร์ตให้ โค้ดทดสอบบน runner เข้าหาได้ที่ localhost:5432
+- options: + --health-* = เซ็ต healthcheck ให้ Docker คอยเช็กว่า Postgres “พร้อมใช้งานจริง” ก่อนเราไปคิวรี
+  - --health-cmd: ใช้ pg_isready ตรวจว่ารับคอนเนกชันได้
+  - --health-interval: เช็กทุก 10 วินาที
+  - --health-timeout: คำสั่งตรวจไม่ควรเกิน 5 วินาที
+  - --health-retries: ต้องผ่านกี่ครั้งจึงถือว่า healthy
+
 5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
 ```yaml
     steps:
