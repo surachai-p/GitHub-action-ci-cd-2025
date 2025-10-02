@@ -8,7 +8,7 @@
 ## ทฤษฎีก่อนการทดลอง
 ## ส่วนที่ 1: ความรู้พื้นฐาน YAML
 
-### YAML คืออะไร?
+### YAML คืออะไร?555
 - **YAML** = YAML Ain't Markup Language
 - เป็นรูปแบบการเก็บข้อมูลที่อ่านได้ง่าย เหมาะสำหรับไฟล์คอนฟิกูเรชัน
 - ใช้การเว้นวรรค (indentation) แทนการใช้วงเล็บ
@@ -1140,8 +1140,16 @@ docker system prune -f
 - [ ] API endpoints ตอบกลับถูกต้อง
 - [ ] Tests ผ่านทั้งหมด
 - [ ] Database และ Redis เชื่อมต่อได้
-```
+``
 ## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
+<img width="1919" height="964" alt="image" src="https://github.com/user-attachments/assets/651dd5f4-c47d-47de-8bc4-e49c05e02c73" />
+<img width="1919" height="974" alt="image" src="https://github.com/user-attachments/assets/0e35a955-e4ae-4fb3-b3be-bc21783d5634" />
+<img width="1919" height="1019" alt="image" src="https://github.com/user-attachments/assets/0a55f511-57e7-46fa-939e-c0aea4c556e3" />
+<img width="1919" height="1014" alt="image" src="https://github.com/user-attachments/assets/2c734f7f-935a-435e-a985-be94f860bdb9" />
+<img width="1919" height="1019" alt="image" src="https://github.com/user-attachments/assets/cd09cf7a-1299-4deb-9895-23bc9b96b2f9" />
+
+<img width="1919" height="1019" alt="image" src="https://github.com/user-attachments/assets/60a8070b-d2b0-41c4-9268-e342fdd832e3" />
+
 
 
 ### การทดลองที่ 2: สร้าง GitHub Actions Workflow
