@@ -1141,10 +1141,14 @@ docker system prune -f
 - [ ] Tests ผ่านทั้งหมด
 - [ ] Database และ Redis เชื่อมต่อได้
 - [ ] 
-```bash
-## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
 
-```
+## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
+### docker
+<img width="1920" height="1020" alt="Screenshot 2025-10-02 144633" src="https://github.com/user-attachments/assets/c1f12631-304a-4eab-a08f-41b9b10aef97" />
+
+### หน้าเว็บ
+<img width="1920" height="1020" alt="Screenshot 2025-10-02 144648" src="https://github.com/user-attachments/assets/c14fb9da-1ea3-47bd-bba5-0b526f97519a" />
+<img width="1920" height="1020" alt="Screenshot 2025-10-02 144658" src="https://github.com/user-attachments/assets/b60cb79b-38f7-4a70-af93-6a73a7beefe2" />
 
 ## การทดลองที่ 2: สร้าง GitHub Actions Workflow
 
@@ -1529,10 +1533,8 @@ git push origin main
 # ตรวจสอบผลลัพธ์ใน GitHub Actions 
 ```
 ## บันทึกรูปผลการทดลอง หน้า GitHub Actions
-```bash
+<img width="1920" height="1020" alt="Screenshot 2025-10-02 153615" src="https://github.com/user-attachments/assets/76ee3c81-c81e-47ae-9bc3-0d92d6b0cb34" />
 
-
-```
 
 #### ขั้นตอนที่ 5: ทดสอบ Pull Request
 
@@ -1547,10 +1549,8 @@ git push origin feature/test-pr
 # ตรวจสอบ workflow การทำงานและ comment ที่ถูกสร้าง
 ```
 ## บันทึกรูปผลการทดลอง 
-```bash
+<img width="1920" height="1020" alt="Screenshot 2025-10-02 161825" src="https://github.com/user-attachments/assets/f05dcb8f-00b7-44ea-b26a-137d8937ec1c" />
 
-
-```
 
 
 ---
@@ -1586,8 +1586,29 @@ git push origin feature/test-pr
 
 ## คำถามท้ายการทดลอง
 1. docker compose คืออะไร มีความสำคัญอย่างไร
+- คือเครื่องมือที่ใช้จัดการ Multi-Container Docker Application หรือพูดง่าย ๆ คือการรันหลาย ๆ container พร้อมกันจากไฟล์กำหนดค่าชุดเดียว (docker-compose.yml)
+- ความสำคัญ
+  - ทำให้การรันระบบที่มีหลาย service (เช่น Web, Database, Cache) เป็นเรื่องง่าย
+  - สามารถกำหนด network, volume, environment variables, dependencies ของ container ได้ในไฟล์เดียว
+  - รองรับการรันใน Development, Testing, Production แบบสอดคล้องกัน
+
 2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
+- คือเครื่องมือ Automation สำหรับการสร้าง workflow เมื่อมีเหตุการณ์ (event) เกิดขึ้นใน repository เช่น push, pull request, schedule
+- ความเกี่ยวข้องกับ CI/CD
+  - CI (Continuous Integration): ทดสอบโค้ดอัตโนมัติทุกครั้งที่มีการ push
+  - CD (Continuous Deployment/Delivery): Deploy แอปไปยัง environment อัตโนมัติหลังจากผ่านขั้นตอน CI
+
 3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
+- volumes
+  - ใช้เก็บข้อมูลที่ container ต้องการเก็บถาวร เช่น database
+  - ป้องกันข้อมูลสูญหายเมื่อ container ถูกลบ
+- networks
+  - จัดการการสื่อสารระหว่าง container
+  - สามารถกำหนด network แบบ private เพื่อความปลอดภัย
+- healthcheck
+  - ตรวจสอบว่า container ทำงานปกติหรือไม่
+  - Docker หรือ CI/CD pipeline จะใช้ healthcheck เพื่อรอให้ container พร้อมก่อนเริ่มขั้นตอนถัดไป
+
 4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
 ```yaml
 jobs:
@@ -1610,6 +1631,15 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 ```
+- อธิบายทีละบรรทัด:
+  - jobs: test: → สร้าง job ชื่อ test เพื่อรันขั้นตอนทดสอบ
+  - runs-on: ubuntu-latest → ใช้ environment เป็น Ubuntu ล่าสุด
+  - services: postgres: → สร้าง container postgres เพื่อใช้ใน job
+  - image: postgres:16-alpine → ใช้ Docker image ของ PostgreSQL เวอร์ชัน 16 แบบ lightweight
+  - env: → กำหนด environment variables ของ database
+  - ports: → เปิด port 5432 ให้ host สามารถเข้าถึง container ได้
+  - options: >- → กำหนด healthcheck เพื่อตรวจสอบว่า database พร้อมทำงานก่อน run tests
+  
 5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
 ```yaml
     steps:
@@ -1622,4 +1652,13 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
 ```
+- actions/checkout@v4 → ดึง source code จาก repository มายัง runner เพื่อให้ workflow ทำงานต่อได้
+- actions/setup-python@v5 → ติดตั้ง Python เวอร์ชันที่กำหนด และสามารถใช้ cache ของ pip เพื่อลดเวลา install dependencies
+
 6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+- คือเครื่องมือ Security & Vulnerability Scanner สำหรับโค้ด, dependencies, container, และ Infrastructure-as-Code
+- ความสามารถหลัก:
+  - ตรวจสอบ ช่องโหว่ของ dependencies (เช่น Python, Node.js, Docker)
+  - แนะนำวิธี แก้ไขช่องโหว่ (fix/update)
+  - ตรวจสอบ container image และ Dockerfile ว่ามีความเสี่ยงหรือไม่
+  - Integration กับ GitHub Actions เพื่อสแกนโค้ดอัตโนมัติ
