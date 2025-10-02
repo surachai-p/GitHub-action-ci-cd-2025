@@ -1534,6 +1534,8 @@ git push origin main
 # ตรวจสอบผลลัพธ์ใน GitHub Actions 
 ```
 ## บันทึกรูปผลการทดลอง หน้า GitHub Actions
+<img width="1283" height="985" alt="image" src="https://github.com/user-attachments/assets/9c95ffac-2578-4a73-8ea9-508faa5a0d8d" />
+
 ```bash
 
 
