@@ -1553,13 +1553,10 @@ git push origin feature/test-pr
 # ตรวจสอบ workflow การทำงานและ comment ที่ถูกสร้าง
 ```
 ## บันทึกรูปผลการทดลอง 
-```bash
 
 
-```
+<img width="1865" height="778" alt="image" src="https://github.com/user-attachments/assets/92b7db01-b9dc-4b5e-9d78-1a41fc1f12e2" />
 
-
----
 
 
 ## Resources และเอกสารอ้างอิง
@@ -1592,8 +1589,27 @@ git push origin feature/test-pr
 
 ## คำถามท้ายการทดลอง
 1. docker compose คืออะไร มีความสำคัญอย่างไร
+```
+= Docker Compose คือเครื่องมือที่ใช้ จัดการ multi-container Docker ได้ง่าย ๆ โดยเราสามารถกำหนด container ทั้งหมดในไฟล์ docker-compose.yml
+๐ ความสำคัญ
+๐ สร้าง environment ของโปรเจคได้เร็วและ reproducible
+๐ กำหนด service (เช่น web, database, cache) ให้ทำงานพร้อมกัน
+๐ ง่ายต่อการ start/stop ทุก container ด้วยคำสั่งเดียว (docker compose up/down)
+```
 2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
+```
+= GitHub pipeline คือชุด workflow ที่ GitHub Actions ใช้รันงานอัตโนมัติ เช่น build, test, deploy
+๐ CI/CD
+๐ CI (Continuous Integration) → ตรวจสอบ code, run test ทุกครั้งที่ push
+๐ CD (Continuous Deployment/Delivery) → deploy code อัตโนมัติหลังจาก CI ผ่าน
+๐ GitHub pipeline คือเครื่องมือในการ ทำ CI/CD บน GitHub
+```
 3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
+  ```
+= volumes → ใช้เก็บข้อมูลถาวรของ container เช่น database เพื่อให้ข้อมูลไม่หายแม้ container ถูกลบ
+networks → กำหนด network ระหว่าง container ให้ติดต่อกันได้อย่างปลอดภัย
+healthcheck → ตรวจสอบว่า container ทำงานปกติหรือไม่ เช่น database พร้อมรับ connection
+```
 4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
 ```yaml
 jobs:
@@ -1616,6 +1632,13 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 ```
+```
+= jobs/test → job ชื่อ Run Tests จะรันบน Ubuntu ล่าสุด
+services/postgres → สร้าง PostgreSQL container สำหรับ job นี้
+env → กำหนด user, password, database ของ PostgreSQL
+ports → map port ของ host ↔ container (ใช้ทดสอบหรือ debug)
+options/healthcheck → ตรวจสอบว่า database พร้อมใช้งานก่อนรัน test
+```
 5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
 ```yaml
     steps:
@@ -1628,4 +1651,17 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
 ```
+```
+๐ actions/checkout@v4 → ดึง source code จาก repo ของคุณเข้ามาใน runner
+๐ actions/setup-python@v5 → ติดตั้ง Python เวอร์ชันที่กำหนด
+๐ cache: 'pip' → cache dependencies ของ Python เพื่อรัน workflow เร็วขึ้น
+```
 6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+ ``` 
+Snyk → เครื่องมือด้าน ความปลอดภัยของโค้ดและ dependencies
+๐ ความสามารถหลัก
+๐ ตรวจสอบ vulnerabilities ของ package / library
+๐ แนะนำวิธีแก้ไขอัตโนมัติ
+๐ สแกน container, IaC (Infrastructure as Code), และโค้ด
+๐ Integrate กับ GitHub Actions ทำให้ CI/CD pipeline ตรวจสอบ security ได้
+  ```
