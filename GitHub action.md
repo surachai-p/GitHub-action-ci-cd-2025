@@ -1642,11 +1642,12 @@ options: กำหนด healthcheck ของ container นี้ เช่น 
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
+```
 uses: actions/checkout@v4: ดึง source code จาก repo นี้ลงมาใน runner
 uses: actions/setup-python@v5: ตั้งค่า Python environment ให้ runner
 python-version: ใช้ version จาก environment variable PYTHON_VERSION
 cache: 'pip': เก็บ cache ของ pip packages เพื่อการติดตั้งเร็วขึ้น
-```
+
 6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
 Snyk เป็นเครื่องมือด้าน Security DevOps ใช้สำหรับตรวจหาช่องโหว่ด้านความปลอดภัยใน:
 โค้ด (SAST) – ตรวจโค้ด source หาช่องโหว่
