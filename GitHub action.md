@@ -1143,6 +1143,8 @@ docker system prune -f
 - [✓ ] 
 bash
 ## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
+<img width="1870" height="1134" alt="image" src="https://github.com/user-attachments/assets/f2b4cda7-f97c-46bf-8c64-7c762ebd2cf0" />
+
 <img width="1919" height="1086" alt="Screenshot 2025-10-02 141804" src="https://github.com/user-attachments/assets/a6669bb7-63f3-4430-8cd8-0ba392cfbc72" />
 <img width="1917" height="573" alt="Screenshot 2025-10-02 141813" src="https://github.com/user-attachments/assets/07f09ddd-ebaf-46ff-823d-5bae235e8bc8" />
 
