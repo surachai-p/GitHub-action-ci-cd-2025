@@ -1042,12 +1042,12 @@ curl -s http://localhost:5000/ | python3 -m json.tool
 docker compose exec db psql -U user
 
 ```sql
-# ทดสอบคำสั่ง SQL
+#### ทดสอบคำสั่ง SQL
 psql> SELECT version();
 psql> \l          (list databases)
 psql> \q          (quit)
 ```
-
+```bash 
 # เข้าไปใน Redis container
 docker compose exec redis redis-cli
 
