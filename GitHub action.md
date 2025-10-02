@@ -1,4 +1,4 @@
-# Lab 00: Preparing Knowledge - YAML for Docker Compose & GitHub Actions
+<img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/f15d1dd6-10f4-4d67-a2aa-bd09d116968e" /># Lab 00: Preparing Knowledge - YAML for Docker Compose & GitHub Actions
 
 ## วัตถุประสงค์
 เพื่อเตรียมความพร้อมในการเขียนไฟล์ YAML สำหรับ Docker Compose และ GitHub Actions 
@@ -1141,10 +1141,12 @@ docker system prune -f
 - [ ] Tests ผ่านทั้งหมด
 - [ ] Database และ Redis เชื่อมต่อได้
 - [ ] 
-```bash
 ## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
+### docker
+<img width="1600" height="840" alt="image" src="https://github.com/user-attachments/assets/1d2a3db1-daf3-4029-ad1e-9dfc7be85a57" />
+### หน้าเว็บ
+<img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/83de00d6-7a38-4694-b36d-7ee7800a3166" />
 
-```
 
 ## การทดลองที่ 2: สร้าง GitHub Actions Workflow
 
