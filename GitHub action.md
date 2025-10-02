@@ -1597,9 +1597,31 @@ git push origin feature/test-pr
 
 ## คำถามท้ายการทดลอง
 1. docker compose คืืออะไร มีความสำคัญอย่างไร
-2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
-3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
-4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
+   
+```
+สามารถสร้างและจัดการหลายๆ container พร้อมกันได้จากไฟล์เดียว(docker-compose.yml)
+ความสำคัญคือ
+-จัดการ โปรแกรมที่บอกว่าโปรแกรมรันที่ไหน ใช้การตั้งค่าอะไร และใช้ทรัพยากรใด
+-กำหนดการเชื่อมต่อระหว่าง container
+-เริ่ม/หยุด environment ด้วยคำสั่งเดียว
+```
+
+3. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
+   ```
+   ชุดคำสั่งที่รันอัตโนมัติบน GitHub เมื่อเกิด event บางอย่าง เช่น push, pull request
+   CI (Continuous Integration): ทดสอบ code ทุกครั้งที่ push หรือ PR
+   CD (Continuous Deployment / Delivery): deploy app อัตโนมัติเมื่อ workflow ผ่าน
+  
+   ```
+5. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
+      ```
+   a) Volumes ใช้เก็บข้อมูลแบบ ถาวร แม้ container จะถูกลบไป
+   b) Networksใช้ให้ container สื่อสารกันใน network เฉพาะ
+   c) Healthcheck ตรวจสอบว่า service พร้อมทำงานหรือยัง ทำให้ container อื่นสามารถ รอจน service พร้อม ก่อนเริ่ม ป้องกันการเข้าถึงจากภายนอกที่ไม่ต้องการ
+      
+   ```
+    
+7. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
 ```yaml
 jobs:
   test:
@@ -1621,7 +1643,19 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 ```
-5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
+
+```
+การสร้าง job ชื่อ test ให้รันบนเครื่อง Ubuntu ล่าสุด (runs-on: ubuntu-latest) และตั้งค่า service เพิ่มเติมคือ PostgreSQL โดยใช้ Docker image postgres:16-alpine พร้อมกำหนด environment variables สำหรับรหัสผ่าน (POSTGRES_PASSWORD), ชื่อผู้ใช้ (POSTGRES_USER) และชื่อ database (POSTGRES_DB) รวมถึงแม็ป port 5432 ของ container กับ host เพื่อให้ job สามารถเชื่อมต่อได้ และใช้ options กำหนด health check ตรวจสอบว่า Postgres พร้อมใช้งาน (pg_isready) ทุก 10 วินาที มี timeout 5 วินาที และ retry 5 ครั้งก่อนถือว่า failed
+```
+
+5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร
+ ```
+  uses: actions/checkout@v4 → เป็น GitHub Action ที่ทำหน้าที่ clone โค้ดจาก repository ลงบน runner เพื่อให้ขั้นตอนต่อไปสามารถเข้าถึงโค้ดและรัน test หรือ build ได้
+uses: actions/setup-python@v5 → เป็น GitHub Action สำหรับ ติดตั้ง Python บน runner
+python-version: ${{ env.PYTHON_VERSION }} → กำหนดเวอร์ชัน Python ตาม environment variable
+cache: 'pip' → เปิดใช้ pip cache เพื่อลดเวลาติดตั้ง dependencies
+```
+
 ```yaml
     steps:
       - name: Checkout code
