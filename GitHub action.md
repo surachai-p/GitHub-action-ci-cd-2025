@@ -65,7 +65,7 @@ services:
     build: .
     container_name: flask_app
     ports:
-      - "5000:5000"
+      - "5000:5000"                       #port host:docker
     environment:
       - FLASK_ENV=development
       - DATABASE_URL=postgresql://user:pass@db:5432/mydb
@@ -1010,7 +1010,7 @@ docker compose logs db
 docker compose logs redis
 
 # ตรวจสอบ health status
-docker compose ps --format "table {{.Name}}\t{{.State}}\t{{.Health}}"
+docker compose ps --format "table {{.Name}}\t{{.State}}\t{{.Health}}" #เป็นการจัดรูปแบบการแสดงผลให้อยู่ในรูปแบบตารางที่อ่านง่ายขึ้น โดยจะแสดงข้อมูล 3 คอลัมน์คือ: 1. {{.Name}}: ชื่อของ container ดังนั้น เมื่อรันคำสั่งนี้รวมกัน จะเป็นการแสดงตารางสรุปสถานะและสถานะสุขภาพของทุก service ในโปรเจคของเรา ทำให้เราเห็นภาพรวมของระบบได้อย่างรวดเร็วว่า service ไหนทำงานปกติ, service ไหนมีปัญหา หรือ service ไหนยังไม่พร้อมใช้งาน
 ```
 
 #### ขั้นตอนที่ 6: ทดสอบ API Endpoints
@@ -1027,7 +1027,7 @@ curl http://localhost:5000/health
 # {"status":"healthy","database":"connected","redis":"connected"}
 
 # ทดสอบด้วย curl แบบ pretty print
-curl -s http://localhost:5000/ | python3 -m json.tool
+curl -s http://localhost:5000/ | python -m json.tool
 
 
 # ทดสอบด้วย browser
@@ -1133,16 +1133,15 @@ docker system prune -f
 
 ### Checklist ก่อนไปขั้นตอนถัดไป:
 
-- [ ] ไฟล์ทั้งหมดถูกสร้างครบ
-- [ ] .env มี passwords ที่ปลอดภัย
-- [ ] `docker compose config` ไม่มี error
-- [ ] Services ทั้งหมด status เป็น "Up" และ "healthy"
-- [ ] API endpoints ตอบกลับถูกต้อง
-- [ ] Tests ผ่านทั้งหมด
-- [ ] Database และ Redis เชื่อมต่อได้
+- [✅] ไฟล์ทั้งหมดถูกสร้างครบ
+- [✅] .env มี passwords ที่ปลอดภัย
+- [✅] `docker compose config` ไม่มี error
+- [✅] Services ทั้งหมด status เป็น "Up" และ "healthy"
+- [✅] API endpoints ตอบกลับถูกต้อง
+- [✅] Tests ผ่านทั้งหมด
+- [✅] Database และ Redis เชื่อมต่อได้
 ```
 ## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
-
 
 ### การทดลองที่ 2: สร้าง GitHub Actions Workflow
 
@@ -1159,6 +1158,9 @@ git remote add origin https://github.com/YOUR_USERNAME/flask-ci-cd-demo-2025.git
 git branch -M main
 git push -u origin main
 ```
+<img width="1919" height="1011" alt="image" src="https://github.com/user-attachments/assets/0507c39f-2313-43ff-9b84-05a0453d7b8e" />
+<img width="1919" height="614" alt="image" src="https://github.com/user-attachments/assets/b51ae273-f94b-4be4-b9d4-aa89cea2f4c0" />
+<img width="1919" height="620" alt="image" src="https://github.com/user-attachments/assets/6fa7f338-89dd-4feb-82af-d079ea76d183" />
 
 #### ขั้นตอนที่ 2: ตั้งค่า GitHub Secrets
 
@@ -1528,9 +1530,9 @@ git push origin main
 ```
 ## บันทึกรูปผลการทดลอง หน้า GitHub Actions
 ```bash
-
-
 ```
+
+<img width="1911" height="917" alt="image" src="https://github.com/user-attachments/assets/7142f771-712e-440e-8173-01470643576b" />
 
 #### ขั้นตอนที่ 5: ทดสอบ Pull Request
 
@@ -1546,10 +1548,9 @@ git push origin feature/test-pr
 ```
 ## บันทึกรูปผลการทดลอง 
 ```bash
-
-
 ```
 
+<img width="1914" height="926" alt="image" src="https://github.com/user-attachments/assets/b203e674-bcbe-457d-baa4-0b1e30559d91" />
 
 ---
 
@@ -1582,42 +1583,266 @@ git push origin feature/test-pr
 
 ---
 
-## คำถามท้ายการทดลอง
-1. docker compose คืืออะไร มีความสำคัญอย่างไร
-2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
-3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
-4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
+# คำตอบคำถามท้ายการทดลอง
+
+## 1. Docker Compose คืออะไร มีความสำคัญอย่างไร
+
+**Docker Compose** คือเครื่องมือสำหรับจัดการและรัน multi-container Docker applications โดยใช้ไฟล์ YAML เพื่อกำหนดค่าและจัดการ services หลายตัวพร้อมกัน
+
+### ความสำคัญ:
+- **จัดการ Multi-Service Applications**: สามารถรัน database, web server, cache, และ services อื่นๆ พร้อมกัน
+- **Network Management**: สร้าง network ให้ containers สื่อสารกันได้อัตโนมัติ
+- **Volume Management**: จัดการ persistent data และ shared storage
+- **Environment Configuration**: กำหนด environment variables และ configurations
+- **Development Consistency**: ทำให้ development environment เหมือนกับ production
+- **Easy Deployment**: deploy และ scale applications ได้ง่าย
+
+### ตัวอย่างการใช้งาน:
+```yaml
+version: '3.8'
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+      - redis
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: myapp
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+  redis:
+    image: redis:7-alpine
+```
+
+---
+
+## 2. GitHub Pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
+
+**GitHub Pipeline** (GitHub Actions Workflow) คือระบบ automation ที่ทำงานบน GitHub เพื่อสร้าง CI/CD pipeline
+
+### ความเกี่ยวข้องกับ CI/CD:
+
+#### **Continuous Integration (CI)**:
+- **Automated Testing**: รัน tests อัตโนมัติเมื่อมี code changes
+- **Code Quality Checks**: ตรวจสอบ code style, security vulnerabilities
+- **Build Verification**: ตรวจสอบว่า code build ได้สำเร็จ
+- **Integration Testing**: ทดสอบการทำงานร่วมกันของ components
+
+#### **Continuous Deployment (CD)**:
+- **Automated Deployment**: deploy application อัตโนมัติ
+- **Environment Management**: จัดการ staging และ production environments
+- **Release Management**: จัดการ versioning และ releases
+- **Rollback Capabilities**: สามารถ rollback เมื่อเกิดปัญหา
+
+### ประโยชน์:
+- **Fast Feedback**: รู้ผลการทดสอบทันทีเมื่อ push code
+- **Quality Assurance**: ป้องกัน bugs เข้า production
+- **Automation**: ลดงาน manual และ human errors
+- **Collaboration**: ทีมสามารถทำงานร่วมกันได้อย่างมีประสิทธิภาพ
+
+---
+
+## 3. จากไฟล์ Docker Compose ส่วนของ volumes, networks และ healthcheck มีความสำคัญอย่างไร
+
+### **Volumes**:
+```yaml
+volumes:
+  postgres_data:
+  redis_data:
+services:
+  db:
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+```
+
+**ความสำคัญ**:
+- **Data Persistence**: เก็บข้อมูลไว้แม้ container หยุดทำงาน
+- **Data Sharing**: แชร์ข้อมูลระหว่าง containers
+- **Backup & Recovery**: สามารถ backup และ restore ข้อมูลได้
+- **Performance**: เข้าถึงข้อมูลได้เร็วกว่าการ mount จาก host
+
+### **Networks**:
+```yaml
+networks:
+  app-network:
+    driver: bridge
+services:
+  web:
+    networks:
+      - app-network
+  db:
+    networks:
+      - app-network
+```
+
+**ความสำคัญ**:
+- **Service Communication**: containers สื่อสารกันได้ผ่าน service names
+- **Security Isolation**: แยก network traffic ระหว่าง applications
+- **Load Balancing**: กระจาย traffic ระหว่าง containers
+- **Service Discovery**: หา services อื่นๆ ได้อัตโนมัติ
+
+### **Health Checks**:
+```yaml
+services:
+  db:
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+```
+
+**ความสำคัญ**:
+- **Service Monitoring**: ตรวจสอบสถานะ service อย่างต่อเนื่อง
+- **Automatic Recovery**: restart container เมื่อ unhealthy
+- **Dependency Management**: รอให้ dependencies พร้อมก่อน start
+- **Load Balancer Integration**: ไม่ส่ง traffic ไป unhealthy containers
+
+---
+
+## 4. อธิบาย Code ของไฟล์ YAML ในส่วนนี้
+
 ```yaml
 jobs:
-  test:
-    name: Run Tests
-    runs-on: ubuntu-latest
+  test:                           # ชื่อ job
+    name: Run Tests              # ชื่อที่แสดงใน UI
+    runs-on: ubuntu-latest       # OS ที่ใช้รัน job
     
-    services:
-      postgres:
-        image: postgres:16-alpine
-        env:
+    services:                    # Services ที่ต้องการสำหรับ testing
+      postgres:                  # ชื่อ service
+        image: postgres:16-alpine # Docker image ที่ใช้
+        env:                     # Environment variables
           POSTGRES_PASSWORD: testpass
           POSTGRES_USER: testuser
           POSTGRES_DB: testdb
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U testuser"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+        ports:                   # Port mapping
+          - 5432:5432           # host:container
+        options: >-              # Docker run options
+          --health-cmd "pg_isready -U testuser"  # คำสั่งตรวจสอบสุขภาพ
+          --health-interval 10s   # ตรวจสอบทุก 10 วินาที
+          --health-timeout 5s     # timeout 5 วินาที
+          --health-retries 5      # retry 5 ครั้ง
 ```
-5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
-```yaml
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          cache: 'pip'
+### รายละเอียดแต่ละส่วน:
+
+- **`runs-on: ubuntu-latest`**: ใช้ Ubuntu runner ล่าสุดจาก GitHub
+- **`services`**: สร้าง service containers สำหรับ testing
+- **`image: postgres:16-alpine`**: ใช้ PostgreSQL version 16 บน Alpine Linux (เบา)
+- **`env`**: ตั้งค่า database credentials
+- **`ports`**: เปิด port 5432 ให้ test code เข้าถึงได้
+- **`health-cmd`**: ใช้ `pg_isready` ตรวจสอบว่า PostgreSQL พร้อมใช้งาน
+- **Health check parameters**: ตั้งค่าการตรวจสอบให้รอจนกว่า DB จะพร้อม
+
+---
+
+## 5. จาก Code ในส่วนของ uses: actions/checkout@v4 และ uses: actions/setup-python@v5 คืออะไร
+
+```yaml
+steps:
+  - name: Checkout code
+    uses: actions/checkout@v4      # Action สำหรับ download source code
+
+  - name: Set up Python
+    uses: actions/setup-python@v5  # Action สำหรับติดตั้ง Python
+    with:
+      python-version: ${{ env.PYTHON_VERSION }}  # Python version ที่ต้องการ
+      cache: 'pip'                 # Cache pip dependencies
 ```
-6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+
+### **actions/checkout@v4**:
+- **หน้าที่**: Download source code จาก repository มาใน runner
+- **Version v4**: เป็น version ล่าสุดที่มี performance และ security improvements
+- **ความจำเป็น**: ต้องมีเพื่อให้ runner เข้าถึง code ได้
+
+### **actions/setup-python@v5**:
+- **หน้าที่**: ติดตั้งและตั้งค่า Python environment
+- **python-version**: กำหนด Python version (ใช้จาก environment variable)
+- **cache: 'pip'**: Cache pip packages เพื่อเพิ่มความเร็วในการ build
+
+### **GitHub Actions Marketplace**:
+- **Pre-built Actions**: Actions เหล่านี้เป็น pre-built tools จาก community
+- **Reusability**: สามารถใช้ซ้ำได้ในหลาย projects
+- **Maintenance**: มี maintainers ดูแลและอัพเดท
+- **Security**: ผ่านการตรวจสอบความปลอดภัย
+
+### **Version Pinning**:
+- **@v4, @v5**: ระบุ version เพื่อความเสถียร
+- **Security**: ป้องกันการใช้ malicious updates
+- **Reproducibility**: ทำให้ build results เหมือนเดิม
+
+---
+
+## 6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+
+**Snyk** คือ platform สำหรับ security testing และ vulnerability management ที่เน้น developer-first approach
+
+### **ความสามารถหลัก**:
+
+#### **1. Dependency Scanning**:
+- **Open Source Vulnerabilities**: ตรวจสอบ vulnerabilities ใน dependencies
+- **License Compliance**: ตรวจสอบ license issues
+- **Automated Fixes**: แนะนำและสร้าง pull requests สำหรับแก้ไข
+- **Database Coverage**: มี vulnerability database ที่ครอบคลุม
+
+#### **2. Code Analysis (SAST)**:
+- **Static Analysis**: วิเคราะห์ source code หา security issues
+- **Custom Rules**: สร้าง security rules เฉพาะ organization
+- **IDE Integration**: ตรวจสอบ real-time ใน IDE
+- **Multiple Languages**: รองรับหลายภาษาโปรแกรม
+
+#### **3. Container Security**:
+- **Image Scanning**: ตรวจสอบ Docker images
+- **Base Image Recommendations**: แนะนำ secure base images
+- **Runtime Monitoring**: ตรวจสอบ containers ขณะทำงาน
+- **Kubernetes Security**: ตรวจสอบ K8s configurations
+
+#### **4. Infrastructure as Code (IaC)**:
+- **Terraform Scanning**: ตรวจสอบ Terraform configurations
+- **CloudFormation**: ตรวจสอบ AWS CloudFormation templates
+- **Kubernetes YAML**: ตรวจสอบ K8s manifests
+- **Misconfiguration Detection**: หา security misconfigurations
+
+### **การใช้งานใน CI/CD**:
+
+```yaml
+- name: Run Snyk Dependencies Scan
+  uses: snyk/actions/python@master
+  env:
+    SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+  with:
+    args: --severity-threshold=high
+    command: test
+
+- name: Run Snyk Code Scan
+  uses: snyk/actions/python@master
+  env:
+    SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+  with:
+    command: code test
+```
+
+### **ประโยชน์**:
+- **Early Detection**: หา vulnerabilities ตั้งแต่ development phase
+- **Automated Remediation**: แก้ไขปัญหาอัตโนมัติ
+- **Developer Friendly**: integrate กับ workflow ที่มีอยู่
+- **Continuous Monitoring**: ตรวจสอบอย่างต่อเนื่อง
+- **Compliance**: ช่วยให้ comply กับ security standards
+- **Risk Prioritization**: จัดลำดับความสำคัญของ vulnerabilities
+
+### **Pricing Models**:
+- **Free Tier**: สำหรับ open source projects
+- **Team Plans**: สำหรับทีมเล็ก
+- **Enterprise**: สำหรับองค์กรใหญ่ที่ต้องการ advanced features
+
+---
+
+## สรุป
+
+การใช้เครื่องมือเหล่านี้ร่วมกันจะช่วยสร้าง **robust, secure, และ maintainable** software development lifecycle ที่มีประสิทธิภาพสูง โดยเฉพาะในยุค DevOps และ Cloud-native applications
+
