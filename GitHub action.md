@@ -1143,6 +1143,9 @@ docker system prune -f
 - [ ] 
 ```bash
 ## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
+<img width="2256" height="1502" alt="bm 2" src="https://github.com/user-attachments/assets/8c83cec2-0a83-4915-abcf-893324b5c56f" />
+<img width="2256" height="1504" alt="bm 1" src="https://github.com/user-attachments/assets/ab736fa9-8816-4fdc-b192-df670b4f1c14" />
+<img width="2254" height="1504" alt="bm dc" src="https://github.com/user-attachments/assets/7d7316f0-2283-4594-9640-f5966285206a" />
 
 ```
 
@@ -1530,6 +1533,7 @@ git push origin main
 ```
 ## บันทึกรูปผลการทดลอง หน้า GitHub Actions
 ```bash
+<img width="2255" height="1503" alt="image" src="https://github.com/user-attachments/assets/26a39745-1276-4db0-b7dc-e3614e409be0" />
 
 
 ```
