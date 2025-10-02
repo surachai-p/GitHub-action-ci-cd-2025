@@ -1141,10 +1141,12 @@ docker system prune -f
 - [ ] Tests ผ่านทั้งหมด
 - [ ] Database และ Redis เชื่อมต่อได้
 - [ ] 
-```bash
-## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
 
-```
+บันทึกรูปผลการทดลอง
+<img width="619" height="535" alt="image" src="https://github.com/user-attachments/assets/21e0754c-e8c9-4aa2-b349-197c9c395a17" />
+<img width="1918" height="1076" alt="image" src="https://github.com/user-attachments/assets/e14770d8-b4d2-4abe-9eb9-394c794f2f7f" />
+<img width="317" height="203" alt="image" src="https://github.com/user-attachments/assets/7355722e-abeb-417a-8483-d5a28d71beaa" />
+
 
 ## การทดลองที่ 2: สร้าง GitHub Actions Workflow
 
@@ -1529,10 +1531,8 @@ git push origin main
 # ตรวจสอบผลลัพธ์ใน GitHub Actions 
 ```
 ## บันทึกรูปผลการทดลอง หน้า GitHub Actions
-```bash
+<img width="1433" height="503" alt="image" src="https://github.com/user-attachments/assets/da141d4e-45cc-4d97-8759-ab6bc86f8329" />
 
-
-```
 
 #### ขั้นตอนที่ 5: ทดสอบ Pull Request
 
@@ -1547,13 +1547,7 @@ git push origin feature/test-pr
 # ตรวจสอบ workflow การทำงานและ comment ที่ถูกสร้าง
 ```
 ## บันทึกรูปผลการทดลอง 
-```bash
-
-
-```
-
-
----
+<img width="1478" height="604" alt="image" src="https://github.com/user-attachments/assets/9e8d0cc5-08f5-4ece-bfd8-5fe954478a34" />
 
 
 ## Resources และเอกสารอ้างอิง
@@ -1586,8 +1580,28 @@ git push origin feature/test-pr
 
 ## คำถามท้ายการทดลอง
 1. docker compose คืออะไร มีความสำคัญอย่างไร
+ตอบ 
+- เครื่องมือจัดการหลายคอนเทนเนอร์ด้วยไฟล์ YAML เดียว (docker-compose.yml)
+- กำหนด services / networks / volumes / env / healthcheck / dependencies ได้อย่างชัดเจน (เป็น infrastructure as code)
+- ช่วยให้ สpin-up/tear-down สภาพแวดล้อม dev/test ได้รวดเร็วด้วยคำสั่งเดียว (docker compose up -d)
+- ลดงานตั้งค่าซ้ำ ๆ บนแต่ละเครื่อง, ทำงานร่วมทีมง่าย, reproducible, ใช้ใน CI ได้สะดวก
+
 2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
+ตอบ 
+คือ Workflow (ไฟล์ YAML) ที่ GitHub Actions รันอัตโนมัติเมื่อเกิดเหตุการณ์ เช่น push, pull_request
+CI (Continuous Integration): build + test + scan ทุกครั้งที่มีการเปลี่ยนแปลงโค้ด
+CD (Continuous Delivery/Deployment): ต่อยอดไป build/push image, deploy, แจ้งผลอัตโนมัติ
+ทำให้คุณภาพโค้ดสม่ำเสมอ, feedback เร็ว, ลดงาน manual
+
 3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
+ตอบ 
+- volumes: เก็บข้อมูลถาวร (เช่น postgres_data, redis_data) ข้อมูลไม่หายเมื่อคอนเทนเนอร์หยุด/อัปเดต image
+
+- networks: ให้คอนเทนเนอร์คุยกันด้วย ชื่อ service (DNS ภายในเครือข่าย เช่น db, redis) แยกสCOPEเครือข่าย เพิ่มความปลอดภัย
+
+- healthcheck: นิยาม “พร้อมใช้งานจริงหรือยัง” ของ service (เช่น pg_isready, redis-cli ping)
+ใช้คู่กับ depends_on: condition: service_healthy เพื่อสั่งให้เว็บ รอ จนกว่าฐานข้อมูล/redis พร้อม ลด race condition ตอนสตาร์ท
+
 4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
 ```yaml
 jobs:
@@ -1610,6 +1624,12 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 ```
+ตอบ 
+- Runner จะมีคอนเทนเนอร์ Postgres (และ Redis ถ้ามี) ให้คุณเทสจริงระหว่างรัน CI
+- ตั้งค่าผู้ใช้/รหัส/DB ผ่าน env
+- ใช้ --health-* เพื่อให้ job รอจน DB “ready” ก่อนรันเทสต์
+- ในขั้น steps สามารถเชื่อมต่อไปที่ localhost:5432 หรือชื่อบริการ (postgres) ได้
+
 5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
 ```yaml
     steps:
@@ -1622,4 +1642,21 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
 ```
+ตอบ 
+actions/checkout@v4: ดึงซอร์สโค้ดของ repo (ตาม commit/PR ที่ทริกเกอร์) มาไว้ใน workspace ของ runner
+
+actions/setup-python@v5: ติดตั้ง/เลือกเวอร์ชัน Python ให้ตรงที่ต้องการ และ (ในตัวอย่าง) เปิด pip cache อัตโนมัติเพื่อให้งานรันเร็วขึ้น
+
 6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+ตอบ
+แพลตฟอร์ม DevSecOps สำหรับสแกนความปลอดภัย ครอบคลุม:
+
+    SCA (Software Composition Analysis): ตรวจช่องโหว่ในไลบรารี/แพ็กเกจ (เช่น requirements.txt) และ license compliance
+
+    SAST (Code Scan): วิเคราะห์โค้ดหาช่องโหว่ (เช่น Hard-coded secrets, SQLi patterns)
+
+    Container/IaC Scan: ตรวจ image ของ Docker และไฟล์ IaC (K8s/Compose/Terraform) หา misconfiguration
+
+    Continuous monitoring: เฝ้าระวังโปรเจ็กต์ เมื่อมี CVE ใหม่จะแจ้งเตือน/เปิด PR แนะนำเวอร์ชันแก้
+
+    อินทิเกรตได้กับ IDE, CLI, GitHub Actions, และ Registry ต่าง ๆ
