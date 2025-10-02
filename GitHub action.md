@@ -1529,10 +1529,7 @@ git push origin main
 # ตรวจสอบผลลัพธ์ใน GitHub Actions 
 ```
 ## บันทึกรูปผลการทดลอง หน้า GitHub Actions
-```bash
-
-
-```
+![alt text](image-3.png)
 
 #### ขั้นตอนที่ 5: ทดสอบ Pull Request
 
@@ -1547,11 +1544,7 @@ git push origin feature/test-pr
 # ตรวจสอบ workflow การทำงานและ comment ที่ถูกสร้าง
 ```
 ## บันทึกรูปผลการทดลอง 
-```bash
-
-
-```
-
+![alt text](image-4.png)
 
 ---
 
@@ -1586,8 +1579,16 @@ git push origin feature/test-pr
 
 ## คำถามท้ายการทดลอง
 1. docker compose คืืออะไร มีความสำคัญอย่างไร
+ตอบ คือเครื่องมือที่ช่วยให้เราสามารถจัดการหลาย container พร้อมกันได้ผ่านไฟล์  โดยไม่ต้องรันคำสั่ง ทีละตัว
+
 2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
+ตอบ GitHub Pipeline คือชุดของขั้นตอน (jobs/steps) ที่กำหนดในไฟล์  เพื่อให้ GitHub Actions ทำงานอัตโนมัติ เช่น build, test, deploy
+
 3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
+volumes = เก็บข้อมูลถาวร เช่นฐานข้อมูล ไม่หายเมื่อ container ถูกลบ
+networks = ให้ container สื่อสารกันได้อย่างปลอดภัยและแยกจากระบบภายนอก
+healthcheck = ตรวจสอบว่า container พร้อมใช้งานหรือยัง เช่น database ต้องพร้อมก่อน web จะเริ่ม
+
 4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
 ```yaml
 jobs:
@@ -1610,6 +1611,15 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 ```
+ตอบ
+เป็นขั้นตอนใน GitHub Actions ที่ชื่อว่า "Run Tests" โดย
+- รันบนเครื่องเสมือนที่ใช้ระบบปฏิบัติการ ubuntu-latest
+- เปิด service ของ PostgreSQL ขึ้นมาชั่วคราวเพื่อให้ workflow ใช้งาน
+- กำหนด environment เช่น user, password, db name
+- กำหนด healthcheck ด้วย pg_isready เพื่อตรวจสอบว่า PostgreSQL พร้อมใช้งานแล้วหรือยัง
+- หาก PostgreSQL ยังไม่พร้อมในเวลา 10 วินาที × 5 ครั้ง จะถือว่าล้มเหลว
+
+
 5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
 ```yaml
     steps:
@@ -1622,4 +1632,15 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
 ```
+ตอบ เป็น action ที่ GitHub เตรียมไว้ให้ใช้งานใน workflow
+- actions/checkout@v4: ดึงโค้ดจาก repository มายัง runner (เครื่องที่รัน pipeline)
+- actions/setup-python@v5: ติดตั้ง Python version ที่ต้องการบน runner
+
 6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+ตอบ Snyk คือเครื่องมือสำหรับ ตรวจสอบความปลอดภัยในโค้ดและ dependency ของโปรเจกต์ เช่น Python, Node.js, Docker, Kubernetes ฯลฯ
+ความสามารถของ Snyk:
+- ตรวจหา ช่องโหว่ (vulnerabilities) ใน dependency/package
+- ตรวจสอบ Docker image ว่ามีช่องโหว่หรือไม่
+- แนะนำ วิธีแก้ไข (fix) หรืออัปเดตเวอร์ชันที่ปลอดภัย
+- ทำงานร่วมกับ GitHub Actions หรือ CI/CD tools ได้อย่างง่าย
+- มี dashboard ติดตามสถานะความปลอดภัยของโปรเจกต์
