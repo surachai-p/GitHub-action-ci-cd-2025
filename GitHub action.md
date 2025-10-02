@@ -1143,6 +1143,8 @@ docker system prune -f
 ```
 ## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
 
+<img width="1915" height="1020" alt="image" src="https://github.com/user-attachments/assets/ac557a2a-3a65-44b6-adf2-e7e297cfe881" />
+
 
 ### การทดลองที่ 2: สร้าง GitHub Actions Workflow
 
