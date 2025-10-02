@@ -1149,8 +1149,11 @@ docker system prune -f
 <img width="1366" height="720" alt="image" src="https://github.com/user-attachments/assets/f67d7836-65f4-4adf-ba5c-e4613ee0e4eb" />
 <img width="1366" height="651" alt="image" src="https://github.com/user-attachments/assets/227896aa-f22a-4650-9b27-ede0f0fe8b29" />
 <img width="1366" height="729" alt="image" src="https://github.com/user-attachments/assets/546f15fd-8d07-4925-8a3f-7707b9780ee4" />
-<img width="1366" height="686" alt="image" src="https://github.com/user-attachments/assets/02dbe001-2c87-41c9-ab30-b2bf6df3f5bb" />
-ตอนแกรขึ้นเป็นดำๆคับพอทำจะมาบันทึกผลแล้วกดรีเฟรชหน้าจอมันขึ้นแบบนี้ครับ
+รูปเว็บ
+<img width="707" height="235" alt="image" src="https://github.com/user-attachments/assets/e6933246-d0c4-4609-a235-7bdeaa349c63" />
+<img width="808" height="218" alt="image" src="https://github.com/user-attachments/assets/85c4dede-9f89-4da7-be04-88c6665a210c" />
+ของผมขึ้นเหมือนเพื่อนแต่ผมปิดแท็บและลบไปแล้วครับเปิดอีกทีมันขึ้น
+<img width="1361" height="616" alt="image" src="https://github.com/user-attachments/assets/df05be97-ad60-4ef7-8537-ed97c3af4aaf" />
 
 ## การทดลองที่ 2: สร้าง GitHub Actions Workflow
 
