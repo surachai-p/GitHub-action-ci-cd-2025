@@ -1133,18 +1133,18 @@ docker system prune -f
 
 ### Checklist ก่อนไปขั้นตอนถัดไป:
 
-- [ ] ไฟล์ทั้งหมดถูกสร้างครบ
-- [ ] .env มี passwords ที่ปลอดภัย
-- [ ] `docker compose config` ไม่มี error
-- [ ] Services ทั้งหมด status เป็น "Up" และ "healthy"
-- [ ] API endpoints ตอบกลับถูกต้อง
-- [ ] Tests ผ่านทั้งหมด
-- [ ] Database และ Redis เชื่อมต่อได้
+- [✓] ไฟล์ทั้งหมดถูกสร้างครบ
+- [✓] .env มี passwords ที่ปลอดภัย
+- [✓] `docker compose config` ไม่มี error
+- [✓] Services ทั้งหมด status เป็น "Up" และ "healthy"
+- [✓] API endpoints ตอบกลับถูกต้อง
+- [✓] Tests ผ่านทั้งหมด
+- [✓] Database และ Redis เชื่อมต่อได้
 - [ ] 
-```bash
-## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
 
-```
+<img width="1218" height="779" alt="ภาพถ่ายหน้าจอ 2568-10-02 เวลา 14 44 07" src="https://github.com/user-attachments/assets/49c2066b-b800-402c-a048-205571f420c2" />
+<img width="1259" height="692" alt="ภาพถ่ายหน้าจอ 2568-10-02 เวลา 14 47 28" src="https://github.com/user-attachments/assets/250d1098-7cfa-4b95-bad8-d3de65f2d108" />
+
 
 ## การทดลองที่ 2: สร้าง GitHub Actions Workflow
 
@@ -1529,10 +1529,8 @@ git push origin main
 # ตรวจสอบผลลัพธ์ใน GitHub Actions 
 ```
 ## บันทึกรูปผลการทดลอง หน้า GitHub Actions
-```bash
+<img width="1432" height="635" alt="ภาพถ่ายหน้าจอ 2568-10-02 เวลา 15 30 26" src="https://github.com/user-attachments/assets/9120cbca-59d3-4f9d-927c-267f1178874e" />
 
-
-```
 
 #### ขั้นตอนที่ 5: ทดสอบ Pull Request
 
@@ -1547,11 +1545,7 @@ git push origin feature/test-pr
 # ตรวจสอบ workflow การทำงานและ comment ที่ถูกสร้าง
 ```
 ## บันทึกรูปผลการทดลอง 
-```bash
-
-
-```
-
+<img width="1294" height="727" alt="ภาพถ่ายหน้าจอ 2568-10-02 เวลา 15 29 23" src="https://github.com/user-attachments/assets/49a1975e-83e2-43a0-a537-401021a5cc9c" />
 
 ---
 
@@ -1586,8 +1580,20 @@ git push origin feature/test-pr
 
 ## คำถามท้ายการทดลอง
 1. docker compose คืออะไร มีความสำคัญอย่างไร
+  - Docker Compose คือเครื่องมือที่ใช้รันและจัดการหลายคอนเทนเนอร์พร้อมกันในโปรเจกต์เดียว โดยกำหนดบริการต่างๆ เช่น เว็บเซิร์ฟเวอร์หรือฐานข้อมูล ในไฟล์ docker-compose-ml 
+  - ความสำคัญของ Docker Compose
+    - จัดการหลายคอนเทนเนอร์พร้อมกัน
+    - ตั้งค่าและรันซ้ำได้ง่าย
+    - เหมาะสำหรับการพัฒนาและทดสอบ
 2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
+  - GitHub Actions คือระบบอัตโนมัติบน GitHub ที่ช่วยสร้าง workflow สำหรับการพัฒนาโปรเจกต์ ตั้งแต่การทดสอบโค้ด การสร้างแอปพลิเคชัน ไปจนถึงการดีพลอยโค้ด โดยใช้ไฟล์คอนฟิก YAML (.github/workflows/...) กำหนดขั้นตอนต่างๆ
+  - ความสำคัญและความเกี่ยวข้องกับ CI/CD :
+      - Continuous Integration (CI): ทำให้โค้ดจากหลายคนถูกรวมเข้ากันได้ต่อเนื่องและปลอดภัย โดยรันทดสอบอัตโนมัติทุกครั้งที่มีการ push หรือ pull request
+      - Continuous Delivery / Deployment (CD): ทำให้โค้ดที่ผ่านการทดสอบแล้วสามารถส่งไปยังสภาพแวดล้อมจริง หรือ staging ได้โดยอัตโนมัติ ลดข้อผิดพลาดจากการดีพลอยด้วยมือ
 3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
+  - volumes ใช้เก็บข้อมูลของคอนเทนเนอร์ให้อยู่คงทน แม้ว่าคอนเทนเนอร์จะถูกลบหรือสร้างใหม่ สำคัญสำหรับเก็บฐานข้อมูลหรือไฟล์ที่ต้องใช้ระหว่างการรันหลายครั้ง
+  - networks กำหนดเครือข่ายให้คอนเทนเนอร์สามารถสื่อสารกันได้ ช่วยให้บริการต่างๆ ภายใน Compose เช่น เว็บเซิร์ฟเวอร์กับฐานข้อมูล ติดต่อกันอย่างปลอดภัยและแยกออกจากเครือข่ายภายนอก
+  - healthcheck ใช้ตรวจสอบสถานะของคอนเทนเนอร์ว่าแอปพลิเคชันทำงานถูกต้องหรือไม่ สำคัญสำหรับ CI/CD pipeline เพราะช่วยให้ระบบรู้ว่า container พร้อมใช้งานก่อนทำงานขั้นตอนถัดไป
 4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
 ```yaml
 jobs:
@@ -1610,6 +1616,22 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 ```
+#### jobs.test
+
+- **jobs:** กำหนดงานที่จะรันใน GitHub Actions workflow  
+- **test:** ชื่อ job สำหรับรันชุดทดสอบ  
+- **name: Run Tests:** ชื่อที่แสดงบนหน้า GitHub Actions  
+- **runs-on: ubuntu-latest:** ใช้ runner เป็น Ubuntu ล่าสุด  
+
+#### services (PostgreSQL)
+- **image:** postgres:16-alpine → ใช้ PostgreSQL 16 บน Alpine Linux  
+- **env:** กำหนดผู้ใช้, รหัสผ่าน และชื่อฐานข้อมูล  
+- **ports:** 5432:5432 → แมปพอร์ต container กับ host  
+- **options (healthcheck):**
+  - `pg_isready -U testuser` → ตรวจสอบว่า PostgreSQL พร้อมใช้งาน  
+  - ตรวจสอบทุก 10 วินาที, timeout 5 วินาที, retry 5 ครั้ง  
+
+
 5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
 ```yaml
     steps:
@@ -1622,4 +1644,20 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
 ```
+
+  - uses: actions/checkout@v4
+    -  คือ GitHub Action ที่ใช้ ดึงโค้ดจาก repository ลงมาใน runner เพื่อให้ workflow สามารถเข้าถึงไฟล์โค้ด รันทดสอบ สร้าง หรือดีพลอยได้ Step นี้มักจะอยู่ ขั้นแรกสุด ของทุก workflow
+    - @v4 คือเวอร์ชันของ action
+  - uses: actions/setup-python@v5
+    - คือ GitHub Action ที่ใช้ ติดตั้ง Python บน runner สำหรับ workflow
+    - @v5 หมายถึง เวอร์ชันของ GitHub Action
+
 6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+- Snyk คืออะไร
+  เป็น เครื่องมือความปลอดภัยสำหรับซอฟต์แวร์ ช่วยตรวจจับและแก้ไข ช่องโหว่ด้านความปลอดภัย ในโค้ด ไลบรารี และ container ของโปรเจกต์ โดยสามารถใช้งานร่วมกับระบบ - CI/CD เช่น GitHub Actions, GitLab CI, Jenkins หรือ Docker ได้
+- ความสามารถหลักของ Snyk
+  - ตรวจสอบช่องโหว่ (Vulnerability Scanning) สแกนโค้ด ไลบรารี หรือ dependencies เพื่อหาช่องโหว่ด้านความปลอดภัย
+  - จัดการ license ของ dependencies ตรวจสอบว่า dependencies ที่ใช้มี license ปลอดภัยและอนุญาตใช้งานตามกฎหมาย
+  - แก้ไขช่องโหว่อัตโนมัติ (Fix & Patch) แนะนำเวอร์ชันใหม่หรือแพทช์สำหรับ dependencies ที่มีปัญหา
+  - ตรวจสอบ container และ infrastructure-as-code สแกน Docker image, Kubernetes, Terraform เพื่อหาช่องโหว่และ configuration ที่ไม่ปลอดภัย
+  - Integration กับ CI/CD ทำให้การตรวจสอบความปลอดภัยเป็นส่วนหนึ่งของ pipeline อัตโนมัติ
