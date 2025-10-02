@@ -1645,7 +1645,9 @@ jobs:
 ```
 
 ```
-การสร้าง job ชื่อ test ให้รันบนเครื่อง Ubuntu ล่าสุด (runs-on: ubuntu-latest) และตั้งค่า service เพิ่มเติมคือ PostgreSQL โดยใช้ Docker image postgres:16-alpine พร้อมกำหนด environment variables สำหรับรหัสผ่าน (POSTGRES_PASSWORD), ชื่อผู้ใช้ (POSTGRES_USER) และชื่อ database (POSTGRES_DB) รวมถึงแม็ป port 5432 ของ container กับ host เพื่อให้ job สามารถเชื่อมต่อได้ และใช้ options กำหนด health check ตรวจสอบว่า Postgres พร้อมใช้งาน (pg_isready) ทุก 10 วินาที มี timeout 5 วินาที และ retry 5 ครั้งก่อนถือว่า failed
+การสร้าง job ชื่อ test ให้รันบนเครื่อง Ubuntu ล่าสุด (runs-on: ubuntu-latest) และตั้งค่า service เพิ่มเติมคือ PostgreSQL
+โดยใช้ Docker image postgres:16-alpine พร้อมกำหนด environment variables สำหรับรหัสผ่าน (POSTGRES_PASSWORD),
+ชื่อผู้ใช้ (POSTGRES_USER) และชื่อ database (POSTGRES_DB) รวมถึงแม็ป port 5432 ของ container กับ host เพื่อให้ job สามารถเชื่อมต่อได้ และใช้ options กำหนด health check ตรวจสอบว่า Postgres พร้อมใช้งาน (pg_isready) ทุก 10 วินาที มี timeout 5 วินาที และ retry 5 ครั้งก่อนถือว่า failed
 ```
 
 5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร
