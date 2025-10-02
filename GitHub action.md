@@ -1133,25 +1133,25 @@ docker system prune -f
 
 ### Checklist ก่อนไปขั้นตอนถัดไป:
 
-- [ ] ไฟล์ทั้งหมดถูกสร้างครบ
-- [ ] .env มี passwords ที่ปลอดภัย
-- [ ] `docker compose config` ไม่มี error
-- [ ] Services ทั้งหมด status เป็น "Up" และ "healthy"
-- [ ] API endpoints ตอบกลับถูกต้อง
-- [ ] Tests ผ่านทั้งหมด
-- [ ] Database และ Redis เชื่อมต่อได้
-- [ ] 
+- [✓] ไฟล์ทั้งหมดถูกสร้างครบ
+- [✓] .env มี passwords ที่ปลอดภัย
+- [✓] `docker compose config` ไม่มี error
+- [✓] Services ทั้งหมด status เป็น "Up" และ "healthy"
+- [✓] API endpoints ตอบกลับถูกต้อง
+- [✓] Tests ผ่านทั้งหมด
+- [✓] Database และ Redis เชื่อมต่อได้
+- [✓] 
 ```bash
 ## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
 
 ```
-
+<img width="3420" height="2156" alt="image" src="https://github.com/user-attachments/assets/ecb5da4f-952c-4c62-99ff-c949f5585832" />
 ## การทดลองที่ 2: สร้าง GitHub Actions Workflow
 
 #### ขั้นตอนที่ 1: สร้าง GitHub Repository
 
 ```bash
-# Initial commit
+# Initial comm✓it
 git init
 git add .
 git commit -m "Initial commit: Flask app setup"
