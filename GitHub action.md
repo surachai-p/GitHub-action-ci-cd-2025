@@ -1145,6 +1145,11 @@ docker system prune -f
 ```
 <img width="1598" height="950" alt="image" src="https://github.com/user-attachments/assets/9eea8a8e-7fc5-4fbb-919b-b1ed119214cc" />
 
+<img width="745" height="254" alt="image" src="https://github.com/user-attachments/assets/55299230-276f-40fd-b824-822e77f4b6d1" />
+
+<img width="784" height="328" alt="image" src="https://github.com/user-attachments/assets/39141dbc-2b1f-4d57-a7c6-50312ad2e429" />
+
+
 
 
 ### การทดลองที่ 2: สร้าง GitHub Actions Workflow
