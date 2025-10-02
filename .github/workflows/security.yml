@@ -53,6 +53,8 @@ jobs:
       with:
         sarif_file: semgrep.sarif
       continue-on-error: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # Job 2: Dependency Scanning
   dependency-scanning:
@@ -95,6 +97,7 @@ jobs:
       with:
         name: snyk-report
         path: snyk-report.json
+      continue-on-error: true
 
   # Job 3: Container Security Scanning
   container-security:
@@ -133,6 +136,9 @@ jobs:
       if: always()
       with:
         sarif_file: 'trivy-container-results.sarif'
+      continue-on-error: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         
     # Docker Scout - Docker security scanning
     - name: Run Docker Scout
@@ -150,6 +156,8 @@ jobs:
       with:
         sarif_file: 'docker-scout-results.sarif'
       continue-on-error: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # Job 4: Secret Scanning
   secret-scanning:

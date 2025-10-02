@@ -120,6 +120,8 @@ jobs:
       with:
         sarif_file: 'trivy-image-results.sarif'
       continue-on-error: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # Job 4: Deploy to Staging (only on develop branch)
   deploy-staging:
