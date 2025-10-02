@@ -1142,9 +1142,9 @@ docker system prune -f
 - [ ] Database และ Redis เชื่อมต่อได้
 ```
 ## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
-
+```
 <img width="1915" height="1020" alt="image" src="https://github.com/user-attachments/assets/ac557a2a-3a65-44b6-adf2-e7e297cfe881" />
-
+```
 
 ### การทดลองที่ 2: สร้าง GitHub Actions Workflow
 
@@ -1530,8 +1530,9 @@ git push origin main
 ```
 ## บันทึกรูปผลการทดลอง หน้า GitHub Actions
 ```bash
-
-
+```
+<img width="1502" height="709" alt="image" src="https://github.com/user-attachments/assets/53ab7960-cf4c-4212-914d-23a4add0a57e" />
+```
 ```
 
 #### ขั้นตอนที่ 5: ทดสอบ Pull Request
