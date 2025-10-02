@@ -1530,7 +1530,7 @@ git push origin main
 # ตรวจสอบผลลัพธ์ใน GitHub Actions 
 ```
 ## บันทึกรูปผลการทดลอง หน้า GitHub Actions
-<img width="1919" height="1073" alt="image" src="https://github.com/user-attachments/assets/28fbe700-5b88-4814-bace-05b3cc929f19" />
+<img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/692a89b2-26ad-494c-a081-dc2e3a08faa8" />
 
 
 #### ขั้นตอนที่ 5: ทดสอบ Pull Request
@@ -1546,7 +1546,7 @@ git push origin feature/test-pr
 # ตรวจสอบ workflow การทำงานและ comment ที่ถูกสร้าง
 ```
 ## บันทึกรูปผลการทดลอง 
-<img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/870e189f-a34c-4faf-a934-0173a0b11d2a" />
+<img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/6d2e9418-d5a6-4a2e-a057-a26ce4c58e7b" />
 
 
 
@@ -1639,4 +1639,25 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
 ```
+- actions/checkout@v4
+  - ดึงซอร์สโค้ดของRepo เข้า workspace ของ runner (รวมถึงซับโมดูล/ประวัติ ตามออปชัน) เพื่อให้สเต็ปถัดไปรันบนโค้ดปัจจุบันได้
+- actions/setup-python@v5
+  - ติดตั้ง/สลับเวอร์ชัน Python บน runner (ตาม python-version) และตั้งแคช pip ให้ด้วย (เมื่อระบุ cache: 'pip') → ติดตั้งแพ็กเกจเร็วขึ้นและได้เวอร์ชันที่คุมได้
 6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+- Snyk คือแพลตฟอร์มด้านความปลอดภัยสำหรับนักพัฒนา (DevSecOps Tool) ที่ช่วยตรวจสอบและป้องกันช่องโหว่ด้านความปลอดภัยในโค้ดและระบบ โดยมีความสามารถหลัก ๆ ดังนี้:
+1. SCA (Software Composition Analysis)
+- ตรวจสอบ ช่องโหว่ใน dependencies / ไลบรารีภายนอก (เช่น requirements.txt ของ Python)
+- แนะนำเวอร์ชันใหม่หรือแพตช์ที่ปลอดภัยกว่า
+2. SAST (Static Application Security Testing)
+- วิเคราะห์ ซอร์สโค้ดของโปรเจกต์ เพื่อหาช่องโหว่ด้านความปลอดภัย เช่น SQL Injection, XSS, SSRF
+- ให้คำแนะนำในการแก้ไข (remediation hints)
+3. Container & IaC Security
+- สแกน Docker image หาช่องโหว่ของระบบปฏิบัติการหรือแพ็กเกจที่ติดตั้งใน container
+- ตรวจสอบไฟล์ Infrastructure as Code (เช่น Kubernetes YAML, Terraform) หาการตั้งค่าไม่ปลอดภัย
+4. Monitoring & Alerts
+- ผูกกับ repository หรือ image registry
+- เมื่อมี CVE ใหม่ ที่กระทบ dependency ของเรา Snyk จะแจ้งเตือนทันที
+5. Policy & Governance
+- สรุปรายงานความเสี่ยง (Risk report)
+- สามารถกำหนด policy ได้ เช่น อนุญาตเฉพาะช่องโหว่ระดับต่ำ-กลาง แต่ถ้าเจอ High/ Critical จะบล็อก PR อัตโนมัติ
+- ใช้ร่วมกับ CI/CD pipeline เพื่อให้โค้ดไม่ถูก merge ถ้าเกินเกณฑ์ที่กำหนด
