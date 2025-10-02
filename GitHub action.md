@@ -1133,18 +1133,20 @@ docker system prune -f
 
 ### Checklist ก่อนไปขั้นตอนถัดไป:
 
-- [ ] ไฟล์ทั้งหมดถูกสร้างครบ
-- [ ] .env มี passwords ที่ปลอดภัย
-- [ ] `docker compose config` ไม่มี error
-- [ ] Services ทั้งหมด status เป็น "Up" และ "healthy"
-- [ ] API endpoints ตอบกลับถูกต้อง
-- [ ] Tests ผ่านทั้งหมด
-- [ ] Database และ Redis เชื่อมต่อได้
-- [ ] 
+- [ได้ ] ไฟล์ทั้งหมดถูกสร้างครบ
+- [ได้ ] .env มี passwords ที่ปลอดภัย
+- [ได้ ] `docker compose config` ไม่มี error
+- [ได้ ] Services ทั้งหมด status เป็น "Up" และ "healthy"
+- [ได้ ] API endpoints ตอบกลับถูกต้อง
+- [ได้] Tests ผ่านทั้งหมด
+- [ได้] Database และ Redis เชื่อมต่อได้
+- [ไม่ได้ ] 
 ```bash
 ## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
 
 ```
+<img width="1085" height="331" alt="image" src="https://github.com/user-attachments/assets/8a2c2ad7-eec5-44db-a52c-ae14e0e173e8" />
+<img width="1043" height="328" alt="image" src="https://github.com/user-attachments/assets/9e95858d-753d-42ec-927b-199a02640fe1" />
 
 ## การทดลองที่ 2: สร้าง GitHub Actions Workflow
 
@@ -1532,7 +1534,9 @@ git push origin main
 ```bash
 
 
+
 ```
+<img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/bf267461-e6f4-41f6-96b3-f84ae39864c5" />
 
 #### ขั้นตอนที่ 5: ทดสอบ Pull Request
 
@@ -1554,6 +1558,7 @@ git push origin feature/test-pr
 
 
 ---
+<img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/750c246e-4c35-4667-8ac7-86d45fabd135" />
 
 
 ## Resources และเอกสารอ้างอิง
@@ -1586,8 +1591,14 @@ git push origin feature/test-pr
 
 ## คำถามท้ายการทดลอง
 1. docker compose คืออะไร มีความสำคัญอย่างไร
+= docker compose คือเครื่องมือที่ใช้จัดการ container หลาย ๆ ตัวพร้อมกัน เราเขียน config ไว้ในไฟล์เดียว (.yml) แล้วสั่ง docker compose up ทีเดียวมันก็จะรันทั้ง stack ได้เลย เช่น มี web + db + redis ขึ้นมาพร้อมกัน ความสำคัญคือช่วยให้ dev/test/deploy สะดวกมาก ทุกคนในทีมก็ได้สภาพแวดล้อมเหมือนกัน
 2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
+= GitHub pipeline ก็คือ workflow ที่เราสร้างไว้ใน repo ของ GitHub เพื่อ automate งานต่าง ๆ เช่น build, test, deploy เวลามีการ push code หรือ PR มันจะรันเอง อันนี้ก็คือ CI/CD นั่นแหละ CI = integrate/test code อัตโนมัติ, CD = deploy อัตโนมัติ
 3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
+= volumes / networks / healthcheck ใน docker compose
+volumes = เอาไว้เก็บข้อมูลถาวร ข้อมูลไม่หายเวลา container ถูกลบ เหมาะกับ db หรือไฟล์ที่ต้องเก็บ
+networks = ใช้เชื่อม container ต่าง ๆ แบบ isolated ภายใน จะได้สื่อสารกันได้โดยไม่ต้องเปิด port ออกมาข้างนอก
+healthcheck = ตรวจว่าบริการพร้อมใช้งานหรือยัง เช่น db ต้องรอให้ start เสร็จก่อนค่อยเชื่อมต่อ
 4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
 ```yaml
 jobs:
@@ -1610,6 +1621,13 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 ```
+= โค้ด yaml ตรง services
+job ชื่อ test, รันบน ubuntu
+มี service postgres ที่ใช้ image postgres:16-alpine
+set env (user/pass/db) ให้ container
+เปิด port 5432 ให้ติดต่อ
+ใส่ options healthcheck: ใช้ pg_isready เช็คว่า postgres พร้อมแล้วหรือยัง ทุก 10s timeout 5s ถ้า fail 5 ครั้งถือว่า unhealthy
+→ ก็คือ job นี้ต้องการให้มี postgres db รันขึ้นมาพร้อมกัน เพื่อใช้ตอน test
 5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
 ```yaml
     steps:
@@ -1622,4 +1640,10 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
 ```
+= actions/checkout กับ actions/setup-python
+checkout@v4 = เอา code จาก repo มาที่ runner (เหมือน git clone)
+setup-python@v5 = ติดตั้ง python environment ตาม version ที่กำหนด พร้อม cache pip ให้ติดตั้ง package เร็วขึ้น
 6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+= Snyk เป็นเครื่องมือด้าน security สำหรับนักพัฒนา เอาไว้สแกนหาช่องโหว่ใน code, dependency, docker image, IaC config ฯลฯ จุดเด่นคือมัน integrate ได้กับ GitHub, GitLab, Jenkins, IDE ต่าง ๆ ตรวจสอบช่องโหว่ + license issue ได้อัตโนมัติ แล้วก็ monitor ต่อเนื่อง ถ้ามีช่องโหว่ใหม่ ๆ โผล่มาใน lib ที่เราใช้ มันจะแจ้งเตือนเลย ทำให้ dev ทำงานไปพร้อมกับ security ได้ง่ายขึ้น
+
+#### Repoที่ใช้ในการทดลอง https://github.com/WisawaK/Ci-Cd.git
