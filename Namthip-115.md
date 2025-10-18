@@ -1,593 +1,3 @@
-# Lab 00: Preparing Knowledge - YAML for Docker Compose & GitHub Actions
-
-## วัตถุประสงค์
-เพื่อเตรียมความพร้อมในการเขียนไฟล์ YAML สำหรับ Docker Compose และ GitHub Actions 
-
----
-
-## ทฤษฎีก่อนการทดลอง
-## ส่วนที่ 1: ความรู้พื้นฐาน YAML
-
-### YAML คืออะไร?
-- **YAML** = YAML Ain't Markup Language
-- เป็นรูปแบบการเก็บข้อมูลที่อ่านได้ง่าย เหมาะสำหรับไฟล์คอนฟิกูเรชัน
-- ใช้การเว้นวรรค (indentation) แทนการใช้วงเล็บ
-- Case-sensitive (แยกตัวพิมพ์เล็กใหญ่)
-
-### กฎการเขียน YAML
-```yaml
-# นี่คือ comment (ความคิดเห็น)
-key: value                    # คู่ key-value พื้นฐาน
-number: 42                    # ตัวเลข
-boolean: true                 # boolean (true/false)
-list:                         # รายการ (array)
-  - item1
-  - item2
-  - item3
-nested:                       # nested object
-  child_key: child_value
-multiline: |                  # multi-line string
-  This is a
-  multi-line
-  string
-```
-
----
-
-## ส่วนที่ 2: Docker Compose YAML
-
-### ทฤษฎี Docker Compose
-Docker Compose เป็นเครื่องมือที่ใช้ในการจัดการแอปพลิเคชันที่ประกอบด้วยหลาย containers โดยใช้ไฟล์ YAML ในการกำหนดค่า
-
-### โครงสร้างพื้นฐาน docker-compose.yml (Modern)
-```yaml
-# Modern Docker Compose - ไม่ต้องระบุ version
-# ใช้ Compose Specification V2 อัตโนมัติ
-
-services:                   # กำหนด services ต่างๆ
-  service_name:             # ชื่อ service
-    # การกำหนดค่า service
-networks:                   # กำหนดเครือข่าย (optional)
-volumes:                    # กำหนด volumes (optional)
-```
-
-
-### ตัวอย่างที่ 1: Flask Application พื้นฐาน
-
-สร้างไฟล์ `docker-compose.yml`:
-
-```yaml
-# Modern Docker Compose - ไม่ต้องระบุ version
-
-services:
-  # Web Application Service
-  web:
-    build: .
-    container_name: flask_app
-    ports:
-      - "5000:5000"
-    environment:
-      - FLASK_ENV=development
-      - DATABASE_URL=postgresql://user:pass@db:5432/mydb
-    depends_on:
-      db:
-        condition: service_healthy        # รอจนกว่า db จะ healthy
-      redis:
-        condition: service_healthy        # รอจนกว่า redis จะ healthy
-    volumes:
-      - .:/app
-    restart: unless-stopped
-    networks:
-      - app-network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-
-  # Database Service
-  db:
-    image: postgres:16-alpine             # PostgreSQL 16 Alpine
-    container_name: postgres_db
-    environment:
-      POSTGRES_DB: mydb
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: pass             # ในการใช้งานจริงใช้ secrets
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-    restart: unless-stopped
-    networks:
-      - app-network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user -d mydb"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
-
-  # Redis Service
-  redis:
-    image: redis:7-alpine                 # Redis 7 Alpine
-    container_name: redis_cache
-    command: redis-server --appendonly yes
-    volumes:
-      - redis_data:/data
-    ports:
-      - "6379:6379"
-    restart: unless-stopped
-    networks:
-      - app-network
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
-
-networks:
-  app-network:
-    driver: bridge
-
-volumes:
-  postgres_data:
-    driver: local
-  redis_data:
-    driver: local
-```
-
-### คำอธิบายแต่ละส่วนใน Docker Compose
-
-#### Services
-แต่ละ service คือ container หนึ่งตัว:
-
-- **build**: สร้าง image จาก Dockerfile
-- **image**: ใช้ image ที่มีอยู่แล้ว (แนะนำใช้ Alpine variants)
-- **container_name**: กำหนดชื่อ container
-- **ports**: map port จาก host ไป container
-- **environment**: ตั้งค่าตัวแปรสภาพแวดล้อม
-- **depends_on**: กำหนดลำดับการเริ่มต้น service พร้อมเงื่อนไข
-  - `condition: service_healthy` - รอจนกว่า service จะผ่าน healthcheck
-  - `condition: service_started` - รอจนกว่า service จะเริ่มต้น
-- **volumes**: mount ข้อมูลระหว่าง host กับ container
-- **restart**: กำหนด restart policy
-- **networks**: เครือข่ายที่ container จะเข้าร่วม
-- **healthcheck**: ตรวจสอบสถานะสุขภาพของ service
-
-#### Health Checks (สำคัญมาก!)
-```yaml
-healthcheck:
-  test: ["CMD-SHELL", "pg_isready -U user"]  # คำสั่งตรวจสอบ
-  interval: 10s                               # ตรวจสอบทุก 10 วินาที
-  timeout: 5s                                 # timeout 5 วินาที
-  retries: 5                                  # ลองใหม่ 5 ครั้ง
-  start_period: 30s                          # รอ 30 วินาทีก่อนเริ่มตรวจสอบ
-```
-
-#### Networks และ Volumes
-- **Networks**: กำหนดเครือข่ายสำหรับให้ containers สื่อสารกัน
-- **Volumes**: จัดเก็บข้อมูลแบบถาวร ไม่หายเมื่อ container ปิด
-
-### คำสั่ง Docker Compose V2
-
-```bash
-# เริ่มต้น services ทั้งหมด
-docker compose up -d
-
-# ดู status ของ services
-docker compose ps
-
-# ดู logs
-docker compose logs -f
-
-# ดู logs เฉพาะ service
-docker compose logs web
-
-# ตรวจสอบ health status
-docker compose ps --format json | jq '.[].Health'
-
-# Restart service
-docker compose restart web
-
-# หยุด services
-docker compose down
-
-# หยุดและลบ volumes
-docker compose down -v
-
-# Validate configuration
-docker compose config
-
-# ดู services ที่กำหนดไว้
-docker compose config --services
-```
-
-**หมายเหตุ:** ใช้ `docker compose` (มีช่องว่าง) ไม่ใช่ `docker-compose` (มีขีด)
-
----
-
-## ส่วนที่ 3: GitHub Actions YAML
-
-### ทฤษฎี GitHub Actions
-GitHub Actions เป็นระบบ CI/CD ที่สร้างไว้ใน GitHub ใช้ไฟล์ YAML ในการกำหนด workflows ที่จะทำงานอัตโนมัติ
-
-### โครงสร้างพื้นฐาน .github/workflows/ci.yml
-```yaml
-name: Workflow Name           # ชื่อ workflow
-on:                          # กำหนดว่าเมื่อไหร่จะทำงาน
-  push:
-  pull_request:
-
-# SECURITY: จำกัดสิทธิ์ (Least Privilege)
-permissions:
-  contents: read
-  packages: write
-
-jobs:                        # กำหนด jobs ต่างๆ
-  job_name:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Step name
-        uses: action@version
-      - name: Another step
-        run: command
-```
-
-### ตัวอย่างที่ 2: CI/CD Pipeline สำหรับ Flask App
-
-สร้างไฟล์ `.github/workflows/ci-cd.yml`:
-
-```yaml
-name: Flask CI/CD Pipeline
-
-on:
-  push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ main ]
-
-env:
-  PYTHON_VERSION: '3.9'
-
-# SECURITY: จำกัดสิทธิ์ตาม Least Privilege Principle
-permissions:
-  contents: read
-  packages: write
-  security-events: write
-  pull-requests: write
-  actions: read
-
-jobs:
-  # Job ที่ 1: ทดสอบโค้ด
-  test:
-    name: Run Tests
-    runs-on: ubuntu-latest
-    
-    services:
-      postgres:
-        image: postgres:16-alpine
-        env:
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U $POSTGRES_USER "
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-          
-      redis:
-        image: redis:7-alpine
-        ports:
-          - 6379:6379
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          cache: 'pip'
-
-      - name: Install dependencies
-        run: |
-          cd backend
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      - name: Set up test environment
-        run: |
-          echo "DATABASE_URL=postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@localhost:5432/${{ secrets.POSTGRES_DB }}" >> $GITHUB_ENV
-          echo "REDIS_URL=redis://localhost:6379" >> $GITHUB_ENV
-          echo "FLASK_ENV=testing" >> $GITHUB_ENV
-
-      - name: Wait for services
-        run: |
-          timeout 60 bash -c 'until pg_isready -h localhost -p 5432 -U ${{ secrets.POSTGRES_USER }}; do sleep 2; done'
-          echo "✅ PostgreSQL is ready!"
-          timeout 60 bash -c 'until redis-cli -h localhost -p 6379 ping | grep -q PONG; do sleep 2; done'
-          echo "✅ Redis is ready!"
-
-      - name: Run tests with coverage
-        run: |
-          cd backend
-          pytest tests/ -v --cov=. --cov-report=xml --cov-report=html
-        env:
-          DATABASE_URL: ${{ env.DATABASE_URL }}
-          SECRET_KEY: ${{ secrets.SECRET_KEY }}
-
-      - name: Upload coverage reports
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: coverage-report
-          path: backend/htmlcov/
-          retention-days: 5
-
-  # Job ที่ 2: Security Scanning ด้วย Snyk
-  security-snyk:
-    name: Snyk Security Scan
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          cache: 'pip'
-
-      - name: Install dependencies
-        run: |
-          cd backend
-          pip install -r requirements.txt
-
-      # SCA - Dependencies Scan
-      - name: Run Snyk Dependencies Scan
-        uses: snyk/actions/python@master
-        continue-on-error: true
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: --severity-threshold=high --file=backend/requirements.txt
-          command: test
-
-      # SAST - Code Scan
-      - name: Run Snyk Code Scan
-        uses: snyk/actions/python@master
-        continue-on-error: true
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: --severity-threshold=medium --sarif-file-output=snyk-code.sarif
-          command: code test
-
-      - name: Upload SARIF to GitHub Security
-        uses: github/codeql-action/upload-sarif@v3
-        if: always()
-        with:
-          sarif_file: snyk-code.sarif
-
-      - name: Monitor with Snyk
-        if: github.ref == 'refs/heads/main'
-        uses: snyk/actions/python@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: --file=backend/requirements.txt
-          command: monitor
-
-  # Job ที่ 3: Additional Security Scans
-  security-additional:
-    name: Additional Security Scans
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          cache: 'pip'
-
-      - name: Run Safety check
-        run: |
-          pip install safety
-          cd backend
-          safety check --json --output safety-report.json || echo "⚠️ Safety warnings found"
-        continue-on-error: true
-
-      - name: Run Bandit SAST
-        run: |
-          pip install bandit[toml]
-          cd backend
-          bandit -r . -f json -o bandit-report.json -ll || echo "⚠️ Bandit warnings found"
-        continue-on-error: true
-
-      - name: Run Semgrep
-        uses: returntocorp/semgrep-action@v1
-        with:
-          config: auto
-          generateSarif: "1"
-        continue-on-error: true
-
-      - name: Secret Scanning with TruffleHog
-        uses: trufflesecurity/trufflehog@main
-        with:
-          path: ./
-          base: ${{ github.event.repository.default_branch }}
-          head: HEAD
-          extra_args: --only-verified
-
-      - name: Upload security artifacts
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: security-reports
-          path: |
-            backend/safety-report.json
-            backend/bandit-report.json
-          retention-days: 30
-
-  # Job ที่ 4: Build Docker Image
-  build:
-    name: Build Docker Image
-    runs-on: ubuntu-latest
-    needs: [test, security-snyk, security-additional]
-    if: |
-      always() && 
-      needs.test.result == 'success' && 
-      (needs.security-snyk.result == 'success' || needs.security-snyk.result == 'skipped')
-
-    env:
-      REGISTRY: ghcr.io
-      IMAGE_NAME: ${{ github.repository }}
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Log in to Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Extract metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=sha,prefix={{branch}}-
-            type=raw,value=latest,enable={{is_default_branch}}
-
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Run Trivy container scan
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-
-      - name: Upload Trivy results
-        uses: github/codeql-action/upload-sarif@v3
-        if: always()
-        with:
-          sarif_file: 'trivy-results.sarif'
-
-  # Job ที่ 5: Notify Results
-  notify:
-    name: Notify Results
-    runs-on: ubuntu-latest
-    needs: [test, security-snyk, security-additional, build]
-    if: always()
-    
-    steps:
-      - name: Create PR comment
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const testStatus = '${{ needs.test.result }}';
-            const snykStatus = '${{ needs.security-snyk.result }}';
-            const additionalSecurityStatus = '${{ needs.security-additional.result }}';
-            const buildStatus = '${{ needs.build.result }}';
-            
-            const statusEmoji = {
-              'success': '✅',
-              'failure': '❌',
-              'cancelled': '⏹️',
-              'skipped': '⏭️'
-            };
-            
-            const comment = \`
-            ## 🚀 CI/CD Pipeline Results
-            
-            | Job | Status | Result |
-            |-----|--------|---------|
-            | Tests | \${statusEmoji[testStatus] || '❓'} | \${testStatus} |
-            | Snyk Security | \${statusEmoji[snykStatus] || '❓'} | \${snykStatus} |
-            | Additional Security | \${statusEmoji[additionalSecurityStatus] || '❓'} | \${additionalSecurityStatus} |
-            | Docker Build | \${statusEmoji[buildStatus] || '❓'} | \${buildStatus} |
-            
-            **Commit**: \\\`${{ github.sha }}\\\`
-            **Branch**: \\\`${{ github.head_ref }}\\\`
-            \`;
-            
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: comment
-            });
-
-      - name: Print summary
-        run: |
-          echo "=== Pipeline Summary ==="
-          echo "Test: ${{ needs.test.result }}"
-          echo "Snyk: ${{ needs.security-snyk.result }}"
-          echo "Security: ${{ needs.security-additional.result }}"
-          echo "Build: ${{ needs.build.result }}"
-```
-
-### คำอธิบายแต่ละส่วนใน GitHub Actions
-
-#### Permissions (สำคัญ!)
-```yaml
-permissions:
-  contents: read          # อ่าน repository
-  packages: write         # เขียน packages
-  security-events: write  # เขียน security events
-```
-
-#### Jobs
-- **runs-on**: ระบบปฏิบัติการที่ใช้
-- **needs**: รอ job อื่นเสร็จก่อน
-- **if**: เงื่อนไขในการทำงาน
-- **services**: services สำหรับทดสอบ
-
-#### Steps
-- **uses**: ใช้ action ที่มีอยู่แล้ว
-- **run**: รันคำสั่งโดยตรง
-- **with**: พารามิเตอร์สำหรับ action
-- **env**: ตัวแปรสภาพแวดล้อม
-
----
-
 # ขั้นตอนการทดลอง
 
 ### การทดลองที่ 1: สร้าง Docker Compose Project
@@ -1142,7 +552,13 @@ docker system prune -f
 - [ ] Database และ Redis เชื่อมต่อได้
 - [ ] 
 ```bash
-## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
+```
+<img width="957" height="158" alt="image" src="https://github.com/user-attachments/assets/ab86fe48-b635-4b4c-a207-75cded18ed37" />
+<img width="956" height="171" alt="image" src="https://github.com/user-attachments/assets/e3ce6d69-7aa7-4997-9f7d-ecc92aad2352" />
+<img width="960" height="1079" alt="image" src="https://github.com/user-attachments/assets/060d2eeb-639e-41c9-89ae-a551d8ea8d11" />
+
+
+
 
 ```
 
@@ -1529,6 +945,9 @@ git push origin main
 # ตรวจสอบผลลัพธ์ใน GitHub Actions 
 ```
 ## บันทึกรูปผลการทดลอง หน้า GitHub Actions
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/0ae425f3-78ef-48a0-85ba-506713f34d05" />
+
+
 ```bash
 
 
@@ -1547,6 +966,8 @@ git push origin feature/test-pr
 # ตรวจสอบ workflow การทำงานและ comment ที่ถูกสร้าง
 ```
 ## บันทึกรูปผลการทดลอง 
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/11c8cfe5-54fe-4b64-af32-1195be6cccf9" />
+
 ```bash
 
 
@@ -1584,11 +1005,32 @@ git push origin feature/test-pr
 
 ---
 
-## คำถามท้ายการทดลอง
-1. docker compose คืออะไร มีความสำคัญอย่างไร
-2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
-3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
-4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
+# คำถามท้ายการทดลอง
+
+## 1. Docker Compose คืออะไร มีความสำคัญอย่างไร  
+**ตอบ:**  
+Docker Compose คือเครื่องมือที่ใช้ในการรันและจัดการหลาย container พร้อมกันโดยใช้ไฟล์เดียว (เช่น `docker-compose.yml`)  
+มีความสำคัญเพราะช่วยให้สามารถตั้งค่า เชื่อมต่อ และควบคุม service ต่าง ๆ ได้ง่ายและสะดวกมากขึ้น  
+
+---
+
+## 2. GitHub Pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร  
+**ตอบ:**  
+GitHub Pipeline คือระบบอัตโนมัติที่อยู่บน GitHub ซึ่งใช้สำหรับรันการทดสอบ สร้าง และ deploy โค้ดแบบอัตโนมัติ  
+เกี่ยวข้องกับ CI/CD เพราะเป็นส่วนหนึ่งของกระบวนการที่ช่วยให้ระบบสามารถพัฒนาและส่งมอบซอฟต์แวร์ได้อย่างต่อเนื่องและปลอดภัย  
+
+---
+
+## 3. จากไฟล์ Docker Compose: ส่วนของ `volumes`, `networks` และ `healthcheck` มีความสำคัญอย่างไร  
+**ตอบ:**  
+- `volumes` : ใช้เก็บข้อมูลถาวรของ container เพื่อไม่ให้หายไปเมื่อ container หยุดทำงาน  
+- `networks` : ใช้เชื่อมต่อ container หลายตัวเข้าด้วยกันให้สามารถสื่อสารกันได้  
+- `healthcheck` : ใช้ตรวจสอบว่า container พร้อมสำหรับการทำงานหรือยัง เช่น ตรวจสอบว่า database ทำงานอยู่หรือไม่  
+
+---
+
+## 4. อธิบาย Code ของไฟล์ YAML ในส่วนนี้
+
 ```yaml
 jobs:
   test:
@@ -1609,9 +1051,15 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+
 ```
 
-5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
+**ตอบ:**
+เป็นการสร้างฐานข้อมูล PostgreSQL สำหรับใช้ในการทดสอบ กำหนดชื่อผู้ใช้ รหัสผ่าน ฐานข้อมูล และมี healthcheck เพื่อตรวจสอบว่าพร้อมก่อนเริ่มรัน
+
+---
+
+## 5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
 ```yaml
     steps:
       - name: Checkout code
@@ -1623,4 +1071,13 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
 ```
-6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+**ตอบ:**
+checkout@v4 ดึงซอร์สโค้ดจาก GitHub มาใช้ ,setup-python@v5 ติดตั้ง Python เพื่อรันหรือทดสอบโปรแกรม
+
+---
+
+## 6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+**ตอบ:**
+เป็นเครื่องมือสแกนหาช่องโหว่ในโค้ดและ dependencies พร้อมแนะนำวิธีแก้และเชื่อมต่อกับ CI/CD เพื่อป้องกันปัญหาความปลอดภัย
+
+---
