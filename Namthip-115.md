@@ -945,6 +945,9 @@ git push origin main
 # ตรวจสอบผลลัพธ์ใน GitHub Actions 
 ```
 ## บันทึกรูปผลการทดลอง หน้า GitHub Actions
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/0ae425f3-78ef-48a0-85ba-506713f34d05" />
+
+
 ```bash
 
 
@@ -963,6 +966,8 @@ git push origin feature/test-pr
 # ตรวจสอบ workflow การทำงานและ comment ที่ถูกสร้าง
 ```
 ## บันทึกรูปผลการทดลอง 
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/11c8cfe5-54fe-4b64-af32-1195be6cccf9" />
+
 ```bash
 
 
@@ -1001,14 +1006,16 @@ git push origin feature/test-pr
 ---
 
 ## คำถามท้ายการทดลอง
-1. docker compose คืออะไร มีความสำคัญอย่างไร
-   ตอบ คือเครื่องมือที่ใช้รันและจัดการหลาย container พร้อมกันในไฟล์เดียว มีความสำคัญเพราะช่วยตั้งค่าและเชื่อมต่อ service ต่าง ๆ ได้ง่ายและสะดวกคือเครื่องมือที่ใช้รันและจัดการหลาย container พร้อมกันในไฟล์เดียว มีความสำคัญเพราะช่วยตั้งค่าและเชื่อมต่อ service ต่าง ๆ ได้ง่ายและสะดวก
-2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
-   ตอบ คือระบบอัตโนมัติบน GitHub ใช้รันทดสอบและ deploy โค้ด ซึ่งเป็นส่วนหนึ่งของกระบวนการ CI/CD เพื่อให้ระบบทำงานต่อเนื่องและปลอดภัย
-3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
-   ตอบ volumes เก็บข้อมูลถาวรไม่หายเมื่อปิด container ,networks เชื่อมต่อ container ให้คุยกันได้ ,healthcheck ตรวจสอบว่า container พร้อมทำงานหรือยัง
+###1. docker compose คืออะไร มีความสำคัญอย่างไร
+คือเครื่องมือที่ใช้รันและจัดการหลาย container พร้อมกันในไฟล์เดียว มีความสำคัญเพราะช่วยตั้งค่าและเชื่อมต่อ service ต่าง ๆ ได้ง่ายและสะดวกคือเครื่องมือที่ใช้รันและจัดการหลาย container พร้อมกันในไฟล์เดียว มีความสำคัญเพราะช่วยตั้งค่าและเชื่อมต่อ service ต่าง ๆ ได้ง่ายและสะดวก
 
-4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
+###2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
+คือระบบอัตโนมัติบน GitHub ใช้รันทดสอบและ deploy โค้ด ซึ่งเป็นส่วนหนึ่งของกระบวนการ CI/CD เพื่อให้ระบบทำงานต่อเนื่องและปลอดภัย
+   
+###3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
+volumes เก็บข้อมูลถาวรไม่หายเมื่อปิด container ,networks เชื่อมต่อ container ให้คุยกันได้ ,healthcheck ตรวจสอบว่า container พร้อมทำงานหรือยัง
+
+###4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
 ```yaml
 jobs:
   test:
@@ -1030,8 +1037,10 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 ```
- ตอบ เป็นการสร้างฐานข้อมูล PostgreSQL สำหรับใช้ในการทดสอบ กำหนดชื่อผู้ใช้ รหัสผ่าน ฐานข้อมูล และมี healthcheck เพื่อตรวจสอบว่าพร้อมก่อนเริ่มรัน
-5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
+
+เป็นการสร้างฐานข้อมูล PostgreSQL สำหรับใช้ในการทดสอบ กำหนดชื่อผู้ใช้ รหัสผ่าน ฐานข้อมูล และมี healthcheck เพื่อตรวจสอบว่าพร้อมก่อนเริ่มรัน
+
+###5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
 ```yaml
     steps:
       - name: Checkout code
@@ -1043,6 +1052,7 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
 ```
- ตอบ checkout@v4 ดึงซอร์สโค้ดจาก GitHub มาใช้ ,setup-python@v5 ติดตั้ง Python เพื่อรันหรือทดสอบโปรแกรม
-6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
- ตอบ เป็นเครื่องมือสแกนหาช่องโหว่ในโค้ดและ dependencies พร้อมแนะนำวิธีแก้และเชื่อมต่อกับ CI/CD เพื่อป้องกันปัญหาความปลอดภัย
+checkout@v4 ดึงซอร์สโค้ดจาก GitHub มาใช้ ,setup-python@v5 ติดตั้ง Python เพื่อรันหรือทดสอบโปรแกรม
+ 
+###6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+เป็นเครื่องมือสแกนหาช่องโหว่ในโค้ดและ dependencies พร้อมแนะนำวิธีแก้และเชื่อมต่อกับ CI/CD เพื่อป้องกันปัญหาความปลอดภัย
