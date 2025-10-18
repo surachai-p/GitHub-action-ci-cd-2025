@@ -552,7 +552,13 @@ docker system prune -f
 - [ ] Database และ Redis เชื่อมต่อได้
 - [ ] 
 ```bash
-## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
+```
+<img width="957" height="158" alt="image" src="https://github.com/user-attachments/assets/ab86fe48-b635-4b4c-a207-75cded18ed37" />
+<img width="956" height="171" alt="image" src="https://github.com/user-attachments/assets/e3ce6d69-7aa7-4997-9f7d-ecc92aad2352" />
+<img width="960" height="1079" alt="image" src="https://github.com/user-attachments/assets/060d2eeb-639e-41c9-89ae-a551d8ea8d11" />
+
+
+
 
 ```
 
