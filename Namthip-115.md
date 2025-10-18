@@ -1005,25 +1005,16 @@ git push origin feature/test-pr
 
 ---
 
-1. Docker Compose คืออะไร มีความสำคัญอย่างไร
+## คำถามท้ายการทดลอง
+1. docker compose คืออะไร มีความสำคัญอย่างไร
+   ตอบ คือเครื่องมือที่ใช้รันและจัดการหลาย container พร้อมกันในไฟล์เดียว มีความสำคัญเพราะช่วยตั้งค่าและเชื่อมต่อ service ต่าง ๆ ได้ง่ายและสะดวกคือเครื่องมือที่ใช้รันและจัดการหลาย container พร้อมกันในไฟล์เดียว มีความสำคัญเพราะช่วยตั้งค่าและเชื่อมต่อ service ต่าง ๆ ได้ง่ายและสะดวก
+2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
+   ตอบ คือระบบอัตโนมัติบน GitHub ใช้รันทดสอบและ deploy โค้ด ซึ่งเป็นส่วนหนึ่งของกระบวนการ CI/CD เพื่อให้ระบบทำงานต่อเนื่องและปลอดภัย
+3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
+   ตอบ volumes เก็บข้อมูลถาวรไม่หายเมื่อปิด container ,networks เชื่อมต่อ container ให้คุยกันได้ ,healthcheck ตรวจสอบว่า container พร้อมทำงานหรือยัง
 
-Docker Compose คือเครื่องมือที่ใช้ในการรันและจัดการหลาย container พร้อมกันในไฟล์เดียว (เช่น docker-compose.yml)
-มีความสำคัญเพราะช่วยให้การตั้งค่าและเชื่อมต่อ service ต่าง ๆ (เช่น database, web app, redis ฯลฯ) ทำได้ง่ายและสะดวกขึ้นมาก
-
-2. GitHub Pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
-
-GitHub Pipeline (หรือ GitHub Actions Workflow) คือระบบอัตโนมัติบน GitHub ที่ใช้ในการรันทดสอบ สแกนความปลอดภัย และ deploy โค้ด
-ซึ่งเป็นหัวใจของกระบวนการ CI/CD (Continuous Integration / Continuous Delivery) เพื่อให้ระบบทำงานต่อเนื่อง รวดเร็ว และปลอดภัย
-
-3. จากไฟล์ Docker Compose ส่วนของ volumes, networks และ healthcheck มีความสำคัญอย่างไร
-
-volumes: ใช้เก็บข้อมูลถาวรของ container เช่นฐานข้อมูล จะไม่หายเมื่อปิดหรือ restart container
-
-networks: ใช้เชื่อมต่อ container ต่าง ๆ ให้สามารถสื่อสารกันได้ใน environment เดียวกัน
-
-healthcheck: ใช้ตรวจสอบสถานะว่า container พร้อมทำงานหรือยัง (Healthy / Unhealthy)
-
-4. อธิบาย Code ของไฟล์ YAML ในส่วนนี้
+4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
+```yaml
 jobs:
   test:
     name: Run Tests
@@ -1043,38 +1034,20 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+```
+ ตอบ เป็นการสร้างฐานข้อมูล PostgreSQL สำหรับใช้ในการทดสอบ กำหนดชื่อผู้ใช้ รหัสผ่าน ฐานข้อมูล และมี healthcheck เพื่อตรวจสอบว่าพร้อมก่อนเริ่มรัน
+5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
+```yaml
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-
-คำอธิบาย:
-เป็นการกำหนดให้ job test ใช้บริการฐานข้อมูล PostgreSQL ใน container ที่มีการตั้งค่า username, password และ database
-รวมถึงใช้ healthcheck เพื่อตรวจสอบว่า PostgreSQL พร้อมใช้งานก่อนจะเริ่มรันทดสอบ
-
-5. จาก Code ในส่วนของ uses: actions/checkout@v4 และ uses: actions/setup-python@v5 คืออะไร
-steps:
-  - name: Checkout code
-    uses: actions/checkout@v4
-
-  - name: Set up Python
-    uses: actions/setup-python@v5
-    with:
-      python-version: ${{ env.PYTHON_VERSION }}
-      cache: 'pip'
-
-
-คำอธิบาย:
-
-actions/checkout@v4: ใช้ในการ clone โค้ดจาก GitHub repository มายังเครื่องที่ใช้รัน workflow
-
-actions/setup-python@v5: ใช้ในการติดตั้ง Python เวอร์ชันที่กำหนด เพื่อเตรียมพร้อมรันทดสอบหรือใช้งานอื่น ๆ
-
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+```
+ ***ตอบ checkout@v4 ดึงซอร์สโค้ดจาก GitHub มาใช้ ,setup-python@v5 ติดตั้ง Python เพื่อรันหรือทดสอบโปรแกรม***
 6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
-
-Snyk คือเครื่องมือด้านความปลอดภัยที่ใช้ในการ
-
-สแกนหาช่องโหว่ (Vulnerabilities) ใน dependency ของโปรเจกต์
-
-วิเคราะห์โค้ดหาช่องโหว่ (Static Code Analysis)
-
-ให้คำแนะนำในการแก้ไข
-
-ใช้งานร่วมกับระบบ CI/CD เพื่อป้องกันความเสี่ยงตั้งแต่ก่อน deploy
+ ***ตอบ เป็นเครื่องมือสแกนหาช่องโหว่ในโค้ดและ dependencies พร้อมแนะนำวิธีแก้และเชื่อมต่อกับ CI/CD เพื่อป้องกันปัญหาความปลอดภัย***
