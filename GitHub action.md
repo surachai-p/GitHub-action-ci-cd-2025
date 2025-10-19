@@ -1133,18 +1133,21 @@ docker system prune -f
 
 ### Checklist ก่อนไปขั้นตอนถัดไป:
 
-- [ ] ไฟล์ทั้งหมดถูกสร้างครบ
-- [ ] .env มี passwords ที่ปลอดภัย
-- [ ] `docker compose config` ไม่มี error
-- [ ] Services ทั้งหมด status เป็น "Up" และ "healthy"
-- [ ] API endpoints ตอบกลับถูกต้อง
-- [ ] Tests ผ่านทั้งหมด
-- [ ] Database และ Redis เชื่อมต่อได้
-- [ ] 
+- [✅] ไฟล์ทั้งหมดถูกสร้างครบ
+- [✅] .env มี passwords ที่ปลอดภัย
+- [✅] `docker compose config` ไม่มี error
+- [✅] Services ทั้งหมด status เป็น "Up" และ "healthy"
+- [✅] API endpoints ตอบกลับถูกต้อง
+- [✅] Tests ผ่านทั้งหมด
+- [✅] Database และ Redis เชื่อมต่อได้
+<img width="433" height="114" alt="image" src="https://github.com/user-attachments/assets/174a5b3f-9399-43b8-8043-d12b6ced9cdc" />
+<img width="646" height="221" alt="image" src="https://github.com/user-attachments/assets/81c9b142-399e-4d8e-8823-a683b9d486ee" />
 ```bash
+
+
+
 ## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
 
-```
 
 ## การทดลองที่ 2: สร้าง GitHub Actions Workflow
 
@@ -1527,7 +1530,9 @@ git commit -m "Add CI/CD pipeline"
 git push origin main
 
 # ตรวจสอบผลลัพธ์ใน GitHub Actions 
-```
+<img width="1280" height="930" alt="image" src="https://github.com/user-attachments/assets/bbb71523-526f-45b5-b1c3-0b1db18b12b8" />
+<img width="1304" height="905" alt="image" src="https://github.com/user-attachments/assets/10def8da-bf5a-499f-9aa6-dd56f3246c3d" />
+
 ## บันทึกรูปผลการทดลอง หน้า GitHub Actions
 ```bash
 
@@ -1585,9 +1590,9 @@ git push origin feature/test-pr
 ---
 
 ## คำถามท้ายการทดลอง
-1. docker compose คืออะไร มีความสำคัญอย่างไร
-2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
-3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
+1. docker compose คืออะไร มีความสำคัญอย่างไร คือเครื่องมือของ Docker ที่ช่วยกำหนด เรียกใช้งาน จัดการ container หลายๆ ตัวที่ทำงานร่วมกันได้ง่าย ความสำคัญของ Docker Compose ง่ายในการจัดการหลาย container ลดการพึ่งพามือ: ไม่ต้องพิมพ์คำสั่ง docker ยาวๆ หลายบรรทัด ใช้ร่วมกับ CI/CD ได้ง่าย: Build และ deploy เป็นระบบ ช่วยให้ dev และ production environment เหมือนกัน
+2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร GitHub Actions เป็นระบบ Automation ของ GitHub สำหรับรันคำสั่งต่างๆ อัตโนมัติรันการทดสอบอัตโนมัติ Build Docker image Deploy ไปยัง server ตรวจสอบโค้ด หรือ lint CI (Continuous Integration) การทดสอบรวมโค้ดอัตโนมัติ CD (Continuous Delivery/Deployment) การ deploy โค้ดอัตโนมัติ
+3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร ocker compose ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร volumes - การจัดการข้อมูลถาวร ใช้สำหรับ เก็บข้อมูลแบบถาวร แม้ container จะถูกลบ เช่นฐานข้อมูล (PostgreSQL, MySQL) → ถ้าไม่มี volume ข้อมูลจะหายเมื่อ container หยุด networks – การเชื่อมต่อระหว่าง container ช่วยให้ container หลายตัว สื่อสารกันได้ ถ้าอยู่ใน network เดียวกัน → เรียกกันได้ด้วยชื่อ service healthcheck – ตรวจสอบสถานะของ container ใช้เช็กว่า container หรือ service ยังทำงานอยู่หรือไม่ ถ้าไม่ healthy → Docker สามารถพยายาม restart หรือแจ้งเตือนได้
 4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
 ```yaml
 jobs:
@@ -1623,3 +1628,4 @@ jobs:
           cache: 'pip'
 ```
 6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+Snyk คือเครื่องมือสำหรับตรวจสอบความปลอดภัยของโค้ดและ dependencies -ตรวจหาช่องโหว่ในแพ็กเกจ (Vulnerability Scanning) -วิเคราะห์โค้ดหาช่องโหว่ (SAST) -ตรวจสอบ Docker Image -ตรวจสอบ Infrastructure as Code (เช่น Kubernetes, Terraform) -มอนิเตอร์ dependencies และแจ้งเตือนเมื่อมีช่องโหว่ใหม่
