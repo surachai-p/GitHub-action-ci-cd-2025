@@ -1133,16 +1133,18 @@ docker system prune -f
 
 ### Checklist ก่อนไปขั้นตอนถัดไป:
 
-- [ ] ไฟล์ทั้งหมดถูกสร้างครบ
-- [ ] .env มี passwords ที่ปลอดภัย
-- [ ] `docker compose config` ไม่มี error
-- [ ] Services ทั้งหมด status เป็น "Up" และ "healthy"
-- [ ] API endpoints ตอบกลับถูกต้อง
-- [ ] Tests ผ่านทั้งหมด
-- [ ] Database และ Redis เชื่อมต่อได้
-- [ ] 
+- [✅] ไฟล์ทั้งหมดถูกสร้างครบ
+- [✅] .env มี passwords ที่ปลอดภัย
+- [✅] `docker compose config` ไม่มี error
+- [✅] Services ทั้งหมด status เป็น "Up" และ "healthy"
+- [✅] API endpoints ตอบกลับถูกต้อง
+- [✅] Tests ผ่านทั้งหมด
+- [✅] Database และ Redis เชื่อมต่อได้
+- [✅] 
 ```bash
 ## บันทึกรูปผลการทดลอง หน้าจอของ docker และหน้าเว็บ
+<img width="433" height="114" alt="image" src="https://github.com/user-attachments/assets/174a5b3f-9399-43b8-8043-d12b6ced9cdc" />
+<img width="646" height="221" alt="image" src="https://github.com/user-attachments/assets/81c9b142-399e-4d8e-8823-a683b9d486ee" />
 
 ```
 
