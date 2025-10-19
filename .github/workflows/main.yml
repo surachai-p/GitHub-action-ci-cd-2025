@@ -41,8 +41,6 @@ jobs:
                 issue_number: prNumber,
                 body: `⚠️ **Submission Deadline Exceeded**
                 
-This pull request was submitted after the due date (**October 20, 2025 at 23:59:59 UTC**) and has been automatically closed.
-
 **Submission Details:**
 - PR Title: ${prTitle}
 - Author: @${prAuthor}
