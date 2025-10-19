@@ -1,4 +1,3 @@
-yaml
 name: Flask CI/CD Pipeline
 
 on:
