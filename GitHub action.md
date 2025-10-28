@@ -588,7 +588,7 @@ permissions:
 
 ---
 
-#ขั้นตอนการทดลอง
+# ขั้นตอนการทดลอง
 
 ### การทดลองที่ 1: สร้าง Docker Compose Project
 
@@ -637,7 +637,7 @@ services:
       redis:
         condition: service_healthy        # รอจนกว่า redis จะ healthy
     volumes:
-      - .:/app
+      - ./backend:/app
     restart: unless-stopped
     networks:
       - app-network
@@ -1042,12 +1042,12 @@ curl -s http://localhost:5000/ | python3 -m json.tool
 docker compose exec db psql -U user
 
 ```sql
-# ทดสอบคำสั่ง SQL
+#### ทดสอบคำสั่ง SQL
 psql> SELECT version();
 psql> \l          (list databases)
 psql> \q          (quit)
 ```
-
+```bash 
 # เข้าไปใน Redis container
 docker compose exec redis redis-cli
 
@@ -1133,6 +1133,7 @@ docker system prune -f
 
 ### Checklist ก่อนไปขั้นตอนถัดไป:
 
+
 - [ / ] ไฟล์ทั้งหมดถูกสร้างครบ
 - [ / ] .env มี passwords ที่ปลอดภัย
 - [ / ] `docker compose config` ไม่มี error
@@ -1147,7 +1148,8 @@ docker system prune -f
 ![alt text](image-2.png)
 ![alt text](image-3.png)
 
-### การทดลองที่ 2: สร้าง GitHub Actions Workflow
+
+## การทดลองที่ 2: สร้าง GitHub Actions Workflow
 
 #### ขั้นตอนที่ 1: สร้าง GitHub Repository
 
@@ -1586,7 +1588,7 @@ git push origin feature/test-pr
 ---
 
 ## คำถามท้ายการทดลอง
-1. docker compose คืืออะไร มีความสำคัญอย่างไร
+1. docker compose คืออะไร มีความสำคัญอย่างไร
 2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
 3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
 4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
