@@ -1530,10 +1530,8 @@ git push origin main
 # ตรวจสอบผลลัพธ์ใน GitHub Actions 
 ```
 ## บันทึกรูปผลการทดลอง หน้า GitHub Actions
-```bash
 
-
-```
+![alt text](image-4.png)
 
 #### ขั้นตอนที่ 5: ทดสอบ Pull Request
 
@@ -1548,11 +1546,8 @@ git push origin feature/test-pr
 # ตรวจสอบ workflow การทำงานและ comment ที่ถูกสร้าง
 ```
 ## บันทึกรูปผลการทดลอง 
-```bash
 
-
-```
-
+![alt text](image-5.png)
 
 ---
 
