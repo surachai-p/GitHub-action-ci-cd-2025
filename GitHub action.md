@@ -1581,41 +1581,32 @@ git push origin feature/test-pr
 ---
 
 ## คำถามท้ายการทดลอง
-1. docker compose คืืออะไร มีความสำคัญอย่างไร
-2. GitHub pipeline คืออะไร เกี่ยวข้องกับ CI/CD อย่างไร
-3. จากไฟล์ docker compose  ส่วนของ volumes networks และ healthcheck มีความสำคัญอย่างไร
-4. อธิบาย Code ของไฟล์ yaml ในส่วนนี้ 
-```yaml
-jobs:
-  test:
-    name: Run Tests
-    runs-on: ubuntu-latest
-    
-    services:
-      postgres:
-        image: postgres:16-alpine
-        env:
-          POSTGRES_PASSWORD: testpass
-          POSTGRES_USER: testuser
-          POSTGRES_DB: testdb
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U testuser"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-```
-5. จาก Code ในส่วนของ uses: actions/checkout@v4  และ uses: actions/setup-python@v5 คืออะไร 
-```yaml
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+1. Docker Compose คืออะไร
+คือไฟล์ .yml ที่ใช้จัดการหลาย container พร้อมกัน เช่น backend, database, redis
+- สำคัญเพราะช่วย สั่ง start / stop ทุก service ด้วยคำสั่งเดียว (docker compose up)
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          cache: 'pip'
-```
-6. Snyk คืออะไร มีความสามารถอย่างไรบ้าง
+2. GitHub Pipeline คืออะไร
+คือ ขั้นตอนการทำงานอัตโนมัติบน GitHub Actions
+- ใช้ในกระบวนการ CI/CD เช่น ทดสอบ (CI) และ Deploy (CD)
+
+3. volumes / networks / healthcheck สำคัญอย่างไร
+- volumes : เก็บข้อมูลถาวร เช่น database ไม่หายเมื่อ container หยุด
+- networks : ให้ containers ต่าง ๆ เชื่อมต่อหากัน
+- healthcheck : ตรวจว่าสถานะ container “พร้อมทำงาน” หรือยัง
+
+4. อธิบาย Code ส่วน jobs:test
+services:
+  postgres:
+    image: postgres:16-alpine
+สร้าง service ชื่อ postgres ใช้ image PostgreSQL 16
+ตั้งค่า user, password, db
+เปิดพอร์ต 5432
+ใช้ healthcheck (pg_isready) ตรวจว่า database พร้อมก่อนเริ่มเทส
+
+5. uses: actions/checkout@v4 / setup-python@v5
+checkout@v4 : ดึงโค้ดจาก GitHub repository มาใช้ใน workflow
+setup-python@v5 : ติดตั้ง Python เวอร์ชันที่กำหนดไว้ในเครื่อง runner
+
+6. Snyk คืออะไร
+เป็นเครื่องมือ สแกนช่องโหว่ความปลอดภัย ในโค้ด, dependency, Docker image
+➡️ ช่วยแจ้งเตือนและแนะนำวิธีแก้ไขอัตโนมัติใน CI/CD ได้
